@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, vi, expect } from 'vitest';
 import { useTheme } from 'next-themes';
-import ThemeButton from '@/app/_components/themeButton';
+import ThemeButton from '../app/_components/themeButton';
 
 // Mock the useTheme hook
 vi.mock('next-themes', () => ({
