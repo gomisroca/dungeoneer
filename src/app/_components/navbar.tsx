@@ -7,7 +7,7 @@ function Navbar() {
     <div className="absolute left-0 right-0 top-0 flex flex-row items-center justify-between p-4">
       <Link
         href="/"
-        className="rounded-xl p-3 text-xl font-bold backdrop-blur-sm transition duration-200 ease-in-out hover:bg-primary-300/80 hover:text-background-200 dark:hover:bg-primary-700/80 dark:hover:text-background-800">
+        className="rounded-xl p-3 text-xl font-bold backdrop-blur-sm transition duration-200 ease-in-out hover:bg-cyan-300/80 hover:text-stone-200 dark:hover:bg-cyan-700/80 dark:hover:text-stone-800">
         dungeoneer
       </Link>
       {/* Basic Menu */}
