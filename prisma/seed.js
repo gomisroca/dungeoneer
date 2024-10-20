@@ -1,33 +1,82 @@
 import { db } from '../src/server/db';
 import supabase from '../src/supabase';
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
+async function uploadImageToSupabase(imageUrl, bucketName, fileName) {
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(imageUrl);
+      if (!response.ok) throw new Error(`Failed to fetch image. Status: ${response.status}`);
+
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, buffer, {
+          contentType: response.headers.get('content-type') || 'image/jpeg',
+          upsert: true,
+        });
+
+      if (error) throw error;
+      if (!data) throw new Error('No data returned from upload.');
+
+      const { data: urlData, error: urlError } = await supabase.storage
+        .from(bucketName)
+        .getPublicUrl(data.path);
+
+      if (urlError) throw urlError;
+      if (!urlData.publicUrl) throw new Error('Failed to get public URL for the image.');
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error(`Attempt ${attempt} failed:`, error);
+      if (attempt === MAX_RETRIES) {
+        console.error('Max retries reached. Failing.');
+        return null;
+      }
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+    }
+  }
+}
+
+// Fetch, transform and create minions in batches
 async function getMinions() {
   const res = await fetch('https://ffxivcollect.com/api/minions');
   const data = await res.json();
   return data.results;
 }
 
-async function transformMinions(){
-  const minions = await getMinions();
-  await Promise.all(
-    minions.map(async (minion) => {
-      const imageUrl = await uploadImage(minion.image, 'minions', minion.id + '.jpg');
-      const dbMinion = await db.minion.create({
-        data: {
-          name: minion.name,
-          shortDescription: description,
-          description: minion.enhanced_description,
-          patch: minion.patch,
-          tradeable: minion.tradeable,
-          behavior: minion.behavior.name,
-          race: minion.race.name,
-          image: imageUrl,
-          owned: minion.owned,
-        },
-      })
-      await db.verminionStats.create({
-        data: {
-          minionId: dbMinion.id,
+async function createMinion(minion) {
+  try {
+    let uploadedImageUrl = null;
+    if (minion.image) {
+      const fileName = `${minion.id}.${minion.image.split('.').pop()}`;
+      uploadedImageUrl = await uploadImageToSupabase(minion.image, 'minions', fileName);
+    }
+    const minionData = {
+      name: minion.name,
+      shortDescription: minion.description,
+      description: minion.enhanced_description,
+      patch: minion.patch,
+      tradeable: minion.tradeable,
+      behavior: minion.behavior.name,
+      race: minion.race.name,
+      image: uploadedImageUrl ?? minion.image,
+      owned: minion.owned,
+      sources: {
+        create: minion.sources.map((source) => ({
+          type: source.type,
+          text: source.text,
+        })),
+      },
+    };
+
+    if (minion.verminion) {
+      minionData.verminion = {
+        create: {
           cost: minion.verminion.cost,
           attack: minion.verminion.attack,
           defense: minion.verminion.defense,
@@ -43,60 +92,47 @@ async function transformMinions(){
           gate: minion.verminion.gate,
           shield: minion.verminion.shield,
         },
-      })
-      for (const source of minion.sources) {
-        await db.source.create({
-          data: {
-            minionId: dbMinion.id,
-            type: source.type,
-            text: source.text,
-          },
-        })
-      }
-    })
-  );
-}
+      };
+    }
 
-async function uploadImage(imageUrl, bucketName, fileName) {
-  try {
-    const response = await fetch(imageUrl);
-    if (!response.ok) throw new Error(`Failed to fetch image. Status: ${response.status}`);
-
-    const blob = await response.blob();
-    const { data, error } = await supabase.storage.from(bucketName).upload(fileName, blob, {
-      contentType: blob.type,
-      upsert: true,
+    return await db.minion.create({
+      data: minionData,
     });
-
-    if (error) throw new Error(`Failed to upload image to Supabase: ${error.message}`);
-
-    console.log('Image uploaded successfully:', data);
-    return data;
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error(`Error creating minion ${minion.name}:`, error);
     return null;
   }
 }
 
-async function main() {
-  // https://cafemaker.wakingsands.com/instanceContent?language=en // Dungeon Basic info
-  // https://cafemaker.wakingsands.com/instanceContent/1?columns=Name,Banner&language=en // Dungeon Banner, could also just directly fetch these
+async function transformMinions() {
+  const minions = await getMinions();
+  let successCount = 0;
+  let failCount = 0;
 
-  // https://ffxivcollect.com/api/minions
-  // https://ffxivcollect.com/api/mounts
-  // https://ffxivcollect.com/api/orchestrions
-  // https://ffxivcollect.com/api/spells
-  // https://triad.raelys.com/api/cards
+  for (let i = 0; i < minions.length; i++) {
+    const minion = minions[i];
+    const result = await createMinion(minion);
+    if (result) {
+      successCount++;
+    } else {
+      failCount++;
+    }
+    console.log(`Processed ${i + 1} out of ${minions.length} minions. Success: ${successCount}, Failed: ${failCount}`);
+  }
 
-
-  transformMinions();
+  console.log(`Finished processing all minions. Total Success: ${successCount}, Total Failed: ${failCount}`);
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
+async function main() {
+  try {
+    await transformMinions();
+  } catch (e) {
+    console.error("An error occurred during the seeding process:", e);
     process.exit(1);
-  })
-  .finally(async () => {
-    await db.$disconnect();
-  });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+main();
+  

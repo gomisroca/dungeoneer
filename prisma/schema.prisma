@@ -60,7 +60,7 @@ model VerificationToken {
 }
 
 model VerminionStats {
-    id               Int     @id @default(autoincrement())
+    id               String  @id @default(cuid())
     cost             Int
     attack           Int
     defense          Int
@@ -76,25 +76,25 @@ model VerminionStats {
     gate             Boolean
     shield           Boolean
     minion           Minion  @relation(fields: [minionId], references: [id])
-    minionId         Int     @unique
+    minionId         String  @unique
 }
 
 model Source {
-    id       Int    @id @default(autoincrement())
+    id       String  @id @default(cuid())
     type     String
     text     String
-    minion   Minion @relation(fields: [minionId], references: [id])
-    minionId Int
-    mount    Mount  @relation(fields: [mountId], references: [id])
-    mountId  Int
-    spell    Spell  @relation(fields: [spellId], references: [id])
-    spellId  Int
-    card     Card   @relation(fields: [cardId], references: [id])
-    cardId   Int
+    minion   Minion? @relation(fields: [minionId], references: [id])
+    minionId String?
+    mount    Mount?  @relation(fields: [mountId], references: [id])
+    mountId  String?
+    spell    Spell?  @relation(fields: [spellId], references: [id])
+    spellId  String?
+    card     Card?   @relation(fields: [cardId], references: [id])
+    cardId   String?
 }
 
 model Minion {
-    id               Int             @id @default(autoincrement())
+    id               String          @id @default(cuid())
     name             String
     shortDescription String
     description      String
@@ -102,7 +102,7 @@ model Minion {
     tradeable        Boolean
     behavior         String
     race             String
-    image            String
+    image            String?
     owned            String
     verminion        VerminionStats?
     sources          Source[]
@@ -111,47 +111,47 @@ model Minion {
 
 // We could upload the BGM too
 model Mount {
-    id               Int      @id @default(autoincrement())
+    id               String   @id @default(cuid())
     name             String
     shortDescription String
     description      String
     patch            String
     tradeable        Boolean
-    image            String
+    image            String?
     owned            String
     sources          Source[]
     owners           User[]
 }
 
 model Orchestrion {
-    id          Int     @id @default(autoincrement())
+    id          String  @id @default(cuid())
     name        String
     description String
     patch       String
     tradeable   Boolean
     number      String
-    image       String
+    image       String?
     owned       String
     owners      User[]
 }
 
 model Spell {
-    id          Int      @id @default(autoincrement())
+    id          String   @id @default(cuid())
     name        String
     description String
     patch       String
     tradeable   Boolean
     number      String
-    image       String
+    image       String?
     owned       String
     owners      User[]
     sources     Source[]
 }
 
 model CardStats {
-    id     Int  @id @default(autoincrement())
-    card   Card @relation(fields: [cardId], references: [id])
-    cardId Int  @unique
+    id     String @id @default(cuid())
+    card   Card   @relation(fields: [cardId], references: [id])
+    cardId String @unique
     top    Int
     right  Int
     bottom Int
@@ -159,14 +159,14 @@ model CardStats {
 }
 
 model Card {
-    id          Int        @id @default(autoincrement())
+    id          String     @id @default(cuid())
     name        String
     description String
     patch       String
     tradeable   Boolean
     stars       String
     number      String
-    image       String
+    image       String?
     owned       String
     stats       CardStats?
     owners      User[]
@@ -174,8 +174,8 @@ model Card {
 }
 
 model Dungeon {
-    id          Int    @id @default(autoincrement())
+    id          Int     @id @default(autoincrement())
     name        String
     description String
-    image       String
+    image       String?
 }
