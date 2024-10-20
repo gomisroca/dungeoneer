@@ -8,18 +8,6 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
@@ -49,14 +37,18 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String        @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?       @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+    minions       Minion[]
+    mounts        Mount[]
+    orchestrions  Orchestrion[]
+    spells        Spell[]
+    cards         Card[]
 }
 
 model VerificationToken {
@@ -65,4 +57,125 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model VerminionStats {
+    id               String  @id @default(cuid())
+    cost             Int
+    attack           Int
+    defense          Int
+    hp               Int
+    speed            Int
+    aoe              Boolean
+    skill            String
+    skillDescription String
+    skillAngle       Int
+    skillCost        Int
+    skillType        String
+    eye              Boolean
+    gate             Boolean
+    shield           Boolean
+    minion           Minion  @relation(fields: [minionId], references: [id])
+    minionId         String  @unique
+}
+
+model Source {
+    id       String  @id @default(cuid())
+    type     String
+    text     String
+    minion   Minion? @relation(fields: [minionId], references: [id])
+    minionId String?
+    mount    Mount?  @relation(fields: [mountId], references: [id])
+    mountId  String?
+    spell    Spell?  @relation(fields: [spellId], references: [id])
+    spellId  String?
+    card     Card?   @relation(fields: [cardId], references: [id])
+    cardId   String?
+}
+
+model Minion {
+    id               String          @id @default(cuid())
+    name             String
+    shortDescription String
+    description      String
+    patch            String
+    tradeable        Boolean
+    behavior         String
+    race             String
+    image            String?
+    owned            String
+    verminion        VerminionStats?
+    sources          Source[]
+    owners           User[]
+}
+
+// We could upload the BGM too
+model Mount {
+    id               String   @id @default(cuid())
+    name             String
+    shortDescription String
+    description      String
+    patch            String
+    tradeable        Boolean
+    image            String?
+    owned            String
+    sources          Source[]
+    owners           User[]
+}
+
+model Orchestrion {
+    id          String  @id @default(cuid())
+    name        String
+    description String
+    patch       String
+    tradeable   Boolean
+    number      String
+    image       String?
+    owned       String
+    owners      User[]
+}
+
+model Spell {
+    id          String   @id @default(cuid())
+    name        String
+    description String
+    patch       String
+    tradeable   Boolean
+    number      String
+    image       String?
+    owned       String
+    owners      User[]
+    sources     Source[]
+}
+
+model CardStats {
+    id     String @id @default(cuid())
+    card   Card   @relation(fields: [cardId], references: [id])
+    cardId String @unique
+    top    Int
+    right  Int
+    bottom Int
+    left   Int
+}
+
+model Card {
+    id          String     @id @default(cuid())
+    name        String
+    description String
+    patch       String
+    tradeable   Boolean
+    stars       String
+    number      String
+    image       String?
+    owned       String
+    stats       CardStats?
+    owners      User[]
+    sources     Source[]
+}
+
+model Dungeon {
+    id          Int     @id @default(autoincrement())
+    name        String
+    description String
+    image       String?
 }
