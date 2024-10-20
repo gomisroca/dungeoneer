@@ -10,7 +10,7 @@
 import { useTheme } from 'next-themes';
 import { FaSun, FaMoon } from 'react-icons/fa6';
 
-import Button from './ui/Button';
+import Button from '../ui/Button';
 
 function ThemeButton() {
   const { theme, setTheme } = useTheme();

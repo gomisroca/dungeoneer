@@ -7,7 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 
 import { TRPCReactProvider } from '@/trpc/react';
-import Navbar from './_components/navbar';
+import Navbar from './_components/navbar/NavbarWrapper';
 
 export const metadata: Metadata = {
   title: 'Dungeoneer',
