@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
-import { api } from '@/trpc/react';
+import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '../_components/ui/Button';
@@ -11,10 +11,10 @@ import { type MinionWithOwners } from 'types';
 function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Session | null }) {
   const utils = api.useUtils();
 
-  const addToUserMutatiom = api.minion.addToUser.useMutation({
+  const addToUserMutatiom = api.minions.addToUser.useMutation({
     onSuccess: async () => {
       alert('Added to your collection!');
-      await utils.minion.getAll.invalidate();
+      await utils.minions.getAll.invalidate();
     },
     onError: (error) => {
       alert(error.message);
@@ -25,10 +25,10 @@ function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Se
     addToUserMutatiom.mutate({ minionId: minion.id });
   };
 
-  const removeFromUserMutatiom = api.minion.removeFromUser.useMutation({
+  const removeFromUserMutatiom = api.minions.removeFromUser.useMutation({
     onSuccess: async () => {
       alert('Removed from your collection!');
-      await utils.minion.getAll.invalidate();
+      await utils.minions.getAll.invalidate();
     },
     onError: (error) => {
       alert(error.message);
@@ -57,13 +57,20 @@ function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Se
   );
 }
 
-export default function MinionList({ session }: { session: Session | null }) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.minion.getAll.useInfiniteQuery(
+type MinionListOutput = RouterOutputs['minions']['getAll'];
+interface MinionListProps {
+  session: Session | null;
+  initialMinions: MinionListOutput;
+}
+
+export default function MinionList({ session, initialMinions }: MinionListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.minions.getAll.useInfiniteQuery(
     {
       limit: 30,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialData: { pages: [initialMinions], pageParams: [undefined] },
     }
   );
 
