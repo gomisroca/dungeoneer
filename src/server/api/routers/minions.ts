@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/
 import { TRPCError } from '@trpc/server';
 import { type MinionWithOwners } from 'types';
 
-export const minionRouter = createTRPCRouter({
+export const minionsRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
       z.object({
