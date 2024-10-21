@@ -83,7 +83,7 @@ function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Sess
     <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-200/20 p-4 font-semibold transition duration-200 ease-in-out hover:scale-110 hover:bg-stone-200/40 dark:border-stone-800 dark:bg-stone-800/20 hover:dark:bg-stone-800/40">
       {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
       <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
-      <div className="flex flex-wrap gap-4 p-4">
+      <div className="flex flex-wrap gap-2 md:gap-4 md:p-4">
         {minion.sources.map((source) => (
           <Source key={source.id} source={source} />
         ))}
@@ -142,7 +142,7 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
       ) : (
         <>
           {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-5 gap-4" key={i}>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
               {page.minions.map((minion, index) => (
                 <div key={minion.id} ref={index === page.minions.length - 1 ? ref : undefined}>
                   <MinionCard minion={minion} session={session} />
