@@ -5,15 +5,26 @@ import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
-import Button from '../_components/ui/Button';
+import Button from '@/app/_components/ui/Button';
 import { type MinionWithOwners } from 'types';
+import { useSignal, useSignalEffect } from '@preact-signals/safe-react';
+import { message } from '../_components/ui/MessagePopup';
 
 function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Session | null }) {
+  const minionsInLS = useSignal<string[]>([]);
+
+  useSignalEffect(() => {
+    const lsMinions = localStorage.getItem('dungeoneer_minions');
+    if (lsMinions) {
+      minionsInLS.value = JSON.parse(lsMinions) as string[];
+    }
+  });
+
   const utils = api.useUtils();
 
   const addToUserMutatiom = api.minions.addToUser.useMutation({
     onSuccess: async () => {
-      alert('Added to your collection!');
+      message.value = `Added ${minion.name} to your collection.`;
       await utils.minions.getAll.invalidate();
     },
     onError: (error) => {
@@ -25,9 +36,22 @@ function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Se
     addToUserMutatiom.mutate({ minionId: minion.id });
   };
 
+  const addToLS = () => {
+    const lsMinions = localStorage.getItem('dungeoneer_minions');
+    if (!lsMinions) {
+      localStorage.setItem('dungeoneer_minions', JSON.stringify([minion.id]));
+    } else {
+      const parsedLsMinions: string[] = JSON.parse(lsMinions) as string[];
+      parsedLsMinions.push(minion.id);
+      localStorage.setItem('dungeoneer_minions', JSON.stringify(parsedLsMinions));
+      minionsInLS.value = parsedLsMinions;
+      message.value = `Added ${minion.name} to your collection.`;
+    }
+  };
+
   const removeFromUserMutatiom = api.minions.removeFromUser.useMutation({
     onSuccess: async () => {
-      alert('Removed from your collection!');
+      message.value = `Removed ${minion.name} from your collection.`;
       await utils.minions.getAll.invalidate();
     },
     onError: (error) => {
@@ -39,20 +63,33 @@ function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Se
     removeFromUserMutatiom.mutate({ minionId: minion.id });
   };
 
+  const removeFromLS = () => {
+    const lsMinions = localStorage.getItem('dungeoneer_minions');
+    if (lsMinions) {
+      const parsedLsMinions = JSON.parse(lsMinions) as string[];
+      const updatedMinions = parsedLsMinions.filter((id: string) => id !== minion.id);
+      localStorage.setItem('dungeoneer_minions', JSON.stringify(updatedMinions));
+      minionsInLS.value = updatedMinions;
+      message.value = `Removed ${minion.name} from your collection.`;
+    }
+  };
+  const isOwnedByUser = session?.user
+    ? minion.owners.some((o) => o.id === session.user.id)
+    : minionsInLS.value.includes(minion.id);
+
   return (
-    <div className="rounded-xl border-4 border-stone-200 p-4 font-semibold transition duration-200 ease-in-out hover:scale-110 dark:border-stone-800">
+    <div className="rounded-xl border-4 border-stone-200 bg-stone-200/20 p-4 font-semibold transition duration-200 ease-in-out hover:scale-110 hover:bg-stone-200/40 dark:border-stone-800 dark:bg-stone-800/20 hover:dark:bg-stone-800/40">
       {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
       {minion.name}
-      {session &&
-        (minion.owners.find((o) => o.id === session.user.id) ? (
-          <Button name="Remove" type="submit" disabled={!session} onClick={removeFromUser}>
-            Remove
-          </Button>
-        ) : (
-          <Button name="Add" type="submit" disabled={!session} onClick={addToUser}>
-            Add
-          </Button>
-        ))}
+      {isOwnedByUser ? (
+        <Button name="Remove" type="submit" onClick={session ? removeFromUser : removeFromLS}>
+          Remove
+        </Button>
+      ) : (
+        <Button name="Add" type="submit" onClick={session ? addToUser : addToLS}>
+          Add
+        </Button>
+      )}
     </div>
   );
 }
@@ -102,7 +139,11 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
               ))}
             </div>
           ))}
-          {isFetchingNextPage && <h1 className="p-4 text-xl font-bold">Loading more...</h1>}
+          {isFetchingNextPage && (
+            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-orange-300 p-4 text-center text-xl font-bold dark:bg-orange-700">
+              Loading more...
+            </h1>
+          )}
         </>
       )}
     </div>
