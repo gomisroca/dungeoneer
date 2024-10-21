@@ -39,7 +39,7 @@ function Source({ source }: { source: SourceType }) {
               alt={source.type}
               width={50}
               height={50}
-              className='hover:scale-110 transition duration-200 ease-in-out hover:contrast-125'
+              className='hover:scale-110 transition duration-200 ease-in-out hover:contrast-125 h-12 object-contain'
             />
           </TooltipTrigger>
           <TooltipContent
