@@ -6,11 +6,12 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
-import { type MinionWithOwners } from 'types';
+import { type ExpandedMinion } from 'types';
 import { useSignal, useSignalEffect } from '@preact-signals/safe-react';
 import { message } from '../_components/ui/MessagePopup';
+import Source from '../_components/ui/Source';
 
-function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Session | null }) {
+function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
   const minionsInLS = useSignal<string[]>([]);
 
   useSignalEffect(() => {
@@ -73,21 +74,31 @@ function MinionCard({ minion, session }: { minion: MinionWithOwners; session: Se
       message.value = `Removed ${minion.name} from your collection.`;
     }
   };
+
   const isOwnedByUser = session?.user
     ? minion.owners.some((o) => o.id === session.user.id)
     : minionsInLS.value.includes(minion.id);
 
   return (
-    <div className="rounded-xl border-4 border-stone-200 bg-stone-200/20 p-4 font-semibold transition duration-200 ease-in-out hover:scale-110 hover:bg-stone-200/40 dark:border-stone-800 dark:bg-stone-800/20 hover:dark:bg-stone-800/40">
+    <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-200/20 p-4 font-semibold transition duration-200 ease-in-out hover:scale-110 hover:bg-stone-200/40 dark:border-stone-800 dark:bg-stone-800/20 hover:dark:bg-stone-800/40">
       {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
-      {minion.name}
+      <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
+      <div className="flex flex-wrap gap-4 p-4">
+        {minion.sources.map((source) => (
+          <Source key={source.id} source={source} />
+        ))}
+      </div>
       {isOwnedByUser ? (
-        <Button name="Remove" type="submit" onClick={session ? removeFromUser : removeFromLS}>
-          Remove
+        <Button
+          name="Remove from Collection"
+          className="w-full"
+          type="submit"
+          onClick={session ? removeFromUser : removeFromLS}>
+          Remove from Collection
         </Button>
       ) : (
-        <Button name="Add" type="submit" onClick={session ? addToUser : addToLS}>
-          Add
+        <Button name="Add to Collection" className="w-full" type="submit" onClick={session ? addToUser : addToLS}>
+          Add to Collection
         </Button>
       )}
     </div>
