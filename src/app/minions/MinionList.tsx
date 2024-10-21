@@ -8,8 +8,8 @@ import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
 import { type ExpandedMinion } from 'types';
 import { useSignal, useSignalEffect } from '@preact-signals/safe-react';
-import { message } from '../_components/ui/MessagePopup';
 import Source from '../_components/ui/Source';
+import { addMessage } from '../_components/ui/MessagePopup';
 
 function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
   const minionsInLS = useSignal<string[]>([]);
@@ -25,7 +25,7 @@ function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Sess
 
   const addToUserMutatiom = api.minions.addToUser.useMutation({
     onSuccess: async () => {
-      message.value = `Added ${minion.name} to your collection.`;
+      addMessage(`Added ${minion.name} to your collection.`);
       await utils.minions.getAll.invalidate();
     },
     onError: (error) => {
@@ -46,13 +46,14 @@ function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Sess
       parsedLsMinions.push(minion.id);
       localStorage.setItem('dungeoneer_minions', JSON.stringify(parsedLsMinions));
       minionsInLS.value = parsedLsMinions;
-      message.value = `Added ${minion.name} to your collection.`;
+      addMessage(`Added ${minion.name} to your collection.`);
+      addMessage(`Log in to make sure you never lose your collection.`);
     }
   };
 
   const removeFromUserMutatiom = api.minions.removeFromUser.useMutation({
     onSuccess: async () => {
-      message.value = `Removed ${minion.name} from your collection.`;
+      addMessage(`Removed ${minion.name} from your collection.`);
       await utils.minions.getAll.invalidate();
     },
     onError: (error) => {
@@ -71,7 +72,7 @@ function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Sess
       const updatedMinions = parsedLsMinions.filter((id: string) => id !== minion.id);
       localStorage.setItem('dungeoneer_minions', JSON.stringify(updatedMinions));
       minionsInLS.value = updatedMinions;
-      message.value = `Removed ${minion.name} from your collection.`;
+      addMessage(`Removed ${minion.name} from your collection.`);
     }
   };
 
