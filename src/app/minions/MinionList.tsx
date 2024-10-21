@@ -98,7 +98,7 @@ function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Sess
     : minionsInLS.value.includes(minion.id);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-200/20 p-4 font-semibold transition duration-200 ease-in-out hover:scale-110 hover:bg-stone-200/40 dark:border-stone-800 dark:bg-stone-800/20 hover:dark:bg-stone-800/40">
+    <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700">
       {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
       <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
