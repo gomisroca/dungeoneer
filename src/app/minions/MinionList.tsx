@@ -83,11 +83,11 @@ function AddOrRemoveButton({
       className="w-full"
       type="submit"
       onClick={session ? removeFromUser : removeFromLS}>
-      Remove from Collection
+      Remove
     </Button>
   ) : (
     <Button name="Add to Collection" className="w-full" type="submit" onClick={session ? addToUser : addToLS}>
-      Add to Collection
+      Add
     </Button>
   );
 }
