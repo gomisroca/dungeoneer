@@ -7,20 +7,21 @@ import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
 import { type ExpandedMinion } from 'types';
-import { useSignal, useSignalEffect } from '@preact-signals/safe-react';
+import { signal, useSignalEffect } from '@preact-signals/safe-react';
 import Source from '../_components/ui/Source';
 import { addMessage } from '../_components/ui/MessagePopup';
 
-function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
-  const minionsInLS = useSignal<string[]>([]);
+const minionsInLS = signal<string[]>([]);
 
-  useSignalEffect(() => {
-    const lsMinions = localStorage.getItem('dungeoneer_minions');
-    if (lsMinions) {
-      minionsInLS.value = JSON.parse(lsMinions) as string[];
-    }
-  });
-
+function AddOrRemoveButton({
+  minion,
+  isOwnedByUser,
+  session,
+}: {
+  minion: ExpandedMinion;
+  isOwnedByUser: boolean;
+  session: Session | null;
+}) {
   const utils = api.useUtils();
 
   const addToUserMutatiom = api.minions.addToUser.useMutation({
@@ -76,6 +77,22 @@ function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Sess
     }
   };
 
+  return isOwnedByUser ? (
+    <Button
+      name="Remove from Collection"
+      className="w-full"
+      type="submit"
+      onClick={session ? removeFromUser : removeFromLS}>
+      Remove from Collection
+    </Button>
+  ) : (
+    <Button name="Add to Collection" className="w-full" type="submit" onClick={session ? addToUser : addToLS}>
+      Add to Collection
+    </Button>
+  );
+}
+
+function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
   const isOwnedByUser = session?.user
     ? minion.owners.some((o) => o.id === session.user.id)
     : minionsInLS.value.includes(minion.id);
@@ -84,24 +101,12 @@ function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Sess
     <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-200/20 p-4 font-semibold transition duration-200 ease-in-out hover:scale-110 hover:bg-stone-200/40 dark:border-stone-800 dark:bg-stone-800/20 hover:dark:bg-stone-800/40">
       {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
       <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
-      <div className="flex flex-wrap gap-2 md:gap-4 md:p-4">
+      <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
         {minion.sources.map((source) => (
           <Source key={source.id} source={source} />
         ))}
       </div>
-      {isOwnedByUser ? (
-        <Button
-          name="Remove from Collection"
-          className="w-full"
-          type="submit"
-          onClick={session ? removeFromUser : removeFromLS}>
-          Remove from Collection
-        </Button>
-      ) : (
-        <Button name="Add to Collection" className="w-full" type="submit" onClick={session ? addToUser : addToLS}>
-          Add to Collection
-        </Button>
-      )}
+      <AddOrRemoveButton minion={minion} isOwnedByUser={isOwnedByUser} session={session} />
     </div>
   );
 }
@@ -111,8 +116,14 @@ interface MinionListProps {
   session: Session | null;
   initialMinions: MinionListOutput;
 }
-
 export default function MinionList({ session, initialMinions }: MinionListProps) {
+  useSignalEffect(() => {
+    const lsMinions = localStorage.getItem('dungeoneer_minions');
+    if (lsMinions) {
+      minionsInLS.value = JSON.parse(lsMinions) as string[];
+    }
+  });
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.minions.getAll.useInfiniteQuery(
     {
       limit: 30,
