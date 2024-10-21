@@ -1,5 +1,6 @@
-import { type Minion, type User } from '@prisma/client';
+import { type Source, type Minion, type User } from '@prisma/client';
 
-export interface MinionWithOwners extends Minion {
+export interface ExpandedMinion extends Minion {
   owners: User[];
+  sources: Source[];
 }

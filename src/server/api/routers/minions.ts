@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { type MinionWithOwners } from 'types';
+import { type ExpandedMinion } from 'types';
 
 export const minionsRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -14,7 +14,7 @@ export const minionsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const limit = input.limit ?? 10;
       const { cursor } = input;
-      const minions: MinionWithOwners[] = await ctx.db.minion.findMany({
+      const minions: ExpandedMinion[] = await ctx.db.minion.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
@@ -22,6 +22,7 @@ export const minionsRouter = createTRPCRouter({
         },
         include: {
           owners: true,
+          sources: true,
         },
       });
 
