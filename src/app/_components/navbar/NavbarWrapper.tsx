@@ -15,7 +15,7 @@ async function Navbar() {
         dungeoneer
       </Link>
       {/* Basic Menu */}
-      <div>
+      <div className="flex gap-2">
         <ThemeButton />
         {session ? <SignOutButton /> : <SignInButton />}
       </div>
