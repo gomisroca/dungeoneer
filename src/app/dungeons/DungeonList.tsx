@@ -45,7 +45,7 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
   return (
     <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700">
       {dungeon.image && (
-        <Image src={dungeon.image} alt={dungeon.name} width={100} height={100} className="w-full object-cover" />
+        <Image src={dungeon.image} alt={dungeon.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
       <div className="flex flex-col items-center justify-center gap-2">
