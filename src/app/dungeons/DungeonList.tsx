@@ -7,17 +7,37 @@ import Image from 'next/image';
 import { type ExpandedMinion, type ExpandedDungeon } from 'types';
 import { minionsInLS } from '../minions/MinionList';
 import { type Session } from 'next-auth';
+import { useMinionLogic } from '@/hooks/useMinionLogic';
+import Button from '../_components/ui/Button';
 
 function MinionView({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
+  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
   const isOwnedByUser = session?.user
     ? minion.owners.some((o) => o.id === session.user.id)
     : minionsInLS.value.includes(minion.id);
 
   return (
-    <div className="flex flex-row items-center justify-center gap-2">
-      {minion.image && <Image src={minion.image} alt={minion.name} width={30} height={30} />}
+    <Button
+      className="flex flex-row items-center justify-center gap-2"
+      onClick={isOwnedByUser ? (session ? removeFromUser : removeFromLS) : session ? addToUser : addToLS}>
+      <div className="relative">
+        {minion.image && (
+          <Image
+            src={minion.image}
+            alt={minion.name}
+            width={30}
+            height={30}
+            className={isOwnedByUser ? 'opacity-75' : ''}
+          />
+        )}
+        {isOwnedByUser && (
+          <div className="absolute bottom-0 left-0 right-0 top-0 text-center text-xl text-cyan-300 dark:text-cyan-700">
+            ✔
+          </div>
+        )}
+      </div>
       <h1 className={isOwnedByUser ? 'text-stone-500' : ''}>{minion.name}</h1>
-    </div>
+    </Button>
   );
 }
 

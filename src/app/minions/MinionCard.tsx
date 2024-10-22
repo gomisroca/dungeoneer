@@ -1,13 +1,12 @@
 'use client';
 
-import { api } from '@/trpc/react';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
 import { type ExpandedMinion } from 'types';
 import Source from '../_components/ui/Source';
-import { addMessage } from '../_components/ui/MessagePopup';
 import { minionsInLS } from './MinionList';
+import { useMinionLogic } from '@/hooks/useMinionLogic';
 
 function AddOrRemoveButton({
   minion,
@@ -18,60 +17,7 @@ function AddOrRemoveButton({
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const utils = api.useUtils();
-
-  const addToUserMutatiom = api.minions.addToUser.useMutation({
-    onSuccess: async () => {
-      addMessage(`Added ${minion.name} to your collection.`);
-      await utils.minions.getAll.invalidate();
-    },
-    onError: (error) => {
-      alert(error.message);
-    },
-  });
-
-  const addToUser = async () => {
-    addToUserMutatiom.mutate({ minionId: minion.id });
-  };
-
-  const addToLS = () => {
-    const lsMinions = localStorage.getItem('dungeoneer_minions');
-    if (!lsMinions) {
-      localStorage.setItem('dungeoneer_minions', JSON.stringify([minion.id]));
-    } else {
-      const parsedLsMinions: string[] = JSON.parse(lsMinions) as string[];
-      parsedLsMinions.push(minion.id);
-      localStorage.setItem('dungeoneer_minions', JSON.stringify(parsedLsMinions));
-      minionsInLS.value = parsedLsMinions;
-      addMessage(`Added ${minion.name} to your collection.`);
-      addMessage(`Log in to make sure you never lose your collection.`);
-    }
-  };
-
-  const removeFromUserMutatiom = api.minions.removeFromUser.useMutation({
-    onSuccess: async () => {
-      addMessage(`Removed ${minion.name} from your collection.`);
-      await utils.minions.getAll.invalidate();
-    },
-    onError: (error) => {
-      alert(error.message);
-    },
-  });
-
-  const removeFromUser = async () => {
-    removeFromUserMutatiom.mutate({ minionId: minion.id });
-  };
-
-  const removeFromLS = () => {
-    const lsMinions = localStorage.getItem('dungeoneer_minions');
-    if (lsMinions) {
-      const parsedLsMinions = JSON.parse(lsMinions) as string[];
-      const updatedMinions = parsedLsMinions.filter((id: string) => id !== minion.id);
-      localStorage.setItem('dungeoneer_minions', JSON.stringify(updatedMinions));
-      minionsInLS.value = updatedMinions;
-      addMessage(`Removed ${minion.name} from your collection.`);
-    }
-  };
+  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
 
   return isOwnedByUser ? (
     <Button
