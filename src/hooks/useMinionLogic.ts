@@ -1,7 +1,9 @@
 import { api } from '@/trpc/react';
 import { type ExpandedMinion } from 'types';
 import { addMessage } from '@/app/_components/ui/MessagePopup';
-import { minionsInLS } from '@/app/minions/MinionList';
+import { signal } from '@preact-signals/safe-react';
+
+export const minionsInLS = signal<string[]>([]);
 
 export function useMinionLogic(minion: ExpandedMinion) {
   const utils = api.useUtils();

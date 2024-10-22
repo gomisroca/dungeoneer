@@ -4,10 +4,9 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import { signal, useSignalEffect } from '@preact-signals/safe-react';
+import { useSignalEffect } from '@preact-signals/safe-react';
 import MinionCard from './MinionCard';
-
-export const minionsInLS = signal<string[]>([]);
+import { minionsInLS } from '@/hooks/useMinionLogic';
 
 type MinionListOutput = RouterOutputs['minions']['getAll'];
 interface MinionListProps {

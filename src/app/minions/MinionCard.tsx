@@ -5,8 +5,7 @@ import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
 import { type ExpandedMinion } from 'types';
 import Source from '../_components/ui/Source';
-import { minionsInLS } from './MinionList';
-import { useMinionLogic } from '@/hooks/useMinionLogic';
+import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
 
 function AddOrRemoveButton({
   minion,
