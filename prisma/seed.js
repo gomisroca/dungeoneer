@@ -123,6 +123,7 @@ async function transformMinions() {
   console.log(`Finished processing all minions. Total Success: ${successCount}, Total Failed: ${failCount}`);
 }
 
+// Fetch, transform and create dungeons in batches
 async function getDungeons() {
   const dungeons = [];
   for (let i = 1; i < 100; i++) {
