@@ -31,14 +31,14 @@ function Source({ source }: { source: SourceType }) {
           <TooltipTrigger 
             ref={(el) => { triggerRef.value = el; }}
             onClick={handleTriggerClick}
-            className='cursor-pointer focus:outline-none'
+            className='cursor-default'
           >
             <Image
               src={`/sources/${source.type}.png`}
               alt={source.type}
               width={50}
               height={50}
-              className='hover:scale-110 transition duration-200 ease-in-out hover:contrast-125 h-12 object-contain'
+              className='active:scale-110 active:contrast-125 active:duration-100 hover:scale-110 transition duration-200 ease-in-out hover:contrast-125 h-12 object-contain'
             />
           </TooltipTrigger>
           <TooltipContent
