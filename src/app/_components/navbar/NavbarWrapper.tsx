@@ -10,17 +10,17 @@ import StyledLink from '../ui/StyledLink';
 async function Navbar() {
   const session = await getServerAuthSession();
   return (
-    <div className="fixed left-0 right-0 top-0 flex flex-row items-start justify-between p-4">
-      <StyledLink href="/">
+    <div className="pointer-events-none fixed left-0 right-0 top-0 flex flex-row items-start justify-between p-4">
+      <StyledLink href="/" className="pointer-events-auto">
         <h1 className="text-xl font-bold backdrop-blur-sm">dungeoneer</h1>
       </StyledLink>
       {/* Basic Menu */}
-      <div className="flex flex-col gap-2">
+      <div className="pointer-events-auto flex flex-col gap-2">
         {session ? <SignOutButton /> : <SignInButton />}
         <ThemeButton />
-        {/* <StyledLink href="/dungeons">
+        <StyledLink href="/dungeons">
           <FaDungeon size={20} />
-        </StyledLink> */}
+        </StyledLink>
         <StyledLink href="/minions">
           <FaDog size={20} />
         </StyledLink>
