@@ -10,7 +10,7 @@ import StyledLink from '../ui/StyledLink';
 async function Navbar() {
   const session = await getServerAuthSession();
   return (
-    <div className="pointer-events-none fixed left-0 right-0 top-0 z-50 flex flex-row items-start justify-between p-4">
+    <div className="pointer-events-none fixed left-0 right-0 top-0 z-20 flex flex-row items-start justify-between p-4">
       <StyledLink href="/" className="pointer-events-auto">
         <h1 className="text-xl font-bold">dungeoneer</h1>
       </StyledLink>
