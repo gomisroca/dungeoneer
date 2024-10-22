@@ -23,14 +23,16 @@ function MinionView({ minion, session }: { minion: ExpandedMinion; session: Sess
           <Image
             src={minion.image}
             alt={minion.name}
-            width={30}
-            height={30}
+            width={50}
+            height={50}
             className={twMerge('flex-shrink-0', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
           />
         )}
         {isOwnedByUser && (
-          <div className="absolute bottom-0 left-0 right-0 top-0 text-center text-xl text-cyan-300 dark:text-cyan-700">
-            ✔
+          <div className="absolute bottom-0 left-0 right-0 top-0 flex">
+            <span className="m-auto text-4xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
+              ✔
+            </span>
           </div>
         )}
       </div>
