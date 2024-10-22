@@ -14,7 +14,7 @@ import { FaUserLarge } from 'react-icons/fa6';
 function SignOutButton() {
   return (
     <Button name="Sign Out" onClick={() => signOut()}>
-      <FaUserLarge />
+      <FaUserLarge size={20} />
       <span className="sr-only">Sign Out</span>
     </Button>
   );
