@@ -5,10 +5,10 @@ import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedMinion, type ExpandedDungeon } from 'types';
-import { minionsInLS } from '../minions/MinionList';
 import { type Session } from 'next-auth';
-import { useMinionLogic } from '@/hooks/useMinionLogic';
+import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
 import Button from '../_components/ui/Button';
+import { twMerge } from 'tailwind-merge';
 
 function MinionView({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
   const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
@@ -17,17 +17,15 @@ function MinionView({ minion, session }: { minion: ExpandedMinion; session: Sess
     : minionsInLS.value.includes(minion.id);
 
   return (
-    <Button
-      className="flex flex-row items-center justify-center gap-2"
-      onClick={isOwnedByUser ? (session ? removeFromUser : removeFromLS) : session ? addToUser : addToLS}>
-      <div className="relative">
+    <Button onClick={isOwnedByUser ? (session ? removeFromUser : removeFromLS) : session ? addToUser : addToLS}>
+      <div className="relative flex-shrink-0">
         {minion.image && (
           <Image
             src={minion.image}
             alt={minion.name}
             width={30}
             height={30}
-            className={isOwnedByUser ? 'opacity-75' : ''}
+            className={twMerge('flex-shrink-0', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
           />
         )}
         {isOwnedByUser && (
@@ -36,7 +34,9 @@ function MinionView({ minion, session }: { minion: ExpandedMinion; session: Sess
           </div>
         )}
       </div>
-      <h1 className={isOwnedByUser ? 'text-stone-500' : ''}>{minion.name}</h1>
+      <p className={twMerge('max-w-full flex-shrink overflow-hidden text-ellipsis', isOwnedByUser && 'text-stone-500')}>
+        {minion.name}
+      </p>
     </Button>
   );
 }
@@ -47,8 +47,10 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
       {dungeon.image && (
         <Image src={dungeon.image} alt={dungeon.name} width={100} height={100} className="w-full object-cover" />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{dungeon.name}</h1>
-      {dungeon.minions?.map((minion) => <MinionView key={minion.id} minion={minion} session={session} />)}
+      <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
+      <div className="flex flex-col items-center justify-center gap-2">
+        {dungeon.minions?.map((minion) => <MinionView key={minion.id} minion={minion} session={session} />)}
+      </div>
     </div>
   );
 }
@@ -89,7 +91,7 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
       ) : (
         <>
           {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
               {page.dungeons.map((dungeon, index) => (
                 <div key={dungeon.id} ref={index === page.dungeons.length - 1 ? ref : undefined}>
                   <DungeonCard dungeon={dungeon} session={session} />
