@@ -126,7 +126,7 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.minions.getAll.useInfiniteQuery(
     {
-      limit: 30,
+      limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
