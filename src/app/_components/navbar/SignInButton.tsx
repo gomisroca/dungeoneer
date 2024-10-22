@@ -7,7 +7,7 @@ import { signIn } from 'next-auth/react';
 function SignInButton() {
   return (
     <Button name="Sign In" onClick={() => signIn('discord')}>
-      <FaKey />
+      <FaKey size={20} />
       <span className="sr-only">Sign In</span>
     </Button>
   );
