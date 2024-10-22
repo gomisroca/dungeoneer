@@ -1,16 +1,15 @@
 import { type Source as SourceType } from '@prisma/client'
 import Image from 'next/image'
-import React, { useRef } from 'react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './Tooltip'
 import { useSignal, useSignalEffect } from '@preact-signals/safe-react'
 
 function Source({ source }: { source: SourceType }) {
   const isOpen = useSignal(false);
-  const triggerRef = useRef<HTMLButtonElement>(null)
+  const triggerRef = useSignal<HTMLButtonElement | null>(null);
 
   useSignalEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+      if (triggerRef.value && !triggerRef.value.contains(event.target as Node)) {
         isOpen.value = false
       }
     }
@@ -29,8 +28,8 @@ function Source({ source }: { source: SourceType }) {
     <div className='flex flex-row gap-2'>
       <TooltipProvider>
         <Tooltip open={isOpen.value} onOpenChange={() => isOpen.value = !isOpen.value}>
-          <TooltipTrigger
-            ref={triggerRef}
+          <TooltipTrigger 
+            ref={(el) => { triggerRef.value = el; }}
             onClick={handleTriggerClick}
             className='cursor-pointer focus:outline-none'
           >
