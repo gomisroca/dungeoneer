@@ -123,6 +123,63 @@ async function transformMinions() {
   console.log(`Finished processing all minions. Total Success: ${successCount}, Total Failed: ${failCount}`);
 }
 
+// Fetch, transform and create mounts in batches
+async function getMounts() {
+  const res = await fetch('https://ffxivcollect.com/api/mounts');
+  const data = await res.json();
+  return data.results;
+}
+
+async function createMount(mount) {
+  try {
+    let uploadedImageUrl = null;
+    if (mount.image) {
+      const fileName = `${mount.id}.${mount.image.split('.').pop()}`;
+      uploadedImageUrl = await uploadImageToSupabase(mount.image, 'mounts', fileName);
+    }
+
+    return await db.mount.create({
+      data: {
+        name: mount.name,
+        shortDescription: mount.description,
+        description: mount.enhanced_description,
+        patch: mount.patch,
+        tradeable: mount.tradeable,
+        image: uploadedImageUrl ?? mount.image,
+        owned: mount.owned,
+        sources: {
+          create: mount.sources.map((source) => ({
+            type: source.type,
+            text: source.text,
+          })),
+        },
+      }
+    });
+  } catch (error) {
+    console.error(`Error creating mount ${mount.name}:`, error);
+    return null;
+  }
+}
+
+async function transformMounts() {
+  const mounts = await getMounts();
+  let successCount = 0;
+  let failCount = 0;
+
+  for (let i = 0; i < mounts.length; i++) {
+    const mount = mounts[i];
+    const result = await createMount(mount);
+    if (result) {
+      successCount++;
+    } else {
+      failCount++;
+    }
+    console.log(`Processed ${i + 1} out of ${mounts.length} mounts. Success: ${successCount}, Failed: ${failCount}`);
+  }
+
+  console.log(`Finished processing all mounts. Total Success: ${successCount}, Total Failed: ${failCount}`);
+}
+
 // Fetch, transform and create dungeons in batches
 async function getDungeons() {
   const dungeons = [];
@@ -152,7 +209,7 @@ async function createDungeon(dungeon) {
       },
     });
   } catch (error) {
-    console.error(`Error creating minion ${minion.name}:`, error);
+    console.error(`Error creating dungeon ${dungeon.name}:`, error);
     return null;
   }
 }
@@ -183,9 +240,15 @@ async function transformDungeons() {
 }
 
 async function main() {
+  // https://cafemaker.wakingsands.com/instanceContent/ 
+  // 20008 to 20097 are trials with their extreme version
+  // 30001 to 30134 are raids with their savage version too
+  // 37001 to 37006 are variant dungeons
+
   try {
     await transformMinions();
     await transformDungeons();
+    await transformMounts();
   } catch (e) {
     console.error("An error occurred during the seeding process:", e);
     process.exit(1);
