@@ -13,7 +13,7 @@ function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrches
   const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session}>
+    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
       <div className="relative flex-shrink-0">
         {orchestrion.image && (
           <Image

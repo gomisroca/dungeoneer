@@ -31,9 +31,13 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
         <Image src={dungeon.image} alt={dungeon.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
-      <MinionSelector minions={dungeon.minions} session={session} />
-      <MountSelector mounts={dungeon.mounts} session={session} />
-      <OrchestrionSelector orchestrions={dungeon.orchestrions} session={session} />
+      <div className="flex flex-col gap-2">
+        {dungeon.minions.length > 0 && <MinionSelector minions={dungeon.minions} session={session} />}
+        {dungeon.mounts.length > 0 && <MountSelector mounts={dungeon.mounts} session={session} />}
+        {dungeon.orchestrions.length > 0 && (
+          <OrchestrionSelector orchestrions={dungeon.orchestrions} session={session} />
+        )}
+      </div>
     </div>
   );
 }

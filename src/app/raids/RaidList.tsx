@@ -31,9 +31,11 @@ function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | nu
         <Image src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
-      <MinionSelector minions={raid.minions} session={session} />
-      <MountSelector mounts={raid.mounts} session={session} />
-      <OrchestrionSelector orchestrions={raid.orchestrions} session={session} />
+      <div className="flex flex-col gap-2">
+        {raid.minions.length > 0 && <MinionSelector minions={raid.minions} session={session} />}
+        {raid.mounts.length > 0 && <MountSelector mounts={raid.mounts} session={session} />}
+        {raid.orchestrions.length > 0 && <OrchestrionSelector orchestrions={raid.orchestrions} session={session} />}
+      </div>
     </div>
   );
 }
