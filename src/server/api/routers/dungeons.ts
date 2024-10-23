@@ -15,65 +15,114 @@ export const dungeonsRouter = createTRPCRouter({
       const limit = input.limit ?? 10;
       const { cursor } = input;
 
-      const dungeons: Dungeon[] = await ctx.db.dungeon.findMany({
-        take: limit + 1,
-        cursor: cursor ? { id: cursor } : undefined,
-      });
+      const dungeonsWithExtras = [];
+      let nextCursor = cursor;
 
-      // Map over each dungeon to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
-      const expandedDungeons = await Promise.all(
-        dungeons.map(async (dungeon) => {
-          const minions = await ctx.db.minion.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Dungeon',
-                  text: {
-                    contains: dungeon.name,
-                    mode: 'insensitive',
+      // Loop to keep fetching dungeons until we fill up to the limit
+      while (dungeonsWithExtras.length < limit) {
+        // Fetch a batch of dungeons with pagination
+        const dungeons: Dungeon[] = await ctx.db.dungeon.findMany({
+          take: limit + 1, // Fetch limit + 1 to determine the next cursor
+          cursor: nextCursor ? { id: nextCursor } : undefined,
+        });
+
+        if (dungeons.length === 0) {
+          break; // No more dungeons to fetch
+        }
+
+        // Map over each dungeon to fetch associated minions and mounts
+        const expandedDungeons = await Promise.all(
+          dungeons.map(async (dungeon) => {
+            const minions = await ctx.db.minion.findMany({
+              where: {
+                sources: {
+                  some: {
+                    type: 'Dungeon',
+                    text: {
+                      contains: dungeon.name,
+                      mode: 'insensitive',
+                    },
                   },
                 },
               },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-          const mounts = await ctx.db.mount.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Dungeon',
-                  text: {
-                    contains: dungeon.name,
-                    mode: 'insensitive',
+              include: {
+                sources: true,
+                owners: true,
+              },
+            });
+
+            const mounts = await ctx.db.mount.findMany({
+              where: {
+                sources: {
+                  some: {
+                    type: 'Dungeon',
+                    text: {
+                      contains: dungeon.name,
+                      mode: 'insensitive',
+                    },
                   },
                 },
               },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-          return {
-            ...dungeon,
-            minions,
-            mounts,
-          };
-        })
-      );
+              include: {
+                sources: true,
+                owners: true,
+              },
+            });
 
-      let nextCursor: typeof cursor | undefined = undefined;
+            const orchestrions = await ctx.db.orchestrion.findMany({
+              where: {
+                sources: {
+                  some: {
+                    text: {
+                      contains: dungeon.name,
+                      mode: 'insensitive',
+                    },
+                  },
+                },
+              },
+              include: {
+                sources: true,
+                owners: true,
+              },
+            });
 
-      if (dungeons.length > limit) {
-        const nextDungeon = dungeons.pop();
-        nextCursor = nextDungeon!.id;
+            // Only return dungeons that have either minions or mounts
+            if (minions.length > 0 || mounts.length > 0) {
+              return {
+                ...dungeon,
+                minions,
+                mounts,
+                orchestrions,
+              };
+            }
+
+            return null; // Return null if no minions or mounts
+          })
+        );
+
+        // Filter out null values (dungeons without minions or mounts)
+        const filteredDungeons = expandedDungeons.filter((dungeon) => dungeon !== null);
+
+        // Add the filtered dungeons to the result set
+        dungeonsWithExtras.push(...filteredDungeons);
+
+        // Update nextCursor for pagination if needed
+        if (dungeons.length > limit) {
+          const nextDungeon = dungeons.pop(); // Remove the extra dungeon used for pagination
+          nextCursor = nextDungeon!.id; // Set nextCursor for the next batch
+        } else {
+          nextCursor = undefined; // No more dungeons to fetch
+        }
+
+        // Stop if we've exhausted all dungeons
+        if (!nextCursor) {
+          break;
+        }
       }
 
+      // Ensure we return no more than the requested limit
       return {
-        dungeons: expandedDungeons.slice(0, limit),
+        dungeons: dungeonsWithExtras.slice(0, limit), // Slice to the exact limit
         nextCursor,
       };
     }),
@@ -131,6 +180,23 @@ export const dungeonsRouter = createTRPCRouter({
         },
       });
 
-      return { ...dungeon, minions, mounts };
+      const orchestrions = await ctx.db.orchestrion.findMany({
+        where: {
+          sources: {
+            some: {
+              text: {
+                contains: dungeon.name,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+        include: {
+          sources: true,
+          owners: true,
+        },
+      });
+
+      return { ...dungeon, minions, mounts, orchestrions };
     }),
 });

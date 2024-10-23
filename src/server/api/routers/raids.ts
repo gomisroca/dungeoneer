@@ -57,10 +57,27 @@ export const raidsRouter = createTRPCRouter({
               owners: true,
             },
           });
+          const orchestrions = await ctx.db.orchestrion.findMany({
+            where: {
+              sources: {
+                some: {
+                  text: {
+                    contains: raid.name,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
           return {
             ...raid,
             minions,
             mounts,
+            orchestrions,
           };
         })
       );
@@ -131,6 +148,23 @@ export const raidsRouter = createTRPCRouter({
         },
       });
 
-      return { ...raid, minions, mounts };
+      const orchestrions = await ctx.db.orchestrion.findMany({
+        where: {
+          sources: {
+            some: {
+              text: {
+                contains: raid.name,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+        include: {
+          sources: true,
+          owners: true,
+        },
+      });
+
+      return { ...raid, minions, mounts, orchestrions };
     }),
 });

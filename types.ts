@@ -7,6 +7,8 @@ import {
   type Trial,
   type Mount,
   type MountSource,
+  type Orchestrion,
+  type OrchestrionSource,
 } from '@prisma/client';
 
 export interface ExpandedMinion extends Minion {
@@ -19,17 +21,25 @@ export interface ExpandedMount extends Mount {
   sources: MountSource[];
 }
 
+export interface ExpandedOrchestrion extends Orchestrion {
+  owners: User[];
+  sources: OrchestrionSource[];
+}
+
 export interface ExpandedDungeon extends Dungeon {
   minions: ExpandedMinion[];
   mounts: ExpandedMount[];
+  orchestrions: ExpandedOrchestrion[];
 }
 
 export interface ExpandedRaid extends Raid {
   minions: ExpandedMinion[];
   mounts: ExpandedMount[];
+  orchestrions: ExpandedOrchestrion[];
 }
 
 export interface ExpandedTrial extends Trial {
   minions: ExpandedMinion[];
   mounts: ExpandedMount[];
+  orchestrions: ExpandedOrchestrion[];
 }

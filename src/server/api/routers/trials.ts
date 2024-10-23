@@ -57,10 +57,27 @@ export const trialsRouter = createTRPCRouter({
               owners: true,
             },
           });
+          const orchestrions = await ctx.db.orchestrion.findMany({
+            where: {
+              sources: {
+                some: {
+                  text: {
+                    contains: trial.name,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
           return {
             ...trial,
             minions,
             mounts,
+            orchestrions,
           };
         })
       );
@@ -129,7 +146,23 @@ export const trialsRouter = createTRPCRouter({
           owners: true,
         },
       });
+      const orchestrions = await ctx.db.orchestrion.findMany({
+        where: {
+          sources: {
+            some: {
+              text: {
+                contains: trial.name,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+        include: {
+          sources: true,
+          owners: true,
+        },
+      });
 
-      return { ...trial, minions, mounts };
+      return { ...trial, minions, mounts, orchestrions };
     }),
 });

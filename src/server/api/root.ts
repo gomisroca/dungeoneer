@@ -6,6 +6,7 @@ import { mountsRouter } from './routers/mounts';
 import { dungeonsRouter } from './routers/dungeons';
 import { raidsRouter } from './routers/raids';
 import { trialsRouter } from './routers/trials';
+import { orchestrionsRouter } from './routers/orchestrions';
 
 /**
  * This is the primary router for your server.
@@ -15,6 +16,7 @@ import { trialsRouter } from './routers/trials';
 export const appRouter = createTRPCRouter({
   minions: minionsRouter,
   mounts: mountsRouter,
+  orchestrions: orchestrionsRouter,
   dungeons: dungeonsRouter,
   raids: raidsRouter,
   trials: trialsRouter,
