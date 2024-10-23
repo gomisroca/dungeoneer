@@ -6,6 +6,7 @@ import Button from '@/app/_components/ui/Button';
 import { type ExpandedMinion } from 'types';
 import Source from '../_components/ui/Source';
 import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
+import { twMerge } from 'tailwind-merge';
 
 function AddOrRemoveButton({
   minion,
@@ -39,7 +40,18 @@ export default function MinionCard({ minion, session }: { minion: ExpandedMinion
     : minionsInLS.value.includes(minion.id);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700">
+    <div
+      className={twMerge(
+        'relative flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700',
+        isOwnedByUser && 'opacity-50 hover:opacity-100'
+      )}>
+      {isOwnedByUser && (
+        <div className="absolute right-[-25px] top-[-25px] flex contrast-200">
+          <span className="m-auto text-8xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
+            ✔
+          </span>
+        </div>
+      )}
       {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
       <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
