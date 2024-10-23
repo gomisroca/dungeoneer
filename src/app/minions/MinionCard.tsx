@@ -7,6 +7,7 @@ import { type ExpandedMinion } from 'types';
 import Source from '../_components/ui/Source';
 import { useMinionLogic } from '@/hooks/useMinionLogic';
 import { twMerge } from 'tailwind-merge';
+import { FaLock } from 'react-icons/fa6';
 
 function AddOrRemoveButton({
   minion,
@@ -20,13 +21,34 @@ function AddOrRemoveButton({
   const { addToUser, removeFromUser } = useMinionLogic(minion);
 
   return isOwnedByUser ? (
-    <Button name="Remove from Collection" className="w-full" type="submit" onClick={removeFromUser} disabled={!session}>
-      Remove
-    </Button>
+    <div className="flex flex-col items-start justify-start">
+      <Button
+        name="Remove from Collection"
+        className="w-full"
+        type="submit"
+        onClick={removeFromUser}
+        disabled={!session}>
+        Remove
+      </Button>
+      {!session && (
+        <div className="flex items-center justify-center gap-2">
+          <FaLock className="text-stone-400 dark:text-stone-600" />
+          <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
+        </div>
+      )}
+    </div>
   ) : (
-    <Button name="Add to Collection" className="w-full" type="submit" onClick={addToUser} disabled={!session}>
-      Add
-    </Button>
+    <div className="flex flex-col items-start justify-start">
+      <Button name="Add to Collection" className="w-full" type="submit" onClick={addToUser} disabled={!session}>
+        Add
+      </Button>
+      {!session && (
+        <div className="flex items-center justify-center gap-2 text-center">
+          <FaLock className="text-stone-400 dark:text-stone-600" />
+          <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
+        </div>
+      )}
+    </div>
   );
 }
 
