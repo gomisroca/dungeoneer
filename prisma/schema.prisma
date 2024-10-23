@@ -49,6 +49,8 @@ model User {
     orchestrions  Orchestrion[]
     spells        Spell[]
     cards         Card[]
+    emotes        Emote[]
+    hairstyles    Hairstyle[]
 }
 
 model VerificationToken {
@@ -80,17 +82,21 @@ model VerminionStats {
 }
 
 model Source {
-    id       String  @id @default(cuid())
-    type     String
-    text     String
-    minion   Minion? @relation(fields: [minionId], references: [id])
-    minionId String?
-    mount    Mount?  @relation(fields: [mountId], references: [id])
-    mountId  String?
-    spell    Spell?  @relation(fields: [spellId], references: [id])
-    spellId  String?
-    card     Card?   @relation(fields: [cardId], references: [id])
-    cardId   String?
+    id          String     @id @default(cuid())
+    type        String
+    text        String
+    minion      Minion?    @relation(fields: [minionId], references: [id])
+    minionId    String?
+    mount       Mount?     @relation(fields: [mountId], references: [id])
+    mountId     String?
+    spell       Spell?     @relation(fields: [spellId], references: [id])
+    spellId     String?
+    card        Card?      @relation(fields: [cardId], references: [id])
+    cardId      String?
+    emote       Emote?     @relation(fields: [emoteId], references: [id])
+    emoteId     String?
+    hairstyle   Hairstyle? @relation(fields: [hairstyleId], references: [id])
+    hairstyleId String?
 }
 
 model Minion {
@@ -173,7 +179,51 @@ model Card {
     sources     Source[]
 }
 
+model Hairstyle {
+    id          String   @id @default(cuid())
+    name        String
+    description String
+    patch       String
+    tradeable   Boolean
+    image       String?
+    owned       String
+    owners      User[]
+    sources     Source[]
+}
+
+model Emote {
+    id        String   @id @default(cuid())
+    name      String
+    patch     String
+    tradeable Boolean
+    image     String?
+    owned     String
+    owners    User[]
+    sources   Source[]
+}
+
 model Dungeon {
+    id          Int     @id @default(autoincrement())
+    name        String
+    description String
+    image       String?
+}
+
+model VariantDungeon {
+    id          Int     @id @default(autoincrement())
+    name        String
+    description String
+    image       String?
+}
+
+model Trial {
+    id          Int     @id @default(autoincrement())
+    name        String
+    description String
+    image       String?
+}
+
+model Raid {
     id          Int     @id @default(autoincrement())
     name        String
     description String
