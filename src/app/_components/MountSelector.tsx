@@ -1,18 +1,19 @@
+'use client';
+
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { type ExpandedMount } from 'types';
 import Button from './ui/Button';
 import { twMerge } from 'tailwind-merge';
-import { mountsInLS, useMountLogic } from '@/hooks/useMountLogic';
+import { useMountLogic } from '@/hooks/useMountLogic';
+import { FaLock } from 'react-icons/fa6';
 
 function MountView({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMountLogic(mount);
-  const isOwnedByUser = session?.user
-    ? mount.owners.some((o) => o.id === session.user.id)
-    : mountsInLS.value.includes(mount.id);
+  const { addToUser, removeFromUser } = useMountLogic(mount);
+  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
 
   return (
-    <Button onClick={isOwnedByUser ? (session ? removeFromUser : removeFromLS) : session ? addToUser : addToLS}>
+    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session}>
       <div className="relative flex-shrink-0">
         {mount.image && (
           <Image
@@ -31,9 +32,21 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
           </div>
         )}
       </div>
-      <p className={twMerge('max-w-full flex-shrink overflow-hidden text-ellipsis', isOwnedByUser && 'text-stone-500')}>
-        {mount.name}
-      </p>
+      <div className="flex flex-col items-start justify-start">
+        <p
+          className={twMerge(
+            'max-w-full flex-shrink overflow-hidden text-ellipsis',
+            isOwnedByUser && 'text-stone-500'
+          )}>
+          {mount.name}
+        </p>
+        {!session && (
+          <div className="flex items-center justify-center gap-2">
+            <FaLock className="text-stone-400 dark:text-stone-600" />
+            <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
+          </div>
+        )}
+      </div>
     </Button>
   );
 }

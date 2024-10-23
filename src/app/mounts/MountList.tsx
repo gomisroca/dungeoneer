@@ -4,9 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import { useSignalEffect } from '@preact-signals/safe-react';
 import MountCard from './MountCard';
-import { mountsInLS } from '@/hooks/useMountLogic';
 
 type MountListOutput = RouterOutputs['mounts']['getAll'];
 interface MountListProps {
@@ -14,13 +12,6 @@ interface MountListProps {
   initialMounts: MountListOutput;
 }
 export default function MountList({ session, initialMounts }: MountListProps) {
-  useSignalEffect(() => {
-    const lsMounts = localStorage.getItem('dungeoneer_mounts');
-    if (lsMounts) {
-      mountsInLS.value = JSON.parse(lsMounts) as string[];
-    }
-  });
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.mounts.getAll.useInfiniteQuery(
     {
       limit: 10,

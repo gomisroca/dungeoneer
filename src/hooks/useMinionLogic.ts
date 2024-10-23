@@ -1,9 +1,6 @@
 import { api } from '@/trpc/react';
 import { type ExpandedMinion } from 'types';
 import { addMessage } from '@/app/_components/ui/MessagePopup';
-import { signal } from '@preact-signals/safe-react';
-
-export const minionsInLS = signal<string[]>([]);
 
 export function useMinionLogic(minion: ExpandedMinion) {
   const utils = api.useUtils();
@@ -22,21 +19,7 @@ export function useMinionLogic(minion: ExpandedMinion) {
     addToUserMutation.mutate({ minionId: minion.id });
   };
 
-  const addToLS = () => {
-    const lsMinions = localStorage.getItem('dungeoneer_minions');
-    if (!lsMinions) {
-      localStorage.setItem('dungeoneer_minions', JSON.stringify([minion.id]));
-    } else {
-      const parsedLsMinions: string[] = JSON.parse(lsMinions) as string[];
-      parsedLsMinions.push(minion.id);
-      localStorage.setItem('dungeoneer_minions', JSON.stringify(parsedLsMinions));
-      minionsInLS.value = parsedLsMinions;
-      addMessage(`Added ${minion.name} to your collection.`);
-      addMessage(`Log in to make sure you never lose your collection.`);
-    }
-  };
-
-  const removeFromUserMutation = api.minions.addToUser.useMutation({
+  const removeFromUserMutation = api.minions.removeFromUser.useMutation({
     onSuccess: async () => {
       addMessage(`Removed ${minion.name} from your collection.`);
       await utils.minions.getAll.invalidate();
@@ -50,21 +33,8 @@ export function useMinionLogic(minion: ExpandedMinion) {
     removeFromUserMutation.mutate({ minionId: minion.id });
   };
 
-  const removeFromLS = () => {
-    const lsMinions = localStorage.getItem('dungeoneer_minions');
-    if (lsMinions) {
-      const parsedLsMinions = JSON.parse(lsMinions) as string[];
-      const updatedMinions = parsedLsMinions.filter((id: string) => id !== minion.id);
-      localStorage.setItem('dungeoneer_minions', JSON.stringify(updatedMinions));
-      minionsInLS.value = updatedMinions;
-      addMessage(`Removed ${minion.name} from your collection.`);
-    }
-  };
-
   return {
     addToUser,
-    addToLS,
     removeFromUser,
-    removeFromLS,
   };
 }

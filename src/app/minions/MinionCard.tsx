@@ -5,7 +5,7 @@ import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
 import { type ExpandedMinion } from 'types';
 import Source from '../_components/ui/Source';
-import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
+import { useMinionLogic } from '@/hooks/useMinionLogic';
 import { twMerge } from 'tailwind-merge';
 
 function AddOrRemoveButton({
@@ -17,27 +17,21 @@ function AddOrRemoveButton({
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
+  const { addToUser, removeFromUser } = useMinionLogic(minion);
 
   return isOwnedByUser ? (
-    <Button
-      name="Remove from Collection"
-      className="w-full"
-      type="submit"
-      onClick={session ? removeFromUser : removeFromLS}>
+    <Button name="Remove from Collection" className="w-full" type="submit" onClick={removeFromUser} disabled={!session}>
       Remove
     </Button>
   ) : (
-    <Button name="Add to Collection" className="w-full" type="submit" onClick={session ? addToUser : addToLS}>
+    <Button name="Add to Collection" className="w-full" type="submit" onClick={addToUser} disabled={!session}>
       Add
     </Button>
   );
 }
 
 export default function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
-  const isOwnedByUser = session?.user
-    ? minion.owners.some((o) => o.id === session.user.id)
-    : minionsInLS.value.includes(minion.id);
+  const isOwnedByUser = minion.owners.some((o) => o.id === session?.user.id);
 
   return (
     <div

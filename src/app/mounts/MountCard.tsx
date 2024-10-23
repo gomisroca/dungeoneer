@@ -5,7 +5,7 @@ import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
 import { type ExpandedMount } from 'types';
 import Source from '../_components/ui/Source';
-import { mountsInLS, useMountLogic } from '@/hooks/useMountLogic';
+import { useMountLogic } from '@/hooks/useMountLogic';
 import { twMerge } from 'tailwind-merge';
 
 function AddOrRemoveButton({
@@ -17,27 +17,21 @@ function AddOrRemoveButton({
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMountLogic(mount);
+  const { addToUser, removeFromUser } = useMountLogic(mount);
 
   return isOwnedByUser ? (
-    <Button
-      name="Remove from Collection"
-      className="w-full"
-      type="submit"
-      onClick={session ? removeFromUser : removeFromLS}>
+    <Button name="Remove from Collection" className="w-full" type="submit" onClick={removeFromUser} disabled={!session}>
       Remove
     </Button>
   ) : (
-    <Button name="Add to Collection" className="w-full" type="submit" onClick={session ? addToUser : addToLS}>
+    <Button name="Add to Collection" className="w-full" type="submit" onClick={addToUser} disabled={!session}>
       Add
     </Button>
   );
 }
 
 export default function Mountard({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const isOwnedByUser = session?.user
-    ? mount.owners.some((o) => o.id === session.user.id)
-    : mountsInLS.value.includes(mount.id);
+  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
 
   return (
     <div
