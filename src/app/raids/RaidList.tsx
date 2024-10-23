@@ -4,37 +4,37 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
-import { type ExpandedDungeon } from 'types';
+import { type ExpandedRaid } from 'types';
 import { type Session } from 'next-auth';
 import MinionSelector from '../_components/MinionSelector';
 import MountSelector from '../_components/MountSelector';
 
-function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
+function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700">
-      {dungeon.image && (
-        <Image src={dungeon.image} alt={dungeon.name} width={300} height={100} className="w-full object-cover" />
+      {raid.image && (
+        <Image src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
-      <MinionSelector minions={dungeon.minions} session={session} />
-      <MountSelector mounts={dungeon.mounts} session={session} />
+      <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
+      <MinionSelector minions={raid.minions} session={session} />
+      <MountSelector mounts={raid.mounts} session={session} />
     </div>
   );
 }
 
-type DungeonListOutput = RouterOutputs['dungeons']['getAll'];
-interface DungeonListProps {
-  initialDungeons: DungeonListOutput;
+type RaidListOutput = RouterOutputs['raids']['getAll'];
+interface RaidListProps {
+  initialRaids: RaidListOutput;
   session: Session | null;
 }
-export default function DungeonList({ initialDungeons, session }: DungeonListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.dungeons.getAll.useInfiniteQuery(
+export default function RaidList({ initialRaids, session }: RaidListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.raids.getAll.useInfiniteQuery(
     {
       limit: 20,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialDungeons], pageParams: [undefined] },
+      initialData: { pages: [initialRaids], pageParams: [undefined] },
     }
   );
 
@@ -54,14 +54,14 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
           {data?.pages.map((page, i) => (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
-              {page.dungeons.map((dungeon, index) => (
-                <div key={dungeon.id} ref={index === page.dungeons.length - 1 ? ref : undefined}>
-                  <DungeonCard dungeon={dungeon} session={session} />
+              {page.raids.map((raid, index) => (
+                <div key={raid.id} ref={index === page.raids.length - 1 ? ref : undefined}>
+                  <RaidCard raid={raid} session={session} />
                 </div>
               ))}
             </div>

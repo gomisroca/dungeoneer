@@ -1,6 +1,11 @@
-import { minionsRouter } from '@/server/api/routers/minions';
 import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc';
+
+import { minionsRouter } from '@/server/api/routers/minions';
+import { mountsRouter } from './routers/mounts';
+
 import { dungeonsRouter } from './routers/dungeons';
+import { raidsRouter } from './routers/raids';
+import { trialsRouter } from './routers/trials';
 
 /**
  * This is the primary router for your server.
@@ -9,7 +14,10 @@ import { dungeonsRouter } from './routers/dungeons';
  */
 export const appRouter = createTRPCRouter({
   minions: minionsRouter,
+  mounts: mountsRouter,
   dungeons: dungeonsRouter,
+  raids: raidsRouter,
+  trials: trialsRouter,
 });
 
 // export type definition of API

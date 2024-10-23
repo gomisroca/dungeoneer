@@ -1,10 +1,10 @@
-import { type Source as SourceType } from '@prisma/client'
+import { type MinionSource, type MountSource, type OrchestrionSource, type EmoteSource, type HairstyleSource, type CardSource, SpellSource } from '@prisma/client'
 import Image from 'next/image'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './Tooltip'
 import { useSignal, useSignalEffect } from '@preact-signals/safe-react'
 import { AnimatePresence, motion } from 'framer-motion';
 
-function Source({ source }: { source: SourceType }) {
+function Source({ source }: { source: MinionSource | MountSource | OrchestrionSource | SpellSource | EmoteSource | HairstyleSource | CardSource }) {
   const isOpen = useSignal(false);
   const triggerRef = useSignal<HTMLButtonElement | null>(null);
 

@@ -3,21 +3,21 @@
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
-import { type ExpandedMinion } from 'types';
+import { type ExpandedMount } from 'types';
 import Source from '../_components/ui/Source';
-import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
+import { mountsInLS, useMountLogic } from '@/hooks/useMountLogic';
 import { twMerge } from 'tailwind-merge';
 
 function AddOrRemoveButton({
-  minion,
+  mount,
   isOwnedByUser,
   session,
 }: {
-  minion: ExpandedMinion;
+  mount: ExpandedMount;
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
+  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMountLogic(mount);
 
   return isOwnedByUser ? (
     <Button
@@ -34,10 +34,10 @@ function AddOrRemoveButton({
   );
 }
 
-export default function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
+export default function Mountard({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
   const isOwnedByUser = session?.user
-    ? minion.owners.some((o) => o.id === session.user.id)
-    : minionsInLS.value.includes(minion.id);
+    ? mount.owners.some((o) => o.id === session.user.id)
+    : mountsInLS.value.includes(mount.id);
 
   return (
     <div
@@ -52,14 +52,14 @@ export default function MinionCard({ minion, session }: { minion: ExpandedMinion
           </span>
         </div>
       )}
-      {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
-      <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
+      {mount.image && <Image src={mount.image} alt={mount.name} width={100} height={100} />}
+      <h1 className="line-clamp-2 text-center text-xl">{mount.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {minion.sources.map((source) => (
-          <Source key={source.id} source={source} />
+        {mount.sources.map((source) => (
+          <Source key={mount.id} source={source} />
         ))}
       </div>
-      <AddOrRemoveButton minion={minion} isOwnedByUser={isOwnedByUser} session={session} />
+      <AddOrRemoveButton mount={mount} isOwnedByUser={isOwnedByUser} session={session} />
     </div>
   );
 }

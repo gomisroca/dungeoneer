@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { type Dungeon } from '@prisma/client';
+import { type Raid } from '@prisma/client';
 
-export const dungeonsRouter = createTRPCRouter({
+export const raidsRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
       z.object({
@@ -15,21 +15,21 @@ export const dungeonsRouter = createTRPCRouter({
       const limit = input.limit ?? 10;
       const { cursor } = input;
 
-      const dungeons: Dungeon[] = await ctx.db.dungeon.findMany({
+      const raids: Raid[] = await ctx.db.raid.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
       });
 
-      // Map over each dungeon to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
-      const expandedDungeons = await Promise.all(
-        dungeons.map(async (dungeon) => {
+      // Map over each raid to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
+      const expandedRaids = await Promise.all(
+        raids.map(async (raid) => {
           const minions = await ctx.db.minion.findMany({
             where: {
               sources: {
                 some: {
-                  type: 'Dungeon',
+                  type: 'Raid',
                   text: {
-                    contains: dungeon.name,
+                    endsWith: raid.name,
                     mode: 'insensitive',
                   },
                 },
@@ -44,9 +44,9 @@ export const dungeonsRouter = createTRPCRouter({
             where: {
               sources: {
                 some: {
-                  type: 'Dungeon',
+                  type: 'Raid',
                   text: {
-                    contains: dungeon.name,
+                    endsWith: raid.name,
                     mode: 'insensitive',
                   },
                 },
@@ -58,7 +58,7 @@ export const dungeonsRouter = createTRPCRouter({
             },
           });
           return {
-            ...dungeon,
+            ...raid,
             minions,
             mounts,
           };
@@ -67,13 +67,13 @@ export const dungeonsRouter = createTRPCRouter({
 
       let nextCursor: typeof cursor | undefined = undefined;
 
-      if (dungeons.length > limit) {
-        const nextDungeon = dungeons.pop();
-        nextCursor = nextDungeon!.id;
+      if (raids.length > limit) {
+        const nextRaid = raids.pop();
+        nextCursor = nextRaid!.id;
       }
 
       return {
-        dungeons: expandedDungeons.slice(0, limit),
+        raids: expandedRaids.slice(0, limit),
         nextCursor,
       };
     }),
@@ -85,13 +85,13 @@ export const dungeonsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const dungeon = await ctx.db.dungeon.findUnique({
+      const raid = await ctx.db.raid.findUnique({
         where: {
           id: input.id,
         },
       });
 
-      if (!dungeon) {
+      if (!raid) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }
 
@@ -99,10 +99,10 @@ export const dungeonsRouter = createTRPCRouter({
         where: {
           sources: {
             some: {
-              type: 'Dungeon',
+              type: 'Raid',
               text: {
-                contains: dungeon.name,
-                mode: 'insensitive', // Optional: to make the search case-insensitive
+                endsWith: raid.name,
+                mode: 'insensitive',
               },
             },
           },
@@ -117,9 +117,9 @@ export const dungeonsRouter = createTRPCRouter({
         where: {
           sources: {
             some: {
-              type: 'Dungeon',
+              type: 'Raid',
               text: {
-                contains: dungeon.name,
+                endsWith: raid.name,
                 mode: 'insensitive',
               },
             },
@@ -131,6 +131,6 @@ export const dungeonsRouter = createTRPCRouter({
         },
       });
 
-      return { ...dungeon, minions, mounts };
+      return { ...raid, minions, mounts };
     }),
 });

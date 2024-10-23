@@ -1,11 +1,7 @@
 import React from 'react';
-import { TbCardsFilled } from 'react-icons/tb';
-import { FaDog, FaDungeon, FaHorse, FaMusic, FaWandMagicSparkles } from 'react-icons/fa6';
 import { getServerAuthSession } from '@/server/auth';
-import SignInButton from './SignInButton';
-import SignOutButton from './SignOutButton';
-import ThemeButton from './themeButton';
 import StyledLink from '../ui/StyledLink';
+import NavbarMenu from './NavbarMenu';
 
 async function Navbar() {
   const session = await getServerAuthSession();
@@ -15,28 +11,7 @@ async function Navbar() {
         <h1 className="text-xl font-bold">dungeoneer</h1>
       </StyledLink>
       {/* Basic Menu */}
-      <div className="pointer-events-auto flex flex-col gap-2">
-        {session ? <SignOutButton /> : <SignInButton />}
-        <ThemeButton />
-        <StyledLink href="/dungeons">
-          <FaDungeon size={20} />
-        </StyledLink>
-        <StyledLink href="/minions">
-          <FaDog size={20} />
-        </StyledLink>
-        {/* <StyledLink href="/mounts">
-          <FaHorse size={20} />
-        </StyledLink>
-        <StyledLink href="/cards">
-          <TbCardsFilled size={20} />
-        </StyledLink>
-        <StyledLink href="/orchestrions">
-          <FaMusic size={20} />
-        </StyledLink>
-        <StyledLink href="/spells">
-          <FaWandMagicSparkles size={20} />
-        </StyledLink> */}
-      </div>
+      <NavbarMenu session={session} />
     </div>
   );
 }
