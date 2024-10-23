@@ -4,44 +4,10 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
-import { type ExpandedMinion, type ExpandedDungeon } from 'types';
+import { type ExpandedDungeon } from 'types';
 import { type Session } from 'next-auth';
-import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
-import Button from '../_components/ui/Button';
-import { twMerge } from 'tailwind-merge';
-
-function MinionView({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
-  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
-  const isOwnedByUser = session?.user
-    ? minion.owners.some((o) => o.id === session.user.id)
-    : minionsInLS.value.includes(minion.id);
-
-  return (
-    <Button onClick={isOwnedByUser ? (session ? removeFromUser : removeFromLS) : session ? addToUser : addToLS}>
-      <div className="relative flex-shrink-0">
-        {minion.image && (
-          <Image
-            src={minion.image}
-            alt={minion.name}
-            width={50}
-            height={50}
-            className={twMerge('flex-shrink-0', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
-          />
-        )}
-        {isOwnedByUser && (
-          <div className="absolute bottom-0 left-0 right-0 top-0 flex">
-            <span className="m-auto text-4xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
-              ✔
-            </span>
-          </div>
-        )}
-      </div>
-      <p className={twMerge('max-w-full flex-shrink overflow-hidden text-ellipsis', isOwnedByUser && 'text-stone-500')}>
-        {minion.name}
-      </p>
-    </Button>
-  );
-}
+import MinionSelector from '../_components/MinionSelector';
+import MountSelector from '../_components/MountSelector';
 
 function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
   return (
@@ -50,9 +16,8 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
         <Image src={dungeon.image} alt={dungeon.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
-      <div className="flex flex-col items-center justify-center gap-2">
-        {dungeon.minions?.map((minion) => <MinionView key={minion.id} minion={minion} session={session} />)}
-      </div>
+      <MinionSelector minions={dungeon.minions} session={session} />
+      <MountSelector mounts={dungeon.mounts} session={session} />
     </div>
   );
 }
@@ -89,7 +54,7 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
       ) : (
         <>
           {data?.pages.map((page, i) => (
@@ -102,7 +67,7 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
             </div>
           ))}
           {isFetchingNextPage && (
-            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-orange-300 p-4 text-center text-xl font-bold dark:bg-orange-700">
+            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...
             </h1>
           )}
