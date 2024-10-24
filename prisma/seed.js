@@ -1,5 +1,7 @@
 import transformCards from "./seed_functions/cards";
 import transformDungeons from "./seed_functions/dungeons";
+import transformEmotes from "./seed_functions/emotes";
+import transformHairstyles from "./seed_functions/hairstyles";
 import transformMinions from "./seed_functions/minions";
 import transformMounts from "./seed_functions/mounts";
 import transformOrchs from "./seed_functions/orchestrions";
@@ -10,15 +12,17 @@ import transformVariants from "./seed_functions/variant";
 
 async function main() {
   try {
-    // await transformMinions();
-    // await transformMounts();
-    // await transformDungeons();
-    // await transformTrials();
-    // await transformRaids();
-    // await transformVariants();
-    // await transformOrchs();
-    // await transformSpells();
+    await transformMinions();
+    await transformMounts();
+    await transformDungeons();
+    await transformTrials();
+    await transformRaids();
+    await transformVariants();
+    await transformOrchs();
+    await transformSpells();
     await transformCards();
+    await transformEmotes();
+    await transformHairstyles();
   } catch (e) {
     console.error("An error occurred during the seeding process:", e);
     process.exit(1);
