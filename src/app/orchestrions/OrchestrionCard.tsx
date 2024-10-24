@@ -79,9 +79,7 @@ export default function OrchestrionCard({
       )}
       <h1 className="line-clamp-2 text-center text-xl">{orchestrion.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {orchestrion.sources.map((source) => (
-          <Source key={source.id} source={source} />
-        ))}
+        {orchestrion.sources?.map((source) => <Source key={source.id} source={source} />)}
       </div>
       <AddOrRemoveButton orchestrion={orchestrion} isOwnedByUser={isOwnedByUser} session={session} />
     </div>

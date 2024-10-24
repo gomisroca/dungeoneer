@@ -73,9 +73,7 @@ export default function TTCard({ card, session }: { card: ExpandedCard; session:
       )}
       <h1 className="line-clamp-2 text-center text-xl">{card.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {card.sources.map((source) => (
-          <Source key={source.id} source={source} />
-        ))}
+        {card.sources?.map((source) => <Source key={source.id} source={source} />)}
       </div>
       <AddOrRemoveButton card={card} isOwnedByUser={isOwnedByUser} session={session} />
     </div>

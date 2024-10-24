@@ -73,9 +73,7 @@ export default function SpellCard({ spell, session }: { spell: ExpandedSpell; se
       )}
       <h1 className="line-clamp-2 text-center text-xl">{spell.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {spell.sources.map((source) => (
-          <Source key={source.id} source={source} />
-        ))}
+        {spell.sources?.map((source) => <Source key={source.id} source={source} />)}
       </div>
       <AddOrRemoveButton spell={spell} isOwnedByUser={isOwnedByUser} session={session} />
     </div>
