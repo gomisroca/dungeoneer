@@ -22,7 +22,10 @@ function SpellView({ spell, session }: { spell: ExpandedSpell; session: Session 
             width={50}
             height={50}
             unoptimized
-            className={twMerge('flex-shrink-0 rounded-xl', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
+            className={twMerge(
+              'flex-shrink-0 rounded-xl border border-stone-600 dark:border-stone-400',
+              isOwnedByUser && 'opacity-75'
+            )} // Prevents the image from shrinking
           />
         )}
         {isOwnedByUser && (

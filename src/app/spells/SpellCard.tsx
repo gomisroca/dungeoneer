@@ -69,7 +69,14 @@ export default function SpellCard({ spell, session }: { spell: ExpandedSpell; se
         </div>
       )}
       {spell.image && (
-        <Image unoptimized src={spell.image} alt={spell.name} width={100} height={100} className="rounded-xl" />
+        <Image
+          unoptimized
+          src={spell.image}
+          alt={spell.name}
+          width={100}
+          height={100}
+          className="rounded-xl border border-stone-600 dark:border-stone-400"
+        />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{spell.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
