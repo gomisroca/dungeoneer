@@ -18,26 +18,26 @@ import {
 
 export interface ExpandedMinion extends Minion {
   owners: User[];
-  sources: MinionSource[];
+  sources?: MinionSource[];
 }
 
 export interface ExpandedMount extends Mount {
   owners: User[];
-  sources: MountSource[];
+  sources?: MountSource[];
 }
 
 export interface ExpandedOrchestrion extends Orchestrion {
   owners: User[];
-  sources: OrchestrionSource[];
+  sources?: OrchestrionSource[];
 }
 export interface ExpandedSpell extends Spell {
   owners: User[];
-  sources: SpellSource[];
+  sources?: SpellSource[];
 }
 export interface ExpandedCard extends Card {
   owners: User[];
   stats?: CardStats;
-  sources: CardSource[];
+  sources?: CardSource[];
 }
 export interface ExpandedDungeon extends Dungeon {
   minions: ExpandedMinion[];

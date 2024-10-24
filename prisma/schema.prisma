@@ -81,7 +81,7 @@ model VerminionStats {
 }
 
 model Minion {
-  id               String          @id @default(cuid())
+  id               String           @id @default(cuid())
   name             String
   shortDescription String
   description      String
@@ -93,7 +93,11 @@ model Minion {
   owned            String
   sources          MinionSource[]
   verminion        VerminionStats?
-  owners           User[]          @relation("MinionToUser")
+  owners           User[]           @relation("MinionToUser")
+  dungeons         Dungeon[]
+  variants         VariantDungeon[]
+  trials           Trial[]
+  raids            Raid[]
 }
 
 model MinionSource {
@@ -105,7 +109,7 @@ model MinionSource {
 }
 
 model Mount {
-  id               String        @id @default(cuid())
+  id               String           @id @default(cuid())
   name             String
   shortDescription String
   description      String
@@ -114,7 +118,11 @@ model Mount {
   image            String?
   owned            String
   sources          MountSource[]
-  owners           User[]        @relation("MountToUser")
+  owners           User[]           @relation("MountToUser")
+  dungeons         Dungeon[]
+  variants         VariantDungeon[]
+  trials           Trial[]
+  raids            Raid[]
 }
 
 model MountSource {
@@ -136,6 +144,10 @@ model Orchestrion {
   owned       String
   owners      User[]              @relation("OrchestrionToUser")
   sources     OrchestrionSource[]
+  dungeons    Dungeon[]
+  variants    VariantDungeon[]
+  trials      Trial[]
+  raids       Raid[]
 }
 
 model OrchestrionSource {
@@ -147,15 +159,19 @@ model OrchestrionSource {
 }
 
 model Spell {
-  id          String        @id @default(cuid())
+  id          String           @id @default(cuid())
   name        String
   description String
   patch       String
   number      Int
   image       String?
   owned       String
-  owners      User[]        @relation("SpellToUser")
+  owners      User[]           @relation("SpellToUser")
   sources     SpellSource[]
+  dungeons    Dungeon[]
+  variants    VariantDungeon[]
+  trials      Trial[]
+  raids       Raid[]
 }
 
 model SpellSource {
@@ -177,7 +193,7 @@ model CardStats {
 }
 
 model Card {
-  id          String       @id @default(cuid())
+  id          String           @id @default(cuid())
   name        String
   description String
   patch       String
@@ -186,8 +202,12 @@ model Card {
   image       String?
   owned       String
   stats       CardStats?
-  owners      User[]       @relation("CardToUser")
+  owners      User[]           @relation("CardToUser")
   sources     CardSource[]
+  dungeons    Dungeon[]
+  variants    VariantDungeon[]
+  trials      Trial[]
+  raids       Raid[]
 }
 
 model CardSource {
@@ -208,6 +228,10 @@ model Hairstyle {
   owned       String
   owners      User[]            @relation("HairstyleToUser")
   sources     HairstyleSource[]
+  dungeons    Dungeon[]
+  variants    VariantDungeon[]
+  trials      Trial[]
+  raids       Raid[]
 }
 
 model HairstyleSource {
@@ -219,14 +243,18 @@ model HairstyleSource {
 }
 
 model Emote {
-  id        String        @id @default(cuid())
+  id        String           @id @default(cuid())
   name      String
   patch     String
   tradeable Boolean
   image     String?
   owned     String
-  owners    User[]        @relation("EmoteToUser")
+  owners    User[]           @relation("EmoteToUser")
   sources   EmoteSource[]
+  dungeons  Dungeon[]
+  variants  VariantDungeon[]
+  trials    Trial[]
+  raids     Raid[]
 }
 
 model EmoteSource {
@@ -238,29 +266,57 @@ model EmoteSource {
 }
 
 model Dungeon {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String
-  image       String?
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String
+  image        String?
+  minions      Minion[]
+  mounts       Mount[]
+  orchestrions Orchestrion[]
+  spells       Spell[]
+  cards        Card[]
+  hairstyles   Hairstyle[]
+  emotes       Emote[]
 }
 
 model VariantDungeon {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String
-  image       String?
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String
+  image        String?
+  minions      Minion[]
+  mounts       Mount[]
+  orchestrions Orchestrion[]
+  spells       Spell[]
+  cards        Card[]
+  hairstyles   Hairstyle[]
+  emotes       Emote[]
 }
 
 model Trial {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String
-  image       String?
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String
+  image        String?
+  minions      Minion[]
+  mounts       Mount[]
+  orchestrions Orchestrion[]
+  spells       Spell[]
+  cards        Card[]
+  hairstyles   Hairstyle[]
+  emotes       Emote[]
 }
 
 model Raid {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String
-  image       String?
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String
+  image        String?
+  minions      Minion[]
+  mounts       Mount[]
+  orchestrions Orchestrion[]
+  spells       Spell[]
+  cards        Card[]
+  hairstyles   Hairstyle[]
+  emotes       Emote[]
 }
