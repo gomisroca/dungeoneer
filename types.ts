@@ -15,6 +15,10 @@ import {
   type CardStats,
   type CardSource,
   type VariantDungeon,
+  type Hairstyle,
+  type HairstyleSource,
+  type EmoteSource,
+  type Emote,
 } from '@prisma/client';
 
 export interface ExpandedMinion extends Minion {
@@ -34,6 +38,16 @@ export interface ExpandedOrchestrion extends Orchestrion {
 export interface ExpandedSpell extends Spell {
   owners: User[];
   sources?: SpellSource[];
+}
+
+export interface ExpandedEmote extends Emote {
+  owners: User[];
+  sources?: EmoteSource[];
+}
+
+export interface ExpandedHairstyle extends Hairstyle {
+  owners: User[];
+  sources?: HairstyleSource[];
 }
 export interface ExpandedCard extends Card {
   owners: User[];
