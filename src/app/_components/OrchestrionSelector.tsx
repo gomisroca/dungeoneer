@@ -2,23 +2,23 @@
 
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedMount } from 'types';
+import { type ExpandedOrchestrion } from 'types';
 import Button from './ui/Button';
 import { twMerge } from 'tailwind-merge';
-import { useMountLogic } from '@/hooks/useMountLogic';
+import { useOrchestrionLogic } from '@/hooks/useOrchestrionLogic';
 import { FaLock } from 'react-icons/fa6';
 
-function MountView({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const { addToUser, removeFromUser } = useMountLogic(mount);
-  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
+function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrchestrion; session: Session | null }) {
+  const { addToUser, removeFromUser } = useOrchestrionLogic(orchestrion);
+  const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
 
   return (
     <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
       <div className="relative flex-shrink-0">
-        {mount.image && (
+        {orchestrion.image && (
           <Image
-            src={mount.image}
-            alt={mount.name}
+            src={orchestrion.image}
+            alt={orchestrion.name}
             width={50}
             height={50}
             className={twMerge('flex-shrink-0', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
@@ -38,7 +38,7 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
             'max-w-full flex-shrink overflow-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {mount.name}
+          {orchestrion.name}
         </p>
         {!session && (
           <div className="flex items-center justify-center gap-2">
@@ -51,14 +51,20 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
   );
 }
 
-function MountSelector({ mounts, session }: { mounts: ExpandedMount[]; session: Session | null }) {
+function OrchestrionSelector({
+  orchestrions,
+  session,
+}: {
+  orchestrions: ExpandedOrchestrion[];
+  session: Session | null;
+}) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {mounts.map((mount) => (
-        <MountView key={mount.id} mount={mount} session={session} />
+      {orchestrions.map((orchestrion) => (
+        <OrchestrionView key={orchestrion.id} orchestrion={orchestrion} session={session} />
       ))}
     </div>
   );
 }
 
-export default MountSelector;
+export default OrchestrionSelector;

@@ -4,9 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import { useSignalEffect } from '@preact-signals/safe-react';
 import MinionCard from './MinionCard';
-import { minionsInLS } from '@/hooks/useMinionLogic';
 
 type MinionListOutput = RouterOutputs['minions']['getAll'];
 interface MinionListProps {
@@ -14,13 +12,6 @@ interface MinionListProps {
   initialMinions: MinionListOutput;
 }
 export default function MinionList({ session, initialMinions }: MinionListProps) {
-  useSignalEffect(() => {
-    const lsMinions = localStorage.getItem('dungeoneer_minions');
-    if (lsMinions) {
-      minionsInLS.value = JSON.parse(lsMinions) as string[];
-    }
-  });
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.minions.getAll.useInfiniteQuery(
     {
       limit: 10,

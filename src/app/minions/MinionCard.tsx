@@ -5,8 +5,9 @@ import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
 import { type ExpandedMinion } from 'types';
 import Source from '../_components/ui/Source';
-import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
+import { useMinionLogic } from '@/hooks/useMinionLogic';
 import { twMerge } from 'tailwind-merge';
+import { FaLock } from 'react-icons/fa6';
 
 function AddOrRemoveButton({
   minion,
@@ -17,27 +18,42 @@ function AddOrRemoveButton({
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
+  const { addToUser, removeFromUser } = useMinionLogic(minion);
 
   return isOwnedByUser ? (
-    <Button
-      name="Remove from Collection"
-      className="w-full"
-      type="submit"
-      onClick={session ? removeFromUser : removeFromLS}>
-      Remove
-    </Button>
+    <div className="flex flex-col items-start justify-start">
+      <Button
+        name="Remove from Collection"
+        className="w-full"
+        type="submit"
+        onClick={removeFromUser}
+        disabled={!session}>
+        Remove
+      </Button>
+      {!session && (
+        <div className="flex items-center justify-center gap-2">
+          <FaLock className="text-stone-400 dark:text-stone-600" />
+          <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
+        </div>
+      )}
+    </div>
   ) : (
-    <Button name="Add to Collection" className="w-full" type="submit" onClick={session ? addToUser : addToLS}>
-      Add
-    </Button>
+    <div className="flex flex-col items-start justify-start">
+      <Button name="Add to Collection" className="w-full" type="submit" onClick={addToUser} disabled={!session}>
+        Add
+      </Button>
+      {!session && (
+        <div className="flex items-center justify-center gap-2 text-center">
+          <FaLock className="text-stone-400 dark:text-stone-600" />
+          <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
+        </div>
+      )}
+    </div>
   );
 }
 
 export default function MinionCard({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
-  const isOwnedByUser = session?.user
-    ? minion.owners.some((o) => o.id === session.user.id)
-    : minionsInLS.value.includes(minion.id);
+  const isOwnedByUser = minion.owners.some((o) => o.id === session?.user.id);
 
   return (
     <div

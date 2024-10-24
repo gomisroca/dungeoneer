@@ -1,18 +1,19 @@
-import { minionsInLS, useMinionLogic } from '@/hooks/useMinionLogic';
+'use client';
+
+import { useMinionLogic } from '@/hooks/useMinionLogic';
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { type ExpandedMinion } from 'types';
 import Button from './ui/Button';
 import { twMerge } from 'tailwind-merge';
+import { FaLock } from 'react-icons/fa6';
 
 function MinionView({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
-  const { addToUser, addToLS, removeFromUser, removeFromLS } = useMinionLogic(minion);
-  const isOwnedByUser = session?.user
-    ? minion.owners.some((o) => o.id === session.user.id)
-    : minionsInLS.value.includes(minion.id);
+  const { addToUser, removeFromUser } = useMinionLogic(minion);
+  const isOwnedByUser = session?.user.minions.some((m) => m.id === minion.id);
 
   return (
-    <Button onClick={isOwnedByUser ? (session ? removeFromUser : removeFromLS) : session ? addToUser : addToLS}>
+    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
       <div className="relative flex-shrink-0">
         {minion.image && (
           <Image
@@ -31,9 +32,21 @@ function MinionView({ minion, session }: { minion: ExpandedMinion; session: Sess
           </div>
         )}
       </div>
-      <p className={twMerge('max-w-full flex-shrink overflow-hidden text-ellipsis', isOwnedByUser && 'text-stone-500')}>
-        {minion.name}
-      </p>
+      <div className="flex flex-col items-start justify-start">
+        <p
+          className={twMerge(
+            'max-w-full flex-shrink overflow-hidden text-ellipsis',
+            isOwnedByUser && 'text-stone-500'
+          )}>
+          {minion.name}
+        </p>
+        {!session && (
+          <div className="flex items-center justify-center gap-2">
+            <FaLock className="text-stone-400 dark:text-stone-600" />
+            <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
+          </div>
+        )}
+      </div>
     </Button>
   );
 }
