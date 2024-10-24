@@ -10,14 +10,14 @@ import transformVariants from "./seed_functions/variant";
 
 async function main() {
   try {
-    await transformMinions();
-    await transformMounts();
-    await transformDungeons();
-    await transformTrials();
-    await transformRaids();
-    await transformVariants();
-    await transformOrchs();
-    await transformSpells();
+    // await transformMinions();
+    // await transformMounts();
+    // await transformDungeons();
+    // await transformTrials();
+    // await transformRaids();
+    // await transformVariants();
+    // await transformOrchs();
+    // await transformSpells();
     await transformCards();
   } catch (e) {
     console.error("An error occurred during the seeding process:", e);

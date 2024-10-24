@@ -68,7 +68,9 @@ export default function Mountard({ mount, session }: { mount: ExpandedMount; ses
           </span>
         </div>
       )}
-      {mount.image && <Image src={mount.image} alt={mount.name} width={100} height={100} />}
+      {mount.image && (
+        <Image unoptimized src={mount.image} alt={mount.name} width={100} height={100} className="rounded-xl" />
+      )}
       <h1 className="line-clamp-2 text-center text-xl">{mount.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
         {mount.sources.map((source) => (

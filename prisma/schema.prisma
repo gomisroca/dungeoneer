@@ -191,12 +191,11 @@ model Card {
 }
 
 model CardSource {
-  id     String   @id @default(cuid())
-  npcs   String[]
-  packs  String[]
-  drops  String[]
+  id     String  @id @default(cuid())
+  type   String
+  text   String
   cardId String?
-  card   Card?    @relation(fields: [cardId], references: [id])
+  card   Card?   @relation(fields: [cardId], references: [id])
 }
 
 model Hairstyle {

@@ -36,7 +36,7 @@ export interface ExpandedSpell extends Spell {
 }
 export interface ExpandedCard extends Card {
   owners: User[];
-  stats: CardStats;
+  stats?: CardStats;
   sources: CardSource[];
 }
 export interface ExpandedDungeon extends Dungeon {

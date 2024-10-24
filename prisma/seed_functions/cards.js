@@ -21,15 +21,42 @@ async function createCard(card) {
       stars: card.stars,
       number: card.number,
       image: uploadedImageUrl ?? card.image,
-      owned: card.owned,
+      owned: card.owned,  
       sources: {
-        create: {
-          npcs: card.sources.npcs.map(n => n.name),
-          packs: card.sources.packs.map(p => p.name),
-          drops: card.sources.drops,
-        }
-      },
+        create: []
+      }
     };
+
+    for (const drop of card.sources.drops) {
+      let type = drop.split(':')[0];
+      let text = drop.split(':')[1];
+      if (text === undefined) {
+        text = type;
+        type = 'Other';
+      }
+      cardData.sources.create.push({
+        type,
+        text,
+      });
+    }
+
+    for (const npc of card.sources.npcs) {
+      const type = 'NPC';
+      const text = npc.name;
+      cardData.sources.create.push({
+        type,
+        text,
+      });
+    }
+
+    for (const pack of card.sources.packs){
+      const type = 'Pack';
+      const text = pack.name;
+      cardData.sources.create.push({
+        type,
+        text,
+      });
+    }
 
     if (card.stats) {
       cardData.stats = {
