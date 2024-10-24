@@ -29,7 +29,7 @@ export const raidsRouter = createTRPCRouter({
                 some: {
                   type: 'Raid',
                   text: {
-                    endsWith: raid.name,
+                    contains: raid.name,
                     mode: 'insensitive',
                   },
                 },
@@ -46,7 +46,7 @@ export const raidsRouter = createTRPCRouter({
                 some: {
                   type: 'Raid',
                   text: {
-                    endsWith: raid.name,
+                    contains: raid.name,
                     mode: 'insensitive',
                   },
                 },
@@ -57,7 +57,26 @@ export const raidsRouter = createTRPCRouter({
               owners: true,
             },
           });
+
           const orchestrions = await ctx.db.orchestrion.findMany({
+            where: {
+              sources: {
+                some: {
+                  type: 'Raid',
+                  text: {
+                    contains: raid.name,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
+
+          const spells = await ctx.db.spell.findMany({
             where: {
               sources: {
                 some: {
@@ -73,11 +92,31 @@ export const raidsRouter = createTRPCRouter({
               owners: true,
             },
           });
+
+          const cards = await ctx.db.card.findMany({
+            where: {
+              sources: {
+                some: {
+                  text: {
+                    contains: raid.name,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
+
           return {
             ...raid,
             minions,
             mounts,
             orchestrions,
+            spells,
+            cards,
           };
         })
       );
