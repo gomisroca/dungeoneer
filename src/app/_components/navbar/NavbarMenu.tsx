@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { TbCardsFilled } from 'react-icons/tb';
-import { FaCaretDown, FaDog, FaHorse, FaMusic, FaWandMagicSparkles } from 'react-icons/fa6';
+import { FaCaretDown, FaDog, FaHorse, FaMusic, FaWandMagicSparkles, FaFaceLaugh, FaScissors } from 'react-icons/fa6';
 import StyledLink from '../ui/StyledLink';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
@@ -101,6 +101,12 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </StyledLink>
         <StyledLink href="/spells">
           <FaWandMagicSparkles size={20} />
+        </StyledLink>
+        <StyledLink href="/emotes">
+          <FaFaceLaugh size={20} />
+        </StyledLink>
+        <StyledLink href="/hairstyles">
+          <FaScissors size={20} />
         </StyledLink>
         <hr className="border-stone-700 dark:border-stone-200" />
         {session ? <SignOutButton /> : <SignInButton />}
