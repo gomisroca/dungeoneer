@@ -14,6 +14,7 @@ import {
   type Card,
   type CardStats,
   type CardSource,
+  type VariantDungeon,
 } from '@prisma/client';
 
 export interface ExpandedMinion extends Minion {
@@ -40,6 +41,14 @@ export interface ExpandedCard extends Card {
   sources?: CardSource[];
 }
 export interface ExpandedDungeon extends Dungeon {
+  minions: ExpandedMinion[];
+  mounts: ExpandedMount[];
+  orchestrions: ExpandedOrchestrion[];
+  spells: ExpandedSpell[];
+  cards: ExpandedCard[];
+}
+
+export interface ExpandedVariantDungeon extends VariantDungeon {
   minions: ExpandedMinion[];
   mounts: ExpandedMount[];
   orchestrions: ExpandedOrchestrion[];
