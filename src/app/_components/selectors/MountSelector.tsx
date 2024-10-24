@@ -3,7 +3,7 @@
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { type ExpandedMount } from 'types';
-import Button from './ui/Button';
+import Button from '../ui/Button';
 import { twMerge } from 'tailwind-merge';
 import { useMountLogic } from '@/hooks/useMountLogic';
 import { FaLock } from 'react-icons/fa6';

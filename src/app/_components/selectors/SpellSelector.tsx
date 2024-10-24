@@ -2,27 +2,30 @@
 
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedOrchestrion } from 'types';
-import Button from './ui/Button';
+import { type ExpandedSpell } from 'types';
+import Button from '../ui/Button';
 import { twMerge } from 'tailwind-merge';
-import { useOrchestrionLogic } from '@/hooks/useOrchestrionLogic';
 import { FaLock } from 'react-icons/fa6';
+import { useSpellLogic } from '@/hooks/useSpellLogic';
 
-function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrchestrion; session: Session | null }) {
-  const { addToUser, removeFromUser } = useOrchestrionLogic(orchestrion);
-  const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
+function SpellView({ spell, session }: { spell: ExpandedSpell; session: Session | null }) {
+  const { addToUser, removeFromUser } = useSpellLogic(spell);
+  const isOwnedByUser = session?.user.spells.some((m) => m.id === spell.id);
 
   return (
     <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
       <div className="relative flex-shrink-0">
-        {orchestrion.image && (
+        {spell.image && (
           <Image
-            src={orchestrion.image}
-            alt={orchestrion.name}
+            src={spell.image}
+            alt={spell.name}
             width={50}
             height={50}
             unoptimized
-            className={twMerge('flex-shrink-0 rounded-xl', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
+            className={twMerge(
+              'flex-shrink-0 rounded-xl border border-stone-600 dark:border-stone-400',
+              isOwnedByUser && 'opacity-75'
+            )} // Prevents the image from shrinking
           />
         )}
         {isOwnedByUser && (
@@ -39,7 +42,7 @@ function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrches
             'max-w-full flex-shrink overflow-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {orchestrion.name}
+          {spell.name}
         </p>
         {!session && (
           <div className="flex items-center justify-center gap-2">
@@ -52,20 +55,14 @@ function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrches
   );
 }
 
-function OrchestrionSelector({
-  orchestrions,
-  session,
-}: {
-  orchestrions: ExpandedOrchestrion[];
-  session: Session | null;
-}) {
+function SpellSelector({ spells, session }: { spells: ExpandedSpell[]; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {orchestrions.map((orchestrion) => (
-        <OrchestrionView key={orchestrion.id} orchestrion={orchestrion} session={session} />
+      {spells.map((spell) => (
+        <SpellView key={spell.id} spell={spell} session={session} />
       ))}
     </div>
   );
 }
 
-export default OrchestrionSelector;
+export default SpellSelector;

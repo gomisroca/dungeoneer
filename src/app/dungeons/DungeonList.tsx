@@ -6,13 +6,13 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedDungeon } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/MinionSelector';
-import MountSelector from '../_components/MountSelector';
-import OrchestrionSelector from '../_components/OrchestrionSelector';
+import MinionSelector from '../_components/selectors/MinionSelector';
+import MountSelector from '../_components/selectors/MountSelector';
+import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/SpellSelector';
-import CardSelector from '../_components/CardSelector';
+import SpellSelector from '../_components/selectors/SpellSelector';
+import CardSelector from '../_components/selectors/CardSelector';
 
 function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
   const allOwned = checkOwnership(dungeon, session);

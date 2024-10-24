@@ -1,31 +1,28 @@
 'use client';
 
+import { useMinionLogic } from '@/hooks/useMinionLogic';
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedSpell } from 'types';
-import Button from './ui/Button';
+import { type ExpandedMinion } from 'types';
+import Button from '../ui/Button';
 import { twMerge } from 'tailwind-merge';
 import { FaLock } from 'react-icons/fa6';
-import { useSpellLogic } from '@/hooks/useSpellLogic';
 
-function SpellView({ spell, session }: { spell: ExpandedSpell; session: Session | null }) {
-  const { addToUser, removeFromUser } = useSpellLogic(spell);
-  const isOwnedByUser = session?.user.spells.some((m) => m.id === spell.id);
+function MinionView({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
+  const { addToUser, removeFromUser } = useMinionLogic(minion);
+  const isOwnedByUser = session?.user.minions.some((m) => m.id === minion.id);
 
   return (
     <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
       <div className="relative flex-shrink-0">
-        {spell.image && (
+        {minion.image && (
           <Image
-            src={spell.image}
-            alt={spell.name}
+            src={minion.image}
+            alt={minion.name}
             width={50}
             height={50}
             unoptimized
-            className={twMerge(
-              'flex-shrink-0 rounded-xl border border-stone-600 dark:border-stone-400',
-              isOwnedByUser && 'opacity-75'
-            )} // Prevents the image from shrinking
+            className={twMerge('flex-shrink-0 rounded-xl', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
           />
         )}
         {isOwnedByUser && (
@@ -42,7 +39,7 @@ function SpellView({ spell, session }: { spell: ExpandedSpell; session: Session 
             'max-w-full flex-shrink overflow-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {spell.name}
+          {minion.name}
         </p>
         {!session && (
           <div className="flex items-center justify-center gap-2">
@@ -55,14 +52,14 @@ function SpellView({ spell, session }: { spell: ExpandedSpell; session: Session 
   );
 }
 
-function SpellSelector({ spells, session }: { spells: ExpandedSpell[]; session: Session | null }) {
+function MinionSelector({ minions, session }: { minions: ExpandedMinion[]; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {spells.map((spell) => (
-        <SpellView key={spell.id} spell={spell} session={session} />
+      {minions.map((minion) => (
+        <MinionView key={minion.id} minion={minion} session={session} />
       ))}
     </div>
   );
 }
 
-export default SpellSelector;
+export default MinionSelector;
