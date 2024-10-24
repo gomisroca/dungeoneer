@@ -9,6 +9,7 @@ import { trialsRouter } from './routers/trials';
 import { orchestrionsRouter } from './routers/orchestrions';
 import { spellsRouter } from './routers/spells';
 import { cardsRouter } from './routers/cards';
+import { variantsRouter } from './routers/variants';
 
 /**
  * This is the primary router for your server.
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   spells: spellsRouter,
   cards: cardsRouter,
   dungeons: dungeonsRouter,
+  variants: variantsRouter,
   raids: raidsRouter,
   trials: trialsRouter,
 });
