@@ -11,6 +11,8 @@ import MountSelector from '../_components/MountSelector';
 import OrchestrionSelector from '../_components/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
+import SpellSelector from '../_components/SpellSelector';
+import CardSelector from '../_components/CardSelector';
 
 function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
   const allOwned = checkOwnership(dungeon, session);
@@ -28,7 +30,14 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
         </div>
       )}
       {dungeon.image && (
-        <Image src={dungeon.image} alt={dungeon.name} width={300} height={100} className="w-full object-cover" />
+        <Image
+          unoptimized
+          src={dungeon.image}
+          alt={dungeon.name}
+          width={300}
+          height={100}
+          className="w-full object-cover"
+        />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
       <div className="flex flex-col gap-2">
@@ -37,6 +46,8 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
         {dungeon.orchestrions.length > 0 && (
           <OrchestrionSelector orchestrions={dungeon.orchestrions} session={session} />
         )}
+        {dungeon.spells.length > 0 && <SpellSelector spells={dungeon.spells} session={session} />}
+        {dungeon.cards.length > 0 && <CardSelector cards={dungeon.cards} session={session} />}
       </div>
     </div>
   );
