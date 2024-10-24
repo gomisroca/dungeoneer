@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { type Trial } from '@prisma/client';
+import { type ExpandedTrial } from 'types';
+
 export const trialsRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
@@ -14,110 +15,46 @@ export const trialsRouter = createTRPCRouter({
       const limit = input.limit ?? 10;
       const { cursor } = input;
 
-      const trials: Trial[] = await ctx.db.trial.findMany({
+      const trials: ExpandedTrial[] = await ctx.db.trial.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        where: {
+          OR: [
+            { minions: { some: {} } },
+            { mounts: { some: {} } },
+            { orchestrions: { some: {} } },
+            { spells: { some: {} } },
+            { cards: { some: {} } },
+          ],
+        },
+        include: {
+          minions: {
+            include: {
+              owners: true,
+            },
+          },
+          mounts: {
+            include: {
+              owners: true,
+            },
+          },
+          orchestrions: {
+            include: {
+              owners: true,
+            },
+          },
+          spells: {
+            include: {
+              owners: true,
+            },
+          },
+          cards: {
+            include: {
+              owners: true,
+            },
+          },
+        },
       });
-
-      // Map over each raid to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
-      const expandedTrials = await Promise.all(
-        trials.map(async (trial) => {
-          const minions = await ctx.db.minion.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Trial',
-                  text: {
-                    equals: trial.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-          const mounts = await ctx.db.mount.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Trial',
-                  text: {
-                    equals: trial.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const orchestrions = await ctx.db.orchestrion.findMany({
-            where: {
-              sources: {
-                some: {
-                  text: {
-                    contains: trial.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const spells = await ctx.db.spell.findMany({
-            where: {
-              sources: {
-                some: {
-                  text: {
-                    contains: trial.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const cards = await ctx.db.card.findMany({
-            where: {
-              sources: {
-                some: {
-                  text: {
-                    contains: trial.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          return {
-            ...trial,
-            minions,
-            mounts,
-            orchestrions,
-            spells,
-            cards,
-          };
-        })
-      );
 
       let nextCursor: typeof cursor | undefined = undefined;
 
@@ -127,7 +64,7 @@ export const trialsRouter = createTRPCRouter({
       }
 
       return {
-        trials: expandedTrials.slice(0, limit),
+        trials: trials.slice(0, limit),
         nextCursor,
       };
     }),
@@ -143,63 +80,39 @@ export const trialsRouter = createTRPCRouter({
         where: {
           id: input.id,
         },
+        include: {
+          minions: {
+            include: {
+              owners: true,
+            },
+          },
+          mounts: {
+            include: {
+              owners: true,
+            },
+          },
+          orchestrions: {
+            include: {
+              owners: true,
+            },
+          },
+          spells: {
+            include: {
+              owners: true,
+            },
+          },
+          cards: {
+            include: {
+              owners: true,
+            },
+          },
+        },
       });
 
       if (!trial) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }
 
-      const minions = await ctx.db.minion.findMany({
-        where: {
-          sources: {
-            some: {
-              type: 'Trial',
-              text: {
-                equals: trial.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-      const mounts = await ctx.db.mount.findMany({
-        where: {
-          sources: {
-            some: {
-              type: 'Trial',
-              text: {
-                equals: trial.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-      const orchestrions = await ctx.db.orchestrion.findMany({
-        where: {
-          sources: {
-            some: {
-              text: {
-                contains: trial.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-
-      return { ...trial, minions, mounts, orchestrions };
+      return trial;
     }),
 });

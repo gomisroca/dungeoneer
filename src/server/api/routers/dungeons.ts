@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { type Dungeon } from '@prisma/client';
+import { type ExpandedDungeon } from 'types';
 
 export const dungeonsRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -15,111 +15,46 @@ export const dungeonsRouter = createTRPCRouter({
       const limit = input.limit ?? 10;
       const { cursor } = input;
 
-      const dungeons: Dungeon[] = await ctx.db.dungeon.findMany({
+      const dungeons: ExpandedDungeon[] = await ctx.db.dungeon.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        where: {
+          OR: [
+            { minions: { some: {} } },
+            { mounts: { some: {} } },
+            { orchestrions: { some: {} } },
+            { spells: { some: {} } },
+            { cards: { some: {} } },
+          ],
+        },
+        include: {
+          minions: {
+            include: {
+              owners: true,
+            },
+          },
+          mounts: {
+            include: {
+              owners: true,
+            },
+          },
+          orchestrions: {
+            include: {
+              owners: true,
+            },
+          },
+          spells: {
+            include: {
+              owners: true,
+            },
+          },
+          cards: {
+            include: {
+              owners: true,
+            },
+          },
+        },
       });
-
-      // Map over each raid to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
-      const expandedDungeons = await Promise.all(
-        dungeons.map(async (dungeon) => {
-          const minions = await ctx.db.minion.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Dungeon',
-                  text: {
-                    contains: dungeon.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-          const mounts = await ctx.db.mount.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Dungeon',
-                  text: {
-                    contains: dungeon.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const orchestrions = await ctx.db.orchestrion.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Dungeon',
-                  text: {
-                    contains: dungeon.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const spells = await ctx.db.spell.findMany({
-            where: {
-              sources: {
-                some: {
-                  text: {
-                    contains: dungeon.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const cards = await ctx.db.card.findMany({
-            where: {
-              sources: {
-                some: {
-                  text: {
-                    contains: dungeon.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          return {
-            ...dungeon,
-            minions,
-            mounts,
-            orchestrions,
-            spells,
-            cards,
-          };
-        })
-      );
 
       let nextCursor: typeof cursor | undefined = undefined;
 
@@ -129,7 +64,7 @@ export const dungeonsRouter = createTRPCRouter({
       }
 
       return {
-        dungeons: expandedDungeons.slice(0, limit),
+        dungeons: dungeons.slice(0, limit),
         nextCursor,
       };
     }),
@@ -145,65 +80,39 @@ export const dungeonsRouter = createTRPCRouter({
         where: {
           id: input.id,
         },
+        include: {
+          minions: {
+            include: {
+              owners: true,
+            },
+          },
+          mounts: {
+            include: {
+              owners: true,
+            },
+          },
+          orchestrions: {
+            include: {
+              owners: true,
+            },
+          },
+          spells: {
+            include: {
+              owners: true,
+            },
+          },
+          cards: {
+            include: {
+              owners: true,
+            },
+          },
+        },
       });
 
       if (!dungeon) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }
 
-      const minions = await ctx.db.minion.findMany({
-        where: {
-          sources: {
-            some: {
-              type: 'Dungeon',
-              text: {
-                contains: dungeon.name,
-                mode: 'insensitive', // Optional: to make the search case-insensitive
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-
-      const mounts = await ctx.db.mount.findMany({
-        where: {
-          sources: {
-            some: {
-              type: 'Dungeon',
-              text: {
-                contains: dungeon.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-
-      const orchestrions = await ctx.db.orchestrion.findMany({
-        where: {
-          sources: {
-            some: {
-              text: {
-                contains: dungeon.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-
-      return { ...dungeon, minions, mounts, orchestrions };
+      return dungeon;
     }),
 });
