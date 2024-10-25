@@ -45,7 +45,7 @@ function EmoteView({ emote, session }: { emote: ExpandedEmote; session: Session 
           {emote.name}
         </p>
         {!session && (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 text-wrap text-start">
             <FaLock className="text-stone-400 dark:text-stone-600" />
             <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
           </div>
