@@ -13,7 +13,10 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
   const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="w-full px-2 py-1">
+    <Button
+      onClick={isOwnedByUser ? removeFromUser : addToUser}
+      disabled={!session}
+      className="w-5/6 justify-start px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
         {mount.image && (
           <Image
@@ -33,10 +36,10 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
           </div>
         )}
       </div>
-      <div className="flex flex-col items-start justify-start">
+      <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
         <p
           className={twMerge(
-            'max-w-full flex-shrink overflow-hidden text-ellipsis',
+            'max-w-full flex-shrink overflow-x-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
           {mount.name}
