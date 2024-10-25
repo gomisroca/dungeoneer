@@ -85,7 +85,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
         className={`flex flex-col gap-2 overflow-hidden py-2 transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
         }`}>
         <StyledLink href="/minions">
           <FaDog size={20} />
@@ -108,7 +108,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         <StyledLink href="/hairstyles">
           <FaScissors size={20} />
         </StyledLink>
-        <hr className="border-stone-700 dark:border-stone-200" />
+        <hr className="border-stone-800 dark:border-stone-200" />
         {session ? <SignOutButton /> : <SignInButton />}
         <ThemeButton />
       </div>
