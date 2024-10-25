@@ -13,7 +13,7 @@ function CardView({ card, session }: { card: ExpandedCard; session: Session | nu
   const isOwnedByUser = session?.user.cards.some((m) => m.id === card.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="w-full px-2 py-1">
       <div className="relative flex-shrink-0">
         {card.image && (
           <Image

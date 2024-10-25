@@ -13,7 +13,7 @@ function MinionView({ minion, session }: { minion: ExpandedMinion; session: Sess
   const isOwnedByUser = session?.user.minions.some((m) => m.id === minion.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="w-full px-2 py-1">
       <div className="relative flex-shrink-0">
         {minion.image && (
           <Image

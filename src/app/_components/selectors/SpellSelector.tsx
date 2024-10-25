@@ -13,7 +13,7 @@ function SpellView({ spell, session }: { spell: ExpandedSpell; session: Session 
   const isOwnedByUser = session?.user.spells.some((m) => m.id === spell.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="w-full px-2 py-1">
       <div className="relative flex-shrink-0">
         {spell.image && (
           <Image

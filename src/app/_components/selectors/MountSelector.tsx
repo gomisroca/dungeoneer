@@ -13,7 +13,7 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
   const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="w-full px-2 py-1">
       <div className="relative flex-shrink-0">
         {mount.image && (
           <Image
