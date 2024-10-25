@@ -24,7 +24,7 @@ function ThemeButton() {
   if (!mounted) return null;
   return (
     <Button
-      className="group"
+      className="group h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4"
       name={theme === 'dark' ? 'Light' : 'Dark'}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
       <FaMoon name="light" size={20} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
