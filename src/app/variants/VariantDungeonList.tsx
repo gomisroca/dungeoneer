@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
-import { type ExpandedDungeon } from 'types';
+import { type ExpandedVariantDungeon } from 'types';
 import { type Session } from 'next-auth';
 import MinionSelector from '../_components/selectors/MinionSelector';
 import MountSelector from '../_components/selectors/MountSelector';
@@ -13,8 +13,10 @@ import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
 import SpellSelector from '../_components/selectors/SpellSelector';
 import CardSelector from '../_components/selectors/CardSelector';
+import EmoteSelector from '../_components/selectors/EmoteSelector';
+import HairstyleSelector from '../_components/selectors/HairstyleSelector';
 
-function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
+function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedVariantDungeon; session: Session | null }) {
   const allOwned = checkOwnership(dungeon, session);
   return (
     <div
@@ -40,7 +42,7 @@ function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; se
         />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
-      <div className="flex flex-col gap-2">
+      <div className="flex w-full flex-col gap-2">
         {dungeon.minions.length > 0 && <MinionSelector minions={dungeon.minions} session={session} />}
         {dungeon.mounts.length > 0 && <MountSelector mounts={dungeon.mounts} session={session} />}
         {dungeon.orchestrions.length > 0 && (
@@ -48,6 +50,8 @@ function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; se
         )}
         {dungeon.spells.length > 0 && <SpellSelector spells={dungeon.spells} session={session} />}
         {dungeon.cards.length > 0 && <CardSelector cards={dungeon.cards} session={session} />}
+        {dungeon.emotes.length > 0 && <EmoteSelector emotes={dungeon.emotes} session={session} />}
+        {dungeon.hairstyles.length > 0 && <HairstyleSelector hairstyles={dungeon.hairstyles} session={session} />}
       </div>
     </div>
   );

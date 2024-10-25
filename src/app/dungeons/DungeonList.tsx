@@ -13,6 +13,8 @@ import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
 import SpellSelector from '../_components/selectors/SpellSelector';
 import CardSelector from '../_components/selectors/CardSelector';
+import EmoteSelector from '../_components/selectors/EmoteSelector';
+import HairstyleSelector from '../_components/selectors/HairstyleSelector';
 
 function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
   const allOwned = checkOwnership(dungeon, session);
@@ -40,7 +42,7 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
         />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
-      <div className="flex flex-col gap-2">
+      <div className="flex w-full flex-col gap-2">
         {dungeon.minions.length > 0 && <MinionSelector minions={dungeon.minions} session={session} />}
         {dungeon.mounts.length > 0 && <MountSelector mounts={dungeon.mounts} session={session} />}
         {dungeon.orchestrions.length > 0 && (
@@ -48,6 +50,8 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
         )}
         {dungeon.spells.length > 0 && <SpellSelector spells={dungeon.spells} session={session} />}
         {dungeon.cards.length > 0 && <CardSelector cards={dungeon.cards} session={session} />}
+        {dungeon.emotes.length > 0 && <EmoteSelector emotes={dungeon.emotes} session={session} />}
+        {dungeon.hairstyles.length > 0 && <HairstyleSelector hairstyles={dungeon.hairstyles} session={session} />}
       </div>
     </div>
   );

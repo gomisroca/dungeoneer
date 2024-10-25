@@ -25,6 +25,8 @@ export const raidsRouter = createTRPCRouter({
             { orchestrions: { some: {} } },
             { spells: { some: {} } },
             { cards: { some: {} } },
+            { emotes: { some: {} } },
+            { hairstyles: { some: {} } },
           ],
         },
         include: {
@@ -49,6 +51,16 @@ export const raidsRouter = createTRPCRouter({
             },
           },
           cards: {
+            include: {
+              owners: true,
+            },
+          },
+          emotes: {
+            include: {
+              owners: true,
+            },
+          },
+          hairstyles: {
             include: {
               owners: true,
             },
@@ -102,6 +114,16 @@ export const raidsRouter = createTRPCRouter({
             },
           },
           cards: {
+            include: {
+              owners: true,
+            },
+          },
+          emotes: {
+            include: {
+              owners: true,
+            },
+          },
+          hairstyles: {
             include: {
               owners: true,
             },

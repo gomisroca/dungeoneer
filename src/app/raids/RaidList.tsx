@@ -13,6 +13,8 @@ import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
 import SpellSelector from '../_components/selectors/SpellSelector';
 import CardSelector from '../_components/selectors/CardSelector';
+import EmoteSelector from '../_components/selectors/EmoteSelector';
+import HairstyleSelector from '../_components/selectors/HairstyleSelector';
 
 function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | null }) {
   const allOwned = checkOwnership(raid, session);
@@ -33,12 +35,14 @@ function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | nu
         <Image unoptimized src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
-      <div className="flex flex-col gap-2">
+      <div className="flex w-full flex-col gap-2">
         {raid.minions.length > 0 && <MinionSelector minions={raid.minions} session={session} />}
         {raid.mounts.length > 0 && <MountSelector mounts={raid.mounts} session={session} />}
         {raid.orchestrions.length > 0 && <OrchestrionSelector orchestrions={raid.orchestrions} session={session} />}
         {raid.spells.length > 0 && <SpellSelector spells={raid.spells} session={session} />}
         {raid.cards.length > 0 && <CardSelector cards={raid.cards} session={session} />}
+        {raid.emotes.length > 0 && <EmoteSelector emotes={raid.emotes} session={session} />}
+        {raid.hairstyles.length > 0 && <HairstyleSelector hairstyles={raid.hairstyles} session={session} />}
       </div>
     </div>
   );

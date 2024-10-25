@@ -60,6 +60,8 @@ export interface ExpandedDungeon extends Dungeon {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
   cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
 }
 
 export interface ExpandedVariantDungeon extends VariantDungeon {
@@ -68,6 +70,8 @@ export interface ExpandedVariantDungeon extends VariantDungeon {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
   cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
 }
 
 export interface ExpandedRaid extends Raid {
@@ -76,6 +80,8 @@ export interface ExpandedRaid extends Raid {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
   cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
 }
 
 export interface ExpandedTrial extends Trial {
@@ -84,4 +90,6 @@ export interface ExpandedTrial extends Trial {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
   cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
 }
