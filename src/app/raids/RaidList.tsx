@@ -75,6 +75,8 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allRaids = data?.pages.flatMap((page) => page.raids) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -83,15 +85,13 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
-              {page.raids.map((raid, index) => (
-                <div key={raid.id} ref={index === page.raids.length - 1 ? ref : undefined}>
-                  <RaidCard raid={raid} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {allRaids.map((raid, index) => (
+              <div key={raid.id} ref={index === allRaids.length - 1 ? ref : undefined}>
+                <RaidCard raid={raid} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

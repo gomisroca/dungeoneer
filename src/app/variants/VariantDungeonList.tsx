@@ -84,6 +84,8 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allVariants = data?.pages.flatMap((page) => page.dungeons) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -92,15 +94,13 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
         <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
-              {page.dungeons.map((dungeon, index) => (
-                <div key={dungeon.id} ref={index === page.dungeons.length - 1 ? ref : undefined}>
-                  <VariantDungeonCard dungeon={dungeon} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {allVariants.map((dungeon, index) => (
+              <div key={dungeon.id} ref={index === allVariants.length - 1 ? ref : undefined}>
+                <VariantDungeonCard dungeon={dungeon} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

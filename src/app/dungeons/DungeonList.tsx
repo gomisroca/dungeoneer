@@ -84,6 +84,8 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allDungeons = data?.pages.flatMap((page) => page.dungeons) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -92,15 +94,13 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
         <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
-              {page.dungeons.map((dungeon, index) => (
-                <div key={dungeon.id} ref={index === page.dungeons.length - 1 ? ref : undefined}>
-                  <DungeonCard dungeon={dungeon} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {allDungeons.map((dungeon, index) => (
+              <div key={dungeon.id} ref={index === allDungeons.length - 1 ? ref : undefined}>
+                <DungeonCard dungeon={dungeon} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

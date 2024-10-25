@@ -33,6 +33,8 @@ export default function HairstyleList({ session, initialHairstyles }: HairstyleL
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allHairstyles = data?.pages.flatMap((page) => page.hairstyles) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -41,15 +43,13 @@ export default function HairstyleList({ session, initialHairstyles }: HairstyleL
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.hairstyles.map((hairstyle, index) => (
-                <div key={hairstyle.id} ref={index === page.hairstyles.length - 1 ? ref : undefined}>
-                  <HairstyleCard hairstyle={hairstyle} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            {allHairstyles.map((hairstyle, index) => (
+              <div key={hairstyle.id} ref={index === allHairstyles.length - 1 ? ref : undefined}>
+                <HairstyleCard hairstyle={hairstyle} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

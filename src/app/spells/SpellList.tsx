@@ -33,6 +33,8 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allSpells = data?.pages.flatMap((page) => page.spells) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -41,15 +43,13 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.spells.map((spell, index) => (
-                <div key={spell.id} ref={index === page.spells.length - 1 ? ref : undefined}>
-                  <SpellCard spell={spell} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            {allSpells.map((spell, index) => (
+              <div key={spell.id} ref={index === allSpells.length - 1 ? ref : undefined}>
+                <SpellCard spell={spell} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...
