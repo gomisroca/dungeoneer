@@ -6,15 +6,9 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedTrial } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/selectors/MinionSelector';
-import MountSelector from '../_components/selectors/MountSelector';
-import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/selectors/SpellSelector';
-import CardSelector from '../_components/selectors/CardSelector';
-import EmoteSelector from '../_components/selectors/EmoteSelector';
-import HairstyleSelector from '../_components/selectors/HairstyleSelector';
+import ItemSelector from '../_components/ItemSelector';
 
 function TrialCard({ trial, session }: { trial: ExpandedTrial; session: Session | null }) {
   const allOwned = checkOwnership(trial, session);
@@ -43,13 +37,15 @@ function TrialCard({ trial, session }: { trial: ExpandedTrial; session: Session 
       )}
       <h1 className="line-clamp-2 text-center text-xl">{trial.name[0]?.toUpperCase() + trial.name.slice(1)}</h1>
       <div className="flex w-full flex-col gap-2">
-        {trial.minions.length > 0 && <MinionSelector minions={trial.minions} session={session} />}
-        {trial.mounts.length > 0 && <MountSelector mounts={trial.mounts} session={session} />}
-        {trial.orchestrions.length > 0 && <OrchestrionSelector orchestrions={trial.orchestrions} session={session} />}
-        {trial.spells.length > 0 && <SpellSelector spells={trial.spells} session={session} />}
-        {trial.cards.length > 0 && <CardSelector cards={trial.cards} session={session} />}
-        {trial.emotes.length > 0 && <EmoteSelector emotes={trial.emotes} session={session} />}
-        {trial.hairstyles.length > 0 && <HairstyleSelector hairstyles={trial.hairstyles} session={session} />}
+        {trial.minions.length > 0 && <ItemSelector items={trial.minions} type="minions" session={session} />}
+        {trial.mounts.length > 0 && <ItemSelector items={trial.mounts} type="mounts" session={session} />}
+        {trial.orchestrions.length > 0 && (
+          <ItemSelector items={trial.orchestrions} type="orchestrions" session={session} />
+        )}
+        {trial.spells.length > 0 && <ItemSelector items={trial.spells} type="spells" session={session} />}
+        {trial.cards.length > 0 && <ItemSelector items={trial.cards} type="cards" session={session} />}
+        {trial.emotes.length > 0 && <ItemSelector items={trial.emotes} type="emotes" session={session} />}
+        {trial.hairstyles.length > 0 && <ItemSelector items={trial.hairstyles} type="hairstyles" session={session} />}
       </div>
     </div>
   );

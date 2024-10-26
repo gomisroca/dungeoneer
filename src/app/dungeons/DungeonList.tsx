@@ -1,20 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedDungeon } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/selectors/MinionSelector';
-import MountSelector from '../_components/selectors/MountSelector';
-import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/selectors/SpellSelector';
-import CardSelector from '../_components/selectors/CardSelector';
-import EmoteSelector from '../_components/selectors/EmoteSelector';
-import HairstyleSelector from '../_components/selectors/HairstyleSelector';
+import ItemSelector from '../_components/ItemSelector';
 
 function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
   const allOwned = checkOwnership(dungeon, session);
@@ -43,15 +37,17 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
       <div className="flex w-full flex-col gap-2">
-        {dungeon.minions.length > 0 && <MinionSelector minions={dungeon.minions} session={session} />}
-        {dungeon.mounts.length > 0 && <MountSelector mounts={dungeon.mounts} session={session} />}
+        {dungeon.minions.length > 0 && <ItemSelector items={dungeon.minions} type="minions" session={session} />}
+        {dungeon.mounts.length > 0 && <ItemSelector items={dungeon.mounts} type="mounts" session={session} />}
         {dungeon.orchestrions.length > 0 && (
-          <OrchestrionSelector orchestrions={dungeon.orchestrions} session={session} />
+          <ItemSelector items={dungeon.orchestrions} type="orchestrions" session={session} />
         )}
-        {dungeon.spells.length > 0 && <SpellSelector spells={dungeon.spells} session={session} />}
-        {dungeon.cards.length > 0 && <CardSelector cards={dungeon.cards} session={session} />}
-        {dungeon.emotes.length > 0 && <EmoteSelector emotes={dungeon.emotes} session={session} />}
-        {dungeon.hairstyles.length > 0 && <HairstyleSelector hairstyles={dungeon.hairstyles} session={session} />}
+        {dungeon.spells.length > 0 && <ItemSelector items={dungeon.spells} type="spells" session={session} />}
+        {dungeon.cards.length > 0 && <ItemSelector items={dungeon.cards} type="cards" session={session} />}
+        {dungeon.emotes.length > 0 && <ItemSelector items={dungeon.emotes} type="emotes" session={session} />}
+        {dungeon.hairstyles.length > 0 && (
+          <ItemSelector items={dungeon.hairstyles} type="hairstyles" session={session} />
+        )}
       </div>
     </div>
   );
@@ -63,6 +59,8 @@ interface DungeonListProps {
   session: Session | null;
 }
 export default function DungeonList({ initialDungeons, session }: DungeonListProps) {
+  const [filter, setFilter] = useState('all');
+  const [filteredDungeons, setFilteredDungeons] = useState<ExpandedDungeon[]>([]);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.dungeons.getAll.useInfiniteQuery(
     {
       limit: 20,
@@ -72,6 +70,20 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
       initialData: { pages: [initialDungeons], pageParams: [undefined] },
     }
   );
+
+  const allDungeons = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
+
+  useEffect(() => {
+    if (filter === 'all') {
+      setFilteredDungeons(allDungeons);
+    }
+    if (filter === 'owned') {
+      setFilteredDungeons(allDungeons.filter((dungeon) => checkOwnership(dungeon, session)));
+    }
+    if (filter === 'unowned') {
+      setFilteredDungeons(allDungeons.filter((dungeon) => !checkOwnership(dungeon, session)));
+    }
+  }, [filter, allDungeons, session]);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -84,8 +96,6 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allDungeons = data?.pages.flatMap((page) => page.dungeons) ?? [];
-
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -94,9 +104,12 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
         <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
       ) : (
         <>
+          <button onClick={() => setFilter('all')}>All</button>
+          <button onClick={() => setFilter('owned')}>Owned</button>
+          <button onClick={() => setFilter('unowned')}>Unowned</button>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allDungeons.map((dungeon, index) => (
-              <div key={dungeon.id} ref={index === allDungeons.length - 1 ? ref : undefined}>
+            {filteredDungeons.map((dungeon, index) => (
+              <div key={dungeon.id} ref={index === filteredDungeons.length - 1 ? ref : undefined}>
                 <DungeonCard dungeon={dungeon} session={session} />
               </div>
             ))}

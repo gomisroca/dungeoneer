@@ -42,13 +42,13 @@ export const cardsRouter = createTRPCRouter({
   addToUser: protectedProcedure
     .input(
       z.object({
-        cardId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const card = await ctx.db.card.findUnique({
         where: {
-          id: input.cardId,
+          id: input.id,
         },
         include: {
           owners: true,
@@ -106,13 +106,13 @@ export const cardsRouter = createTRPCRouter({
   removeFromUser: protectedProcedure
     .input(
       z.object({
-        cardId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const card = await ctx.db.card.findUnique({
         where: {
-          id: input.cardId,
+          id: input.id,
         },
         include: {
           owners: true,

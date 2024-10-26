@@ -6,15 +6,9 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedRaid } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/selectors/MinionSelector';
-import MountSelector from '../_components/selectors/MountSelector';
-import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/selectors/SpellSelector';
-import CardSelector from '../_components/selectors/CardSelector';
-import EmoteSelector from '../_components/selectors/EmoteSelector';
-import HairstyleSelector from '../_components/selectors/HairstyleSelector';
+import ItemSelector from '../_components/ItemSelector';
 
 function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | null }) {
   const allOwned = checkOwnership(raid, session);
@@ -36,13 +30,15 @@ function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | nu
       )}
       <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
       <div className="flex w-full flex-col gap-2">
-        {raid.minions.length > 0 && <MinionSelector minions={raid.minions} session={session} />}
-        {raid.mounts.length > 0 && <MountSelector mounts={raid.mounts} session={session} />}
-        {raid.orchestrions.length > 0 && <OrchestrionSelector orchestrions={raid.orchestrions} session={session} />}
-        {raid.spells.length > 0 && <SpellSelector spells={raid.spells} session={session} />}
-        {raid.cards.length > 0 && <CardSelector cards={raid.cards} session={session} />}
-        {raid.emotes.length > 0 && <EmoteSelector emotes={raid.emotes} session={session} />}
-        {raid.hairstyles.length > 0 && <HairstyleSelector hairstyles={raid.hairstyles} session={session} />}
+        {raid.minions.length > 0 && <ItemSelector items={raid.minions} type="minions" session={session} />}
+        {raid.mounts.length > 0 && <ItemSelector items={raid.mounts} type="mounts" session={session} />}
+        {raid.orchestrions.length > 0 && (
+          <ItemSelector items={raid.orchestrions} type="orchestrions" session={session} />
+        )}
+        {raid.spells.length > 0 && <ItemSelector items={raid.spells} type="spells" session={session} />}
+        {raid.cards.length > 0 && <ItemSelector items={raid.cards} type="cards" session={session} />}
+        {raid.emotes.length > 0 && <ItemSelector items={raid.emotes} type="emotes" session={session} />}
+        {raid.hairstyles.length > 0 && <ItemSelector items={raid.hairstyles} type="hairstyles" session={session} />}
       </div>
     </div>
   );

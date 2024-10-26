@@ -42,13 +42,13 @@ export const emotesRouter = createTRPCRouter({
   addToUser: protectedProcedure
     .input(
       z.object({
-        emoteId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const emote = await ctx.db.emote.findUnique({
         where: {
-          id: input.emoteId,
+          id: input.id,
         },
         include: {
           owners: true,
@@ -106,13 +106,13 @@ export const emotesRouter = createTRPCRouter({
   removeFromUser: protectedProcedure
     .input(
       z.object({
-        emoteId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const emote = await ctx.db.emote.findUnique({
         where: {
-          id: input.emoteId,
+          id: input.id,
         },
         include: {
           owners: true,

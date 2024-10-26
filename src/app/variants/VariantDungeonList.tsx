@@ -6,15 +6,9 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedVariantDungeon } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/selectors/MinionSelector';
-import MountSelector from '../_components/selectors/MountSelector';
-import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/selectors/SpellSelector';
-import CardSelector from '../_components/selectors/CardSelector';
-import EmoteSelector from '../_components/selectors/EmoteSelector';
-import HairstyleSelector from '../_components/selectors/HairstyleSelector';
+import ItemSelector from '../_components/ItemSelector';
 
 function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedVariantDungeon; session: Session | null }) {
   const allOwned = checkOwnership(dungeon, session);
@@ -43,15 +37,17 @@ function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedVariantDung
       )}
       <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
       <div className="flex w-full flex-col gap-2">
-        {dungeon.minions.length > 0 && <MinionSelector minions={dungeon.minions} session={session} />}
-        {dungeon.mounts.length > 0 && <MountSelector mounts={dungeon.mounts} session={session} />}
+        {dungeon.minions.length > 0 && <ItemSelector items={dungeon.minions} type="minions" session={session} />}
+        {dungeon.mounts.length > 0 && <ItemSelector items={dungeon.mounts} type="mounts" session={session} />}
         {dungeon.orchestrions.length > 0 && (
-          <OrchestrionSelector orchestrions={dungeon.orchestrions} session={session} />
+          <ItemSelector items={dungeon.orchestrions} type="orchestrions" session={session} />
         )}
-        {dungeon.spells.length > 0 && <SpellSelector spells={dungeon.spells} session={session} />}
-        {dungeon.cards.length > 0 && <CardSelector cards={dungeon.cards} session={session} />}
-        {dungeon.emotes.length > 0 && <EmoteSelector emotes={dungeon.emotes} session={session} />}
-        {dungeon.hairstyles.length > 0 && <HairstyleSelector hairstyles={dungeon.hairstyles} session={session} />}
+        {dungeon.spells.length > 0 && <ItemSelector items={dungeon.spells} type="spells" session={session} />}
+        {dungeon.cards.length > 0 && <ItemSelector items={dungeon.cards} type="cards" session={session} />}
+        {dungeon.emotes.length > 0 && <ItemSelector items={dungeon.emotes} type="emotes" session={session} />}
+        {dungeon.hairstyles.length > 0 && (
+          <ItemSelector items={dungeon.hairstyles} type="hairstyles" session={session} />
+        )}
       </div>
     </div>
   );
