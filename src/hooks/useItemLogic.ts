@@ -9,6 +9,7 @@ interface Item {
 }
 
 export function useItemLogic<T extends Item>(item: T) {
+  const utils = api.useUtils();
   const addToUserMutation = api[item.type].addToUser.useMutation({
     onSuccess: async () => {
       addMessage(`Added ${item.name} to your collection.`);
@@ -21,6 +22,7 @@ export function useItemLogic<T extends Item>(item: T) {
   const addToUser = async () => {
     try {
       await addToUserMutation.mutateAsync({ id: item.id });
+      await utils.invalidate();
       return true;
     } catch (_error) {
       return false;
@@ -39,6 +41,7 @@ export function useItemLogic<T extends Item>(item: T) {
   const removeFromUser = async () => {
     try {
       await removeFromUserMutation.mutateAsync({ id: item.id });
+      await utils.invalidate();
       return true;
     } catch (_error) {
       return false;

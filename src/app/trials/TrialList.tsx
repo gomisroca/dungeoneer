@@ -1,55 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
-import Image from 'next/image';
-import { type ExpandedTrial } from 'types';
 import { type Session } from 'next-auth';
-import { twMerge } from 'tailwind-merge';
+import InstanceCard from '../_components/InstanceCard';
+import { type ExpandedTrial } from 'types';
 import checkOwnership from '@/utils/checkOwnership';
-import ItemSelector from '../_components/ItemSelector';
-
-function TrialCard({ trial, session }: { trial: ExpandedTrial; session: Session | null }) {
-  const allOwned = checkOwnership(trial, session);
-  return (
-    <div
-      className={twMerge(
-        'relative flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700',
-        allOwned && 'opacity-50 hover:opacity-100'
-      )}>
-      {allOwned && (
-        <div className="absolute right-[-25px] top-[-25px] flex contrast-200">
-          <span className="m-auto text-8xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
-            ✔
-          </span>
-        </div>
-      )}
-      {trial.image && (
-        <Image
-          unoptimized
-          src={trial.image}
-          alt={trial.name}
-          width={300}
-          height={100}
-          className="w-full object-cover"
-        />
-      )}
-      <h1 className="line-clamp-2 text-center text-xl">{trial.name[0]?.toUpperCase() + trial.name.slice(1)}</h1>
-      <div className="flex w-full flex-col gap-2">
-        {trial.minions.length > 0 && <ItemSelector items={trial.minions} type="minions" session={session} />}
-        {trial.mounts.length > 0 && <ItemSelector items={trial.mounts} type="mounts" session={session} />}
-        {trial.orchestrions.length > 0 && (
-          <ItemSelector items={trial.orchestrions} type="orchestrions" session={session} />
-        )}
-        {trial.spells.length > 0 && <ItemSelector items={trial.spells} type="spells" session={session} />}
-        {trial.cards.length > 0 && <ItemSelector items={trial.cards} type="cards" session={session} />}
-        {trial.emotes.length > 0 && <ItemSelector items={trial.emotes} type="emotes" session={session} />}
-        {trial.hairstyles.length > 0 && <ItemSelector items={trial.hairstyles} type="hairstyles" session={session} />}
-      </div>
-    </div>
-  );
-}
+import Button from '../_components/ui/Button';
+import { FaFilter } from 'react-icons/fa6';
 
 type TrialListtOutput = RouterOutputs['trials']['getAll'];
 interface TrialListtProps {
@@ -57,6 +16,9 @@ interface TrialListtProps {
   session: Session | null;
 }
 export default function TrialList({ initialTrials, session }: TrialListtProps) {
+  const [showFilter, setShowFilter] = useState(false);
+  const [filter, setFilter] = useState('all');
+  const [filteredTrials, setFilteredTrials] = useState<ExpandedTrial[]>([]);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.trials.getAll.useInfiniteQuery(
     {
       limit: 20,
@@ -78,7 +40,19 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allTrials = data?.pages.flatMap((page) => page.trials) ?? [];
+  const allTrials = useMemo(() => data?.pages.flatMap((page) => page.trials) ?? [], [data]);
+
+  useEffect(() => {
+    if (filter === 'all') {
+      setFilteredTrials(allTrials);
+    }
+    if (filter === 'owned') {
+      setFilteredTrials(allTrials.filter((trial) => checkOwnership(trial, session)));
+    }
+    if (filter === 'unowned') {
+      setFilteredTrials(allTrials.filter((trial) => !checkOwnership(trial, session)));
+    }
+  }, [filter, allTrials, session]);
 
   return (
     <div className="flex flex-col space-y-4">
@@ -88,10 +62,40 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching trials</h1>
       ) : (
         <>
+          {session && (
+            <div className="fixed right-12 top-0 z-20 flex flex-col items-end justify-end gap-2 p-4 md:right-20">
+              <Button
+                onClick={() => setShowFilter(!showFilter)}
+                className="h-[35px] w-[35px] p-2 md:h-full md:w-full md:p-4">
+                <FaFilter size={20} />
+              </Button>
+              {showFilter && (
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={() => setFilter('all')}
+                    className={filter === 'all' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'}>
+                    All
+                  </Button>
+                  <Button
+                    onClick={() => setFilter('owned')}
+                    className={filter === 'owned' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'}>
+                    Owned
+                  </Button>
+                  <Button
+                    onClick={() => setFilter('unowned')}
+                    className={
+                      filter === 'unowned' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'
+                    }>
+                    Unowned
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allTrials.map((trial, index) => (
-              <div key={trial.id} ref={index === allTrials.length - 1 ? ref : undefined}>
-                <TrialCard trial={trial} session={session} />
+            {filteredTrials.map((trial, index) => (
+              <div key={trial.id} ref={index === filteredTrials.length - 1 ? ref : undefined}>
+                <InstanceCard instance={trial} session={session} />
               </div>
             ))}
           </div>

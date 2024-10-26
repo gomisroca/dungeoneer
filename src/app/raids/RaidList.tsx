@@ -1,48 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
-import Image from 'next/image';
-import { type ExpandedRaid } from 'types';
 import { type Session } from 'next-auth';
-import { twMerge } from 'tailwind-merge';
+import InstanceCard from '../_components/InstanceCard';
+import Button from '../_components/ui/Button';
+import { FaFilter } from 'react-icons/fa6';
+import { type ExpandedRaid } from 'types';
 import checkOwnership from '@/utils/checkOwnership';
-import ItemSelector from '../_components/ItemSelector';
-
-function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | null }) {
-  const allOwned = checkOwnership(raid, session);
-  return (
-    <div
-      className={twMerge(
-        'relative flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700',
-        allOwned && 'opacity-50 hover:opacity-100'
-      )}>
-      {allOwned && (
-        <div className="absolute right-[-25px] top-[-25px] flex contrast-200">
-          <span className="m-auto text-8xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
-            ✔
-          </span>
-        </div>
-      )}
-      {raid.image && (
-        <Image unoptimized src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
-      )}
-      <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
-      <div className="flex w-full flex-col gap-2">
-        {raid.minions.length > 0 && <ItemSelector items={raid.minions} type="minions" session={session} />}
-        {raid.mounts.length > 0 && <ItemSelector items={raid.mounts} type="mounts" session={session} />}
-        {raid.orchestrions.length > 0 && (
-          <ItemSelector items={raid.orchestrions} type="orchestrions" session={session} />
-        )}
-        {raid.spells.length > 0 && <ItemSelector items={raid.spells} type="spells" session={session} />}
-        {raid.cards.length > 0 && <ItemSelector items={raid.cards} type="cards" session={session} />}
-        {raid.emotes.length > 0 && <ItemSelector items={raid.emotes} type="emotes" session={session} />}
-        {raid.hairstyles.length > 0 && <ItemSelector items={raid.hairstyles} type="hairstyles" session={session} />}
-      </div>
-    </div>
-  );
-}
 
 type RaidListOutput = RouterOutputs['raids']['getAll'];
 interface RaidListProps {
@@ -50,6 +16,9 @@ interface RaidListProps {
   session: Session | null;
 }
 export default function RaidList({ initialRaids, session }: RaidListProps) {
+  const [showFilter, setShowFilter] = useState(false);
+  const [filter, setFilter] = useState('all');
+  const [filteredRaids, setFilteredRaids] = useState<ExpandedRaid[]>([]);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.raids.getAll.useInfiniteQuery(
     {
       limit: 20,
@@ -71,7 +40,19 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allRaids = data?.pages.flatMap((page) => page.raids) ?? [];
+  const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
+
+  useEffect(() => {
+    if (filter === 'all') {
+      setFilteredRaids(allRaids);
+    }
+    if (filter === 'owned') {
+      setFilteredRaids(allRaids.filter((dungeon) => checkOwnership(dungeon, session)));
+    }
+    if (filter === 'unowned') {
+      setFilteredRaids(allRaids.filter((dungeon) => !checkOwnership(dungeon, session)));
+    }
+  }, [filter, allRaids, session]);
 
   return (
     <div className="flex flex-col space-y-4">
@@ -81,10 +62,40 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
+          {session && (
+            <div className="fixed right-12 top-0 z-20 flex flex-col items-end justify-end gap-2 p-4 md:right-20">
+              <Button
+                onClick={() => setShowFilter(!showFilter)}
+                className="h-[35px] w-[35px] p-2 md:h-full md:w-full md:p-4">
+                <FaFilter size={20} />
+              </Button>
+              {showFilter && (
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={() => setFilter('all')}
+                    className={filter === 'all' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'}>
+                    All
+                  </Button>
+                  <Button
+                    onClick={() => setFilter('owned')}
+                    className={filter === 'owned' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'}>
+                    Owned
+                  </Button>
+                  <Button
+                    onClick={() => setFilter('unowned')}
+                    className={
+                      filter === 'unowned' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'
+                    }>
+                    Unowned
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allRaids.map((raid, index) => (
-              <div key={raid.id} ref={index === allRaids.length - 1 ? ref : undefined}>
-                <RaidCard raid={raid} session={session} />
+            {filteredRaids.map((raid, index) => (
+              <div key={raid.id} ref={index === filteredRaids.length - 1 ? ref : undefined}>
+                <InstanceCard instance={raid} session={session} />
               </div>
             ))}
           </div>
