@@ -9,6 +9,7 @@ import { type ExpandedTrial } from 'types';
 import checkOwnership from '@/utils/checkOwnership';
 import Button from '../_components/ui/Button';
 import { FaFilter } from 'react-icons/fa6';
+import { twMerge } from 'tailwind-merge';
 
 type TrialListtOutput = RouterOutputs['trials']['getAll'];
 interface TrialListtProps {
@@ -73,19 +74,17 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
                 <div className="flex flex-col gap-2">
                   <Button
                     onClick={() => setFilter('all')}
-                    className={filter === 'all' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'}>
+                    className={twMerge('w-28 p-2 md:p-4', filter === 'all' && 'bg-cyan-400 dark:bg-cyan-600')}>
                     All
                   </Button>
                   <Button
                     onClick={() => setFilter('owned')}
-                    className={filter === 'owned' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'}>
+                    className={twMerge('w-28 p-2 md:p-4', filter === 'owned' && 'bg-cyan-400 dark:bg-cyan-600')}>
                     Owned
                   </Button>
                   <Button
                     onClick={() => setFilter('unowned')}
-                    className={
-                      filter === 'unowned' ? 'w-28 bg-cyan-400 p-2 dark:bg-cyan-600 md:p-4' : 'w-28 p-2 md:p-4'
-                    }>
+                    className={twMerge('w-28 p-2 md:p-4', filter === 'unowned' && 'bg-cyan-400 dark:bg-cyan-600')}>
                     Unowned
                   </Button>
                 </div>
