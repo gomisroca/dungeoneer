@@ -35,7 +35,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
   }, []);
 
   return (
-    <div ref={menuRef} className="relativeflex pointer-events-auto flex-col">
+    <div ref={menuRef} className="pointer-events-auto relative flex flex-col">
       <div className="flex flex-col items-center justify-center gap-2">
         <StyledLink href="/dungeons" className="group p-1">
           <Image
