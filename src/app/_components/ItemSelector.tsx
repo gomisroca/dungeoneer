@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import { FaLock } from 'react-icons/fa6';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
 import Button from './ui/Button';
+import { type ItemType } from 'types';
 
 interface BaseItem {
   id: string;
@@ -13,7 +14,6 @@ interface BaseItem {
   image: string | null;
   owners: { id: string }[];
 }
-type ItemType = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
 
 interface ItemViewProps {
   item: BaseItem;

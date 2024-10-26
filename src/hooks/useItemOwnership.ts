@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useItemLogic } from './useItemLogic';
 import { type Session } from 'next-auth';
+import { type ItemType } from 'types';
 
 interface OwnableItem {
   id: string;
   name: string;
-  type: 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
+  type: ItemType;
   owners: { id: string }[];
 }
 

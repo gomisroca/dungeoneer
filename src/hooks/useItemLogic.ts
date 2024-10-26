@@ -1,7 +1,7 @@
 import { api } from '@/trpc/react';
 import { addMessage } from '@/app/_components/ui/MessagePopup';
+import { type ItemType } from 'types';
 
-type ItemType = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
 interface Item {
   id: string;
   name: string;
