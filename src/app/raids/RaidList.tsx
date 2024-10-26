@@ -6,13 +6,15 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedRaid } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/MinionSelector';
-import MountSelector from '../_components/MountSelector';
-import OrchestrionSelector from '../_components/OrchestrionSelector';
+import MinionSelector from '../_components/selectors/MinionSelector';
+import MountSelector from '../_components/selectors/MountSelector';
+import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/SpellSelector';
-import CardSelector from '../_components/CardSelector';
+import SpellSelector from '../_components/selectors/SpellSelector';
+import CardSelector from '../_components/selectors/CardSelector';
+import EmoteSelector from '../_components/selectors/EmoteSelector';
+import HairstyleSelector from '../_components/selectors/HairstyleSelector';
 
 function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | null }) {
   const allOwned = checkOwnership(raid, session);
@@ -33,12 +35,14 @@ function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | nu
         <Image unoptimized src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
-      <div className="flex flex-col gap-2">
+      <div className="flex w-full flex-col gap-2">
         {raid.minions.length > 0 && <MinionSelector minions={raid.minions} session={session} />}
         {raid.mounts.length > 0 && <MountSelector mounts={raid.mounts} session={session} />}
         {raid.orchestrions.length > 0 && <OrchestrionSelector orchestrions={raid.orchestrions} session={session} />}
         {raid.spells.length > 0 && <SpellSelector spells={raid.spells} session={session} />}
         {raid.cards.length > 0 && <CardSelector cards={raid.cards} session={session} />}
+        {raid.emotes.length > 0 && <EmoteSelector emotes={raid.emotes} session={session} />}
+        {raid.hairstyles.length > 0 && <HairstyleSelector hairstyles={raid.hairstyles} session={session} />}
       </div>
     </div>
   );
@@ -71,6 +75,8 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allRaids = data?.pages.flatMap((page) => page.raids) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -79,15 +85,13 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
-              {page.raids.map((raid, index) => (
-                <div key={raid.id} ref={index === page.raids.length - 1 ? ref : undefined}>
-                  <RaidCard raid={raid} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {allRaids.map((raid, index) => (
+              <div key={raid.id} ref={index === allRaids.length - 1 ? ref : undefined}>
+                <RaidCard raid={raid} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

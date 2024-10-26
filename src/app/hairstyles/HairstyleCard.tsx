@@ -3,22 +3,22 @@
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
-import { type ExpandedOrchestrion } from 'types';
+import { type ExpandedHairstyle } from 'types';
 import Source from '../_components/ui/Source';
 import { twMerge } from 'tailwind-merge';
 import { FaLock } from 'react-icons/fa6';
-import { useOrchestrionLogic } from '@/hooks/useOrchestrionLogic';
+import { useHairstyleLogic } from '@/hooks/useHairstyleLogic';
 
 function AddOrRemoveButton({
-  orchestrion,
+  hairstyle,
   isOwnedByUser,
   session,
 }: {
-  orchestrion: ExpandedOrchestrion;
+  hairstyle: ExpandedHairstyle;
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, removeFromUser } = useOrchestrionLogic(orchestrion);
+  const { addToUser, removeFromUser } = useHairstyleLogic(hairstyle);
 
   return isOwnedByUser ? (
     <div className="flex flex-col items-start justify-start">
@@ -52,14 +52,14 @@ function AddOrRemoveButton({
   );
 }
 
-export default function OrchestrionCard({
-  orchestrion,
+export default function HairstyleCard({
+  hairstyle,
   session,
 }: {
-  orchestrion: ExpandedOrchestrion;
+  hairstyle: ExpandedHairstyle;
   session: Session | null;
 }) {
-  const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
+  const isOwnedByUser = hairstyle.owners.some((o) => o.id === session?.user.id);
 
   return (
     <div
@@ -74,14 +74,14 @@ export default function OrchestrionCard({
           </span>
         </div>
       )}
-      {orchestrion.image && (
-        <Image src={orchestrion.image} alt={orchestrion.name} width={100} height={100} className="rounded-xl" />
+      {hairstyle.image && (
+        <Image unoptimized src={hairstyle.image} alt={hairstyle.name} width={100} height={100} className="rounded-xl" />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{orchestrion.name}</h1>
+      <h1 className="line-clamp-2 text-center text-xl">{hairstyle.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {orchestrion.sources?.map((source) => <Source key={source.id} source={source} />)}
+        {hairstyle.sources?.map((source) => <Source key={source.id} source={source} />)}
       </div>
-      <AddOrRemoveButton orchestrion={orchestrion} isOwnedByUser={isOwnedByUser} session={session} />
+      <AddOrRemoveButton hairstyle={hairstyle} isOwnedByUser={isOwnedByUser} session={session} />
     </div>
   );
 }

@@ -2,23 +2,26 @@
 
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedCard } from 'types';
-import Button from './ui/Button';
+import { type ExpandedMount } from 'types';
+import Button from '../ui/Button';
 import { twMerge } from 'tailwind-merge';
+import { useMountLogic } from '@/hooks/useMountLogic';
 import { FaLock } from 'react-icons/fa6';
-import { useCardLogic } from '@/hooks/useCardLogic';
 
-function CardView({ card, session }: { card: ExpandedCard; session: Session | null }) {
-  const { addToUser, removeFromUser } = useCardLogic(card);
-  const isOwnedByUser = session?.user.cards.some((m) => m.id === card.id);
+function MountView({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
+  const { addToUser, removeFromUser } = useMountLogic(mount);
+  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button
+      onClick={isOwnedByUser ? removeFromUser : addToUser}
+      disabled={!session}
+      className="w-5/6 justify-start px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
-        {card.image && (
+        {mount.image && (
           <Image
-            src={card.image}
-            alt={card.name}
+            src={mount.image}
+            alt={mount.name}
             width={50}
             height={50}
             unoptimized
@@ -33,16 +36,16 @@ function CardView({ card, session }: { card: ExpandedCard; session: Session | nu
           </div>
         )}
       </div>
-      <div className="flex flex-col items-start justify-start">
+      <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
         <p
           className={twMerge(
-            'max-w-full flex-shrink overflow-hidden text-ellipsis',
+            'max-w-full flex-shrink overflow-x-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {card.name}
+          {mount.name}
         </p>
         {!session && (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 text-wrap text-start">
             <FaLock className="text-stone-400 dark:text-stone-600" />
             <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
           </div>
@@ -52,14 +55,14 @@ function CardView({ card, session }: { card: ExpandedCard; session: Session | nu
   );
 }
 
-function CardSelector({ cards, session }: { cards: ExpandedCard[]; session: Session | null }) {
+function MountSelector({ mounts, session }: { mounts: ExpandedMount[]; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {cards.map((card) => (
-        <CardView key={card.id} card={card} session={session} />
+      {mounts.map((mount) => (
+        <MountView key={mount.id} mount={mount} session={session} />
       ))}
     </div>
   );
 }
 
-export default CardSelector;
+export default MountSelector;

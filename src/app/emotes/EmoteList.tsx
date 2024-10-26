@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import TTCard from './TTCard';
+import EmoteCard from './EmoteCard';
 
-type CardListOutput = RouterOutputs['cards']['getAll'];
-interface CardListProps {
+type EmoteListOutput = RouterOutputs['emotes']['getAll'];
+interface EmoteListProps {
   session: Session | null;
-  initialCards: CardListOutput;
+  initialEmotes: EmoteListOutput;
 }
-export default function CardList({ session, initialCards }: CardListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.cards.getAll.useInfiniteQuery(
+export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.emotes.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialCards], pageParams: [undefined] },
+      initialData: { pages: [initialEmotes], pageParams: [undefined] },
     }
   );
 
@@ -33,7 +33,7 @@ export default function CardList({ session, initialCards }: CardListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
+  const allEmotes = data?.pages.flatMap((page) => page.emotes) ?? [];
 
   return (
     <div className="flex flex-col space-y-4">
@@ -44,9 +44,9 @@ export default function CardList({ session, initialCards }: CardListProps) {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allCards.map((card, index) => (
-              <div key={card.id} ref={index === allCards.length - 1 ? ref : undefined}>
-                <TTCard card={card} session={session} />
+            {allEmotes.map((emote, index) => (
+              <div key={emote.id} ref={index === allEmotes.length - 1 ? ref : undefined}>
+                <EmoteCard emote={emote} session={session} />
               </div>
             ))}
           </div>

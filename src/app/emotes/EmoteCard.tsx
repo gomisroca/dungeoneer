@@ -3,22 +3,22 @@
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
-import { type ExpandedOrchestrion } from 'types';
 import Source from '../_components/ui/Source';
 import { twMerge } from 'tailwind-merge';
 import { FaLock } from 'react-icons/fa6';
-import { useOrchestrionLogic } from '@/hooks/useOrchestrionLogic';
+import { type ExpandedEmote } from 'types';
+import { useEmoteLogic } from '@/hooks/useEmoteLogic';
 
 function AddOrRemoveButton({
-  orchestrion,
+  emote,
   isOwnedByUser,
   session,
 }: {
-  orchestrion: ExpandedOrchestrion;
+  emote: ExpandedEmote;
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, removeFromUser } = useOrchestrionLogic(orchestrion);
+  const { addToUser, removeFromUser } = useEmoteLogic(emote);
 
   return isOwnedByUser ? (
     <div className="flex flex-col items-start justify-start">
@@ -52,14 +52,8 @@ function AddOrRemoveButton({
   );
 }
 
-export default function OrchestrionCard({
-  orchestrion,
-  session,
-}: {
-  orchestrion: ExpandedOrchestrion;
-  session: Session | null;
-}) {
-  const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
+export default function EmoteCard({ emote, session }: { emote: ExpandedEmote; session: Session | null }) {
+  const isOwnedByUser = emote.owners.some((o) => o.id === session?.user.id);
 
   return (
     <div
@@ -74,14 +68,21 @@ export default function OrchestrionCard({
           </span>
         </div>
       )}
-      {orchestrion.image && (
-        <Image src={orchestrion.image} alt={orchestrion.name} width={100} height={100} className="rounded-xl" />
+      {emote.image && (
+        <Image
+          unoptimized
+          src={emote.image}
+          alt={emote.name}
+          width={100}
+          height={100}
+          className="rounded-xl border border-stone-600 dark:border-stone-400"
+        />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{orchestrion.name}</h1>
+      <h1 className="line-clamp-2 text-center text-xl">{emote.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {orchestrion.sources?.map((source) => <Source key={source.id} source={source} />)}
+        {emote.sources?.map((source) => <Source key={source.id} source={source} />)}
       </div>
-      <AddOrRemoveButton orchestrion={orchestrion} isOwnedByUser={isOwnedByUser} session={session} />
+      <AddOrRemoveButton emote={emote} isOwnedByUser={isOwnedByUser} session={session} />
     </div>
   );
 }

@@ -33,6 +33,8 @@ export default function OrchestrionList({ session, initialOrchestrions }: Orches
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allOrchestrions = data?.pages.flatMap((page) => page.orchestrions) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -41,15 +43,13 @@ export default function OrchestrionList({ session, initialOrchestrions }: Orches
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.orchestrions.map((orchestrion, index) => (
-                <div key={orchestrion.id} ref={index === page.orchestrions.length - 1 ? ref : undefined}>
-                  <OrchestrionCard orchestrion={orchestrion} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            {allOrchestrions.map((orchestrion, index) => (
+              <div key={orchestrion.id} ref={index === allOrchestrions.length - 1 ? ref : undefined}>
+                <OrchestrionCard orchestrion={orchestrion} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

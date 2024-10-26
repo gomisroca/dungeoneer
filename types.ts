@@ -14,30 +14,45 @@ import {
   type Card,
   type CardStats,
   type CardSource,
+  type VariantDungeon,
+  type Hairstyle,
+  type HairstyleSource,
+  type EmoteSource,
+  type Emote,
 } from '@prisma/client';
 
 export interface ExpandedMinion extends Minion {
   owners: User[];
-  sources: MinionSource[];
+  sources?: MinionSource[];
 }
 
 export interface ExpandedMount extends Mount {
   owners: User[];
-  sources: MountSource[];
+  sources?: MountSource[];
 }
 
 export interface ExpandedOrchestrion extends Orchestrion {
   owners: User[];
-  sources: OrchestrionSource[];
+  sources?: OrchestrionSource[];
 }
 export interface ExpandedSpell extends Spell {
   owners: User[];
-  sources: SpellSource[];
+  sources?: SpellSource[];
+}
+
+export interface ExpandedEmote extends Emote {
+  owners: User[];
+  sources?: EmoteSource[];
+}
+
+export interface ExpandedHairstyle extends Hairstyle {
+  owners: User[];
+  sources?: HairstyleSource[];
 }
 export interface ExpandedCard extends Card {
   owners: User[];
   stats?: CardStats;
-  sources: CardSource[];
+  sources?: CardSource[];
 }
 export interface ExpandedDungeon extends Dungeon {
   minions: ExpandedMinion[];
@@ -45,6 +60,18 @@ export interface ExpandedDungeon extends Dungeon {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
   cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
+}
+
+export interface ExpandedVariantDungeon extends VariantDungeon {
+  minions: ExpandedMinion[];
+  mounts: ExpandedMount[];
+  orchestrions: ExpandedOrchestrion[];
+  spells: ExpandedSpell[];
+  cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
 }
 
 export interface ExpandedRaid extends Raid {
@@ -53,6 +80,8 @@ export interface ExpandedRaid extends Raid {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
   cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
 }
 
 export interface ExpandedTrial extends Trial {
@@ -61,4 +90,6 @@ export interface ExpandedTrial extends Trial {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
   cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
 }

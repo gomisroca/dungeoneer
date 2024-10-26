@@ -73,9 +73,7 @@ export default function Mountard({ mount, session }: { mount: ExpandedMount; ses
       )}
       <h1 className="line-clamp-2 text-center text-xl">{mount.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {mount.sources.map((source) => (
-          <Source key={mount.id} source={source} />
-        ))}
+        {mount.sources?.map((source) => <Source key={mount.id} source={source} />)}
       </div>
       <AddOrRemoveButton mount={mount} isOwnedByUser={isOwnedByUser} session={session} />
     </div>

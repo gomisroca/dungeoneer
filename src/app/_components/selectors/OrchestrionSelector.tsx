@@ -1,24 +1,27 @@
 'use client';
 
-import { useMinionLogic } from '@/hooks/useMinionLogic';
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedMinion } from 'types';
-import Button from './ui/Button';
+import { type ExpandedOrchestrion } from 'types';
+import Button from '../ui/Button';
 import { twMerge } from 'tailwind-merge';
+import { useOrchestrionLogic } from '@/hooks/useOrchestrionLogic';
 import { FaLock } from 'react-icons/fa6';
 
-function MinionView({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
-  const { addToUser, removeFromUser } = useMinionLogic(minion);
-  const isOwnedByUser = session?.user.minions.some((m) => m.id === minion.id);
+function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrchestrion; session: Session | null }) {
+  const { addToUser, removeFromUser } = useOrchestrionLogic(orchestrion);
+  const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button
+      onClick={isOwnedByUser ? removeFromUser : addToUser}
+      disabled={!session}
+      className="w-5/6 justify-start px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
-        {minion.image && (
+        {orchestrion.image && (
           <Image
-            src={minion.image}
-            alt={minion.name}
+            src={orchestrion.image}
+            alt={orchestrion.name}
             width={50}
             height={50}
             unoptimized
@@ -33,16 +36,16 @@ function MinionView({ minion, session }: { minion: ExpandedMinion; session: Sess
           </div>
         )}
       </div>
-      <div className="flex flex-col items-start justify-start">
+      <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
         <p
           className={twMerge(
-            'max-w-full flex-shrink overflow-hidden text-ellipsis',
+            'max-w-full flex-shrink overflow-x-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {minion.name}
+          {orchestrion.name}
         </p>
         {!session && (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 text-wrap text-start">
             <FaLock className="text-stone-400 dark:text-stone-600" />
             <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
           </div>
@@ -52,14 +55,20 @@ function MinionView({ minion, session }: { minion: ExpandedMinion; session: Sess
   );
 }
 
-function MinionSelector({ minions, session }: { minions: ExpandedMinion[]; session: Session | null }) {
+function OrchestrionSelector({
+  orchestrions,
+  session,
+}: {
+  orchestrions: ExpandedOrchestrion[];
+  session: Session | null;
+}) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {minions.map((minion) => (
-        <MinionView key={minion.id} minion={minion} session={session} />
+      {orchestrions.map((orchestrion) => (
+        <OrchestrionView key={orchestrion.id} orchestrion={orchestrion} session={session} />
       ))}
     </div>
   );
 }
 
-export default MinionSelector;
+export default OrchestrionSelector;

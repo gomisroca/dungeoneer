@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { type Raid } from '@prisma/client';
+import { type ExpandedRaid } from 'types';
 
 export const raidsRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -15,111 +15,58 @@ export const raidsRouter = createTRPCRouter({
       const limit = input.limit ?? 10;
       const { cursor } = input;
 
-      const raids: Raid[] = await ctx.db.raid.findMany({
+      const raids: ExpandedRaid[] = await ctx.db.raid.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        where: {
+          OR: [
+            { minions: { some: {} } },
+            { mounts: { some: {} } },
+            { orchestrions: { some: {} } },
+            { spells: { some: {} } },
+            { cards: { some: {} } },
+            { emotes: { some: {} } },
+            { hairstyles: { some: {} } },
+          ],
+        },
+        include: {
+          minions: {
+            include: {
+              owners: true,
+            },
+          },
+          mounts: {
+            include: {
+              owners: true,
+            },
+          },
+          orchestrions: {
+            include: {
+              owners: true,
+            },
+          },
+          spells: {
+            include: {
+              owners: true,
+            },
+          },
+          cards: {
+            include: {
+              owners: true,
+            },
+          },
+          emotes: {
+            include: {
+              owners: true,
+            },
+          },
+          hairstyles: {
+            include: {
+              owners: true,
+            },
+          },
+        },
       });
-
-      // Map over each raid to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
-      const expandedRaids = await Promise.all(
-        raids.map(async (raid) => {
-          const minions = await ctx.db.minion.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Raid',
-                  text: {
-                    contains: raid.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-          const mounts = await ctx.db.mount.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Raid',
-                  text: {
-                    contains: raid.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const orchestrions = await ctx.db.orchestrion.findMany({
-            where: {
-              sources: {
-                some: {
-                  type: 'Raid',
-                  text: {
-                    contains: raid.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const spells = await ctx.db.spell.findMany({
-            where: {
-              sources: {
-                some: {
-                  text: {
-                    contains: raid.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          const cards = await ctx.db.card.findMany({
-            where: {
-              sources: {
-                some: {
-                  text: {
-                    contains: raid.name,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            },
-            include: {
-              sources: true,
-              owners: true,
-            },
-          });
-
-          return {
-            ...raid,
-            minions,
-            mounts,
-            orchestrions,
-            spells,
-            cards,
-          };
-        })
-      );
 
       let nextCursor: typeof cursor | undefined = undefined;
 
@@ -129,7 +76,7 @@ export const raidsRouter = createTRPCRouter({
       }
 
       return {
-        raids: expandedRaids.slice(0, limit),
+        raids: raids.slice(0, limit),
         nextCursor,
       };
     }),
@@ -145,65 +92,49 @@ export const raidsRouter = createTRPCRouter({
         where: {
           id: input.id,
         },
+        include: {
+          minions: {
+            include: {
+              owners: true,
+            },
+          },
+          mounts: {
+            include: {
+              owners: true,
+            },
+          },
+          orchestrions: {
+            include: {
+              owners: true,
+            },
+          },
+          spells: {
+            include: {
+              owners: true,
+            },
+          },
+          cards: {
+            include: {
+              owners: true,
+            },
+          },
+          emotes: {
+            include: {
+              owners: true,
+            },
+          },
+          hairstyles: {
+            include: {
+              owners: true,
+            },
+          },
+        },
       });
 
       if (!raid) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }
 
-      const minions = await ctx.db.minion.findMany({
-        where: {
-          sources: {
-            some: {
-              type: 'Raid',
-              text: {
-                endsWith: raid.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-
-      const mounts = await ctx.db.mount.findMany({
-        where: {
-          sources: {
-            some: {
-              type: 'Raid',
-              text: {
-                endsWith: raid.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-
-      const orchestrions = await ctx.db.orchestrion.findMany({
-        where: {
-          sources: {
-            some: {
-              text: {
-                contains: raid.name,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        include: {
-          sources: true,
-          owners: true,
-        },
-      });
-
-      return { ...raid, minions, mounts, orchestrions };
+      return raid;
     }),
 });

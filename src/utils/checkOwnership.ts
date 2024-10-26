@@ -10,8 +10,19 @@ export default function checkOwnership(
   const allOrchsOwned = instance.orchestrions.every((orch) => orch.owners.some((o) => o.id === session?.user.id));
   const allSpellsOwned = instance.spells.every((spell) => spell.owners.some((o) => o.id === session?.user.id));
   const allCardsOwned = instance.cards.every((card) => card.owners.some((o) => o.id === session?.user.id));
+  const allEmotesOwned = instance.emotes.every((emote) => emote.owners.some((o) => o.id === session?.user.id));
+  const allHairstylesOwned = instance.hairstyles.every((hairstyle) =>
+    hairstyle.owners.some((o) => o.id === session?.user.id)
+  );
 
-  const allOwned = allMinionsOwned && allMountsOwned && allOrchsOwned && allSpellsOwned && allCardsOwned;
+  const allOwned =
+    allMinionsOwned &&
+    allMountsOwned &&
+    allOrchsOwned &&
+    allSpellsOwned &&
+    allCardsOwned &&
+    allEmotesOwned &&
+    allHairstylesOwned;
 
   return allOwned;
 }

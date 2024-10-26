@@ -33,6 +33,8 @@ export default function MountList({ session, initialMounts }: MountListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allMounts = data?.pages.flatMap((page) => page.mounts) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -41,15 +43,13 @@ export default function MountList({ session, initialMounts }: MountListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.mounts.map((mount, index) => (
-                <div key={mount.id} ref={index === page.mounts.length - 1 ? ref : undefined}>
-                  <MountCard mount={mount} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            {allMounts.map((mount, index) => (
+              <div key={mount.id} ref={index === allMounts.length - 1 ? ref : undefined}>
+                <MountCard mount={mount} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

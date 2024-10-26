@@ -6,13 +6,15 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import Image from 'next/image';
 import { type ExpandedTrial } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/MinionSelector';
-import MountSelector from '../_components/MountSelector';
-import OrchestrionSelector from '../_components/OrchestrionSelector';
+import MinionSelector from '../_components/selectors/MinionSelector';
+import MountSelector from '../_components/selectors/MountSelector';
+import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/SpellSelector';
-import CardSelector from '../_components/CardSelector';
+import SpellSelector from '../_components/selectors/SpellSelector';
+import CardSelector from '../_components/selectors/CardSelector';
+import EmoteSelector from '../_components/selectors/EmoteSelector';
+import HairstyleSelector from '../_components/selectors/HairstyleSelector';
 
 function TrialCard({ trial, session }: { trial: ExpandedTrial; session: Session | null }) {
   const allOwned = checkOwnership(trial, session);
@@ -40,12 +42,14 @@ function TrialCard({ trial, session }: { trial: ExpandedTrial; session: Session 
         />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{trial.name[0]?.toUpperCase() + trial.name.slice(1)}</h1>
-      <div className="flex flex-col gap-2">
+      <div className="flex w-full flex-col gap-2">
         {trial.minions.length > 0 && <MinionSelector minions={trial.minions} session={session} />}
         {trial.mounts.length > 0 && <MountSelector mounts={trial.mounts} session={session} />}
         {trial.orchestrions.length > 0 && <OrchestrionSelector orchestrions={trial.orchestrions} session={session} />}
         {trial.spells.length > 0 && <SpellSelector spells={trial.spells} session={session} />}
         {trial.cards.length > 0 && <CardSelector cards={trial.cards} session={session} />}
+        {trial.emotes.length > 0 && <EmoteSelector emotes={trial.emotes} session={session} />}
+        {trial.hairstyles.length > 0 && <HairstyleSelector hairstyles={trial.hairstyles} session={session} />}
       </div>
     </div>
   );
@@ -78,6 +82,8 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allTrials = data?.pages.flatMap((page) => page.trials) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -86,15 +92,13 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching trials</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
-              {page.trials.map((trial, index) => (
-                <div key={trial.id} ref={index === page.trials.length - 1 ? ref : undefined}>
-                  <TrialCard trial={trial} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {allTrials.map((trial, index) => (
+              <div key={trial.id} ref={index === allTrials.length - 1 ? ref : undefined}>
+                <TrialCard trial={trial} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...

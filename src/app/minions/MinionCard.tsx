@@ -73,9 +73,7 @@ export default function MinionCard({ minion, session }: { minion: ExpandedMinion
       )}
       <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {minion.sources.map((source) => (
-          <Source key={source.id} source={source} />
-        ))}
+        {minion.sources?.map((source) => <Source key={source.id} source={source} />)}
       </div>
       <AddOrRemoveButton minion={minion} isOwnedByUser={isOwnedByUser} session={session} />
     </div>

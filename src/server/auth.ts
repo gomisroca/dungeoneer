@@ -5,7 +5,15 @@ import DiscordProvider from 'next-auth/providers/discord';
 
 import { env } from '@/env';
 import { db } from '@/server/db';
-import { type Card, type Mount, type Orchestrion, type Spell, type Minion } from '@prisma/client';
+import {
+  type Card,
+  type Mount,
+  type Orchestrion,
+  type Spell,
+  type Minion,
+  type Emote,
+  type Hairstyle,
+} from '@prisma/client';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -22,6 +30,8 @@ declare module 'next-auth' {
       orchestrions: Orchestrion[];
       spells: Spell[];
       cards: Card[];
+      emotes: Emote[];
+      hairstyles: Hairstyle[];
     } & DefaultSession['user'];
   }
 
@@ -31,6 +41,8 @@ declare module 'next-auth' {
     orchestrions: Orchestrion[];
     spells: Spell[];
     cards: Card[];
+    emotes: Emote[];
+    hairstyles: Hairstyle[];
   }
 }
 
@@ -52,6 +64,8 @@ export const authOptions: NextAuthOptions = {
           orchestrions: true,
           spells: true,
           cards: true,
+          emotes: true,
+          hairstyles: true,
         },
       });
 
@@ -65,6 +79,8 @@ export const authOptions: NextAuthOptions = {
           orchestrions: dbUser?.orchestrions ?? [],
           spells: dbUser?.spells ?? [],
           cards: dbUser?.cards ?? [],
+          emotes: dbUser?.emotes ?? [],
+          hairstyles: dbUser?.hairstyles ?? [],
         },
       };
     },

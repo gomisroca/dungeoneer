@@ -2,23 +2,26 @@
 
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedOrchestrion } from 'types';
-import Button from './ui/Button';
+import { type ExpandedEmote } from 'types';
+import Button from '../ui/Button';
 import { twMerge } from 'tailwind-merge';
-import { useOrchestrionLogic } from '@/hooks/useOrchestrionLogic';
 import { FaLock } from 'react-icons/fa6';
+import { useEmoteLogic } from '@/hooks/useEmoteLogic';
 
-function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrchestrion; session: Session | null }) {
-  const { addToUser, removeFromUser } = useOrchestrionLogic(orchestrion);
-  const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
+function EmoteView({ emote, session }: { emote: ExpandedEmote; session: Session | null }) {
+  const { addToUser, removeFromUser } = useEmoteLogic(emote);
+  const isOwnedByUser = session?.user.emotes.some((m) => m.id === emote.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button
+      onClick={isOwnedByUser ? removeFromUser : addToUser}
+      disabled={!session}
+      className="w-5/6 justify-start px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
-        {orchestrion.image && (
+        {emote.image && (
           <Image
-            src={orchestrion.image}
-            alt={orchestrion.name}
+            src={emote.image}
+            alt={emote.name}
             width={50}
             height={50}
             unoptimized
@@ -33,16 +36,16 @@ function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrches
           </div>
         )}
       </div>
-      <div className="flex flex-col items-start justify-start">
+      <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
         <p
           className={twMerge(
-            'max-w-full flex-shrink overflow-hidden text-ellipsis',
+            'max-w-full flex-shrink overflow-x-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {orchestrion.name}
+          {emote.name}
         </p>
         {!session && (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 text-wrap text-start">
             <FaLock className="text-stone-400 dark:text-stone-600" />
             <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
           </div>
@@ -52,20 +55,14 @@ function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrches
   );
 }
 
-function OrchestrionSelector({
-  orchestrions,
-  session,
-}: {
-  orchestrions: ExpandedOrchestrion[];
-  session: Session | null;
-}) {
+function EmoteSelector({ emotes, session }: { emotes: ExpandedEmote[]; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {orchestrions.map((orchestrion) => (
-        <OrchestrionView key={orchestrion.id} orchestrion={orchestrion} session={session} />
+      {emotes.map((emote) => (
+        <EmoteView key={emote.id} emote={emote} session={session} />
       ))}
     </div>
   );
 }
 
-export default OrchestrionSelector;
+export default EmoteSelector;

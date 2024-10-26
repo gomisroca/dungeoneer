@@ -1,24 +1,27 @@
 'use client';
 
+import { useMinionLogic } from '@/hooks/useMinionLogic';
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedMount } from 'types';
-import Button from './ui/Button';
+import { type ExpandedMinion } from 'types';
+import Button from '../ui/Button';
 import { twMerge } from 'tailwind-merge';
-import { useMountLogic } from '@/hooks/useMountLogic';
 import { FaLock } from 'react-icons/fa6';
 
-function MountView({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const { addToUser, removeFromUser } = useMountLogic(mount);
-  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
+function MinionView({ minion, session }: { minion: ExpandedMinion; session: Session | null }) {
+  const { addToUser, removeFromUser } = useMinionLogic(minion);
+  const isOwnedByUser = session?.user.minions.some((m) => m.id === minion.id);
 
   return (
-    <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
+    <Button
+      onClick={isOwnedByUser ? removeFromUser : addToUser}
+      disabled={!session}
+      className="w-5/6 justify-start px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
-        {mount.image && (
+        {minion.image && (
           <Image
-            src={mount.image}
-            alt={mount.name}
+            src={minion.image}
+            alt={minion.name}
             width={50}
             height={50}
             unoptimized
@@ -33,16 +36,16 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
           </div>
         )}
       </div>
-      <div className="flex flex-col items-start justify-start">
+      <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
         <p
           className={twMerge(
-            'max-w-full flex-shrink overflow-hidden text-ellipsis',
+            'max-w-full flex-shrink overflow-x-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {mount.name}
+          {minion.name}
         </p>
         {!session && (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 text-wrap text-start">
             <FaLock className="text-stone-400 dark:text-stone-600" />
             <p className="m-auto text-sm text-stone-400 dark:text-stone-600">Log in to add to your collection.</p>
           </div>
@@ -52,14 +55,14 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
   );
 }
 
-function MountSelector({ mounts, session }: { mounts: ExpandedMount[]; session: Session | null }) {
+function MinionSelector({ minions, session }: { minions: ExpandedMinion[]; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {mounts.map((mount) => (
-        <MountView key={mount.id} mount={mount} session={session} />
+      {minions.map((minion) => (
+        <MinionView key={minion.id} minion={minion} session={session} />
       ))}
     </div>
   );
 }
 
-export default MountSelector;
+export default MinionSelector;

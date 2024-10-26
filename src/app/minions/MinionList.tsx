@@ -33,6 +33,8 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const allMinions = data?.pages.flatMap((page) => page.minions) ?? [];
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -41,15 +43,13 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
-          {data?.pages.map((page, i) => (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.minions.map((minion, index) => (
-                <div key={minion.id} ref={index === page.minions.length - 1 ? ref : undefined}>
-                  <MinionCard minion={minion} session={session} />
-                </div>
-              ))}
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            {allMinions.map((minion, index) => (
+              <div key={minion.id} ref={index === allMinions.length - 1 ? ref : undefined}>
+                <MinionCard minion={minion} session={session} />
+              </div>
+            ))}
+          </div>
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...
