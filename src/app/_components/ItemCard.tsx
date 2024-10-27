@@ -68,7 +68,7 @@ export default function ItemCard({ item, type, session }: ItemCardProps) {
           )}
         />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{item.name}</h1>
+      <h1 className="line-clamp-2 text-center text-lg">{item.name}</h1>
       {item.sources && (
         <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
           {item.sources.map((source) => (

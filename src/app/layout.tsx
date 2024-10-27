@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
 
-import { Work_Sans } from 'next/font/google';
+import { Raleway } from 'next/font/google';
 import { type Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -16,14 +16,14 @@ export const metadata: Metadata = {
   icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
-const worksans = Work_Sans({
+const raleway = Raleway({
   subsets: ['latin'],
   weight: ['400', '600'], // Add specific weights if needed
 });
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={worksans.className}>
+    <html lang="en" className={raleway.className}>
       <body>
         <ThemeProvider attribute="class">
           <TRPCReactProvider>

@@ -13,7 +13,9 @@ export default function InstanceCard({
   session: Session | null;
 }) {
   const allOwned = checkOwnership(instance, session);
-  const [title, subtitle] = instance.name.split(/[-:(]/).map((part) => part.trim());
+  // subtitles has to be an array
+  const [title, ...subtitles] = instance.name.split(/[-:(]/);
+
   return (
     <div
       className={twMerge(
@@ -38,8 +40,17 @@ export default function InstanceCard({
         />
       )}
       <div className="flex flex-col items-center justify-center gap-1">
-        {title && <h1 className="line-clamp-2 text-center text-xl">{title[0]!.toUpperCase() + title.slice(1)}</h1>}
-        {subtitle && <p className="text-center">{subtitle.split(/[)]/)[0]}</p>}
+        {title && <h1 className="line-clamp-2 text-center text-lg">{title[0]!.toUpperCase() + title.slice(1)}</h1>}
+
+        {subtitles && (
+          <div className="flex flex-row items-center justify-center gap-1">
+            {subtitles.map((sub, i) => (
+              <p key={i} className="text-center">
+                {sub.split(')')[0]}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex w-full flex-col gap-2">
         {instance.minions.length > 0 && <ItemSelector items={instance.minions} type="minions" session={session} />}
