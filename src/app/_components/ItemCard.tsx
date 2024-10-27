@@ -45,7 +45,7 @@ export default function ItemCard({ item, type, session }: ItemCardProps) {
   return (
     <div
       className={twMerge(
-        'relative flex h-full flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-zinc-200 bg-zinc-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-zinc-800 dark:bg-zinc-700',
+        'relative flex h-full flex-col items-center justify-start gap-y-4 rounded-xl border-4 border-zinc-200 bg-zinc-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-zinc-800 dark:bg-zinc-700',
         owned && 'opacity-50 hover:opacity-100'
       )}>
       {owned && (
