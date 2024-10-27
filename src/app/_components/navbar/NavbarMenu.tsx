@@ -39,6 +39,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
       <div className="flex flex-col items-center justify-center gap-2">
         <StyledLink href="/dungeons" className="group p-1">
           <Image
+            unoptimized
             src="/sources/Dungeon.png"
             alt="Dungeon"
             width={50}
@@ -48,6 +49,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </StyledLink>
         <StyledLink href="/raids" className="group p-1">
           <Image
+            unoptimized
             src="/sources/Raid.png"
             alt="Raid"
             width={50}
@@ -57,6 +59,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </StyledLink>
         <StyledLink href="/trials" className="group p-1">
           <Image
+            unoptimized
             src="/sources/Trial.png"
             alt="Trial"
             width={50}
@@ -66,6 +69,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </StyledLink>
         <StyledLink href="/variants" className="group p-1">
           <Image
+            unoptimized
             src="/sources/V&C Dungeon.png"
             alt="V&C Dungeon"
             width={50}
