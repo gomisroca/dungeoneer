@@ -35,6 +35,7 @@ function Source({ source }: { source: MinionSource | MountSource | OrchestrionSo
             className='cursor-default'
           >
             <Image
+            unoptimized
               src={`/sources/${source.type}.png`}
               alt={source.type}
               width={50}
