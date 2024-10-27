@@ -14,7 +14,7 @@ interface DungeonListProps {
 export default function DungeonList({ initialDungeons, session }: DungeonListProps) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.dungeons.getAll.useInfiniteQuery(
     {
-      limit: 20,
+      limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
