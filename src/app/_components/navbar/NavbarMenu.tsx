@@ -78,7 +78,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
           />
         </StyledLink>
         <button
-          className="flex h-[35px] w-[35px] flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-0 font-semibold backdrop-blur-md transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-stone-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-stone-100 dark:active:bg-cyan-700 md:h-full md:w-full md:p-4"
+          className="flex h-[35px] w-[35px] flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-0 font-semibold backdrop-blur-md transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700 md:h-full md:w-full md:p-4"
           onMouseEnter={() => setIsExpanded(true)}
           onMouseLeave={() => setIsExpanded(false)}
           onClick={toggleMenu}
@@ -113,7 +113,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         <StyledLink href="/hairstyles" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
           <FaScissors size={20} />
         </StyledLink>
-        <Separator className="bg-stone-800 dark:bg-stone-200" />
+        <Separator className="bg-zinc-800 dark:bg-zinc-200" />
         {session ? <SignOutButton /> : <SignInButton />}
         <ThemeButton />
       </div>

@@ -29,12 +29,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <TRPCReactProvider>
             <div
               style={{ backgroundImage: "url('/bg.jpg')" }}
-              className="min-h-screen bg-cover bg-fixed bg-center bg-no-repeat text-stone-800 dark:text-stone-200">
+              className="min-h-screen bg-cover bg-fixed bg-center bg-no-repeat text-zinc-800 dark:text-zinc-200">
               <Navbar />
               <MessagePopup />
               <main
                 role="main"
-                className="flex min-h-screen items-center justify-center overflow-x-hidden bg-gradient-to-br from-stone-50 via-stone-200/90 to-stone-800/40 px-4 pb-10 pt-20 dark:from-stone-950 dark:via-stone-900/95 dark:to-stone-900/60 xl:px-32">
+                className="flex min-h-screen items-center justify-center overflow-x-hidden bg-gradient-to-br from-zinc-50 via-zinc-200/90 to-zinc-800/40 px-4 pb-10 pt-20 dark:from-zinc-950 dark:via-zinc-900/95 dark:to-zinc-900/60 xl:px-32">
                 {children}
               </main>
             </div>
