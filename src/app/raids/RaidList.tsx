@@ -5,11 +5,8 @@ import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '../_components/InstanceCard';
-import Button from '../_components/ui/Button';
-import { FaFilter } from 'react-icons/fa6';
-import { type ExpandedRaid } from 'types';
-import checkOwnership from '@/utils/checkOwnership';
-import { twMerge } from 'tailwind-merge';
+import { useFilter } from '@/hooks/useFilter';
+import InstanceFilter from '../_components/InstanceFilter';
 
 type RaidListOutput = RouterOutputs['raids']['getAll'];
 interface RaidListProps {
@@ -17,9 +14,6 @@ interface RaidListProps {
   session: Session | null;
 }
 export default function RaidList({ initialRaids, session }: RaidListProps) {
-  const [showFilter, setShowFilter] = useState(false);
-  const [filter, setFilter] = useState('all');
-  const [filteredRaids, setFilteredRaids] = useState<ExpandedRaid[]>([]);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.raids.getAll.useInfiniteQuery(
     {
       limit: 20,
@@ -29,6 +23,11 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
       initialData: { pages: [initialRaids], pageParams: [undefined] },
     }
   );
+
+  const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
+
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredRaids = useFilter(allRaids, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -41,20 +40,6 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
-
-  useEffect(() => {
-    if (filter === 'all') {
-      setFilteredRaids(allRaids);
-    }
-    if (filter === 'owned') {
-      setFilteredRaids(allRaids.filter((dungeon) => checkOwnership(dungeon, session)));
-    }
-    if (filter === 'unowned') {
-      setFilteredRaids(allRaids.filter((dungeon) => !checkOwnership(dungeon, session)));
-    }
-  }, [filter, allRaids, session]);
-
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -63,34 +48,7 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
-          {session && (
-            <div className="fixed right-12 top-0 z-20 flex flex-col items-end justify-end gap-2 p-4 md:right-20">
-              <Button
-                onClick={() => setShowFilter(!showFilter)}
-                className="h-[35px] w-[35px] p-2 md:h-full md:w-full md:p-4">
-                <FaFilter size={20} />
-              </Button>
-              {showFilter && (
-                <div className="flex flex-col gap-2">
-                  <Button
-                    onClick={() => setFilter('all')}
-                    className={twMerge('w-28 p-2 md:p-4', filter === 'all' && 'bg-cyan-400 dark:bg-cyan-600')}>
-                    All
-                  </Button>
-                  <Button
-                    onClick={() => setFilter('owned')}
-                    className={twMerge('w-28 p-2 md:p-4', filter === 'owned' && 'bg-cyan-400 dark:bg-cyan-600')}>
-                    Owned
-                  </Button>
-                  <Button
-                    onClick={() => setFilter('unowned')}
-                    className={twMerge('w-28 p-2 md:p-4', filter === 'unowned' && 'bg-cyan-400 dark:bg-cyan-600')}>
-                    Unowned
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
+          {session && <InstanceFilter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredRaids.map((raid, index) => (
               <div key={raid.id} ref={index === filteredRaids.length - 1 ? ref : undefined}>
