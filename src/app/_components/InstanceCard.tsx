@@ -13,6 +13,7 @@ export default function InstanceCard({
   session: Session | null;
 }) {
   const allOwned = checkOwnership(instance, session);
+  const [title, subtitle] = instance.name.split(/[-:(]/).map((part) => part.trim());
   return (
     <div
       className={twMerge(
@@ -36,7 +37,10 @@ export default function InstanceCard({
           unoptimized
         />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{instance.name[0]?.toUpperCase() + instance.name.slice(1)}</h1>
+      <div className="flex flex-col items-center justify-center gap-1">
+        {title && <h1 className="line-clamp-2 text-center text-xl">{title[0]!.toUpperCase() + title.slice(1)}</h1>}
+        {subtitle && <p className="text-center">{subtitle.split(/[)]/)[0]}</p>}
+      </div>
       <div className="flex w-full flex-col gap-2">
         {instance.minions.length > 0 && <ItemSelector items={instance.minions} type="minions" session={session} />}
         {instance.mounts.length > 0 && <ItemSelector items={instance.mounts} type="mounts" session={session} />}
