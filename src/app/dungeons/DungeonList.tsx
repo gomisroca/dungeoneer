@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
@@ -14,7 +14,7 @@ interface DungeonListProps {
 export default function DungeonList({ initialDungeons, session }: DungeonListProps) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.dungeons.getAll.useInfiniteQuery(
     {
-      limit: 20,
+      limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -22,7 +22,7 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
     }
   );
 
-  const allDungeons = data?.pages.flatMap((page) => page.dungeons) ?? [];
+  const allDungeons = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
 
   const { ref, entry } = useIntersection({
     root: null,
