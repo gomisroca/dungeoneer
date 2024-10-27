@@ -46,17 +46,13 @@ function ItemView({ item, type, session }: ItemViewProps) {
         )}
       </div>
       <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
-        <p
-          className={twMerge(
-            'max-w-full flex-shrink overflow-x-hidden text-ellipsis',
-            owned && 'text-muted-foreground'
-          )}>
+        <p className={twMerge('max-w-full flex-shrink overflow-x-hidden text-ellipsis', owned && 'text-neutral-500')}>
           {item.name}
         </p>
         {!session && (
           <div className="flex items-center justify-center gap-2 text-wrap text-start">
-            <FaLock className="text-muted-foreground" />
-            <p className="text-muted-foreground m-auto text-sm">Log in to add to your collection.</p>
+            <FaLock className="text-neutral-500" />
+            <p className="m-auto text-sm text-neutral-500">Log in to add to your collection.</p>
           </div>
         )}
       </div>
