@@ -22,7 +22,7 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
     }
   );
 
-  const allDungeons = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
+  const allDungeons = data?.pages.flatMap((page) => page.dungeons) ?? [];
 
   const { ref, entry } = useIntersection({
     root: null,
