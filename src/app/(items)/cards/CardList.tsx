@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import ItemCard from '../_components/ItemCard';
+import ItemCard from '@/app/_components/ItemCard';
 
-type EmoteListOutput = RouterOutputs['emotes']['getAll'];
-interface EmoteListProps {
+type CardListOutput = RouterOutputs['cards']['getAll'];
+interface CardListProps {
   session: Session | null;
-  initialEmotes: EmoteListOutput;
+  initialCards: CardListOutput;
 }
-export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.emotes.getAll.useInfiniteQuery(
+export default function CardList({ session, initialCards }: CardListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.cards.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialEmotes], pageParams: [undefined] },
+      initialData: { pages: [initialCards], pageParams: [undefined] },
     }
   );
 
@@ -33,7 +33,7 @@ export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allEmotes = data?.pages.flatMap((page) => page.emotes) ?? [];
+  const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
 
   return (
     <div className="flex flex-col space-y-4">
@@ -44,9 +44,9 @@ export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allEmotes.map((emote, index) => (
-              <div key={emote.id} ref={index === allEmotes.length - 1 ? ref : undefined}>
-                <ItemCard item={emote} type="emotes" session={session} />
+            {allCards.map((card, index) => (
+              <div key={card.id} ref={index === allCards.length - 1 ? ref : undefined}>
+                <ItemCard item={card} type="cards" session={session} />
               </div>
             ))}
           </div>

@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import ItemCard from '../_components/ItemCard';
+import ItemCard from '@/app/_components/ItemCard';
 
-type MountListOutput = RouterOutputs['mounts']['getAll'];
-interface MountListProps {
+type SpellListOutput = RouterOutputs['spells']['getAll'];
+interface SpellListProps {
   session: Session | null;
-  initialMounts: MountListOutput;
+  initialSpells: SpellListOutput;
 }
-export default function MountList({ session, initialMounts }: MountListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.mounts.getAll.useInfiniteQuery(
+export default function SpellList({ session, initialSpells }: SpellListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.spells.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialMounts], pageParams: [undefined] },
+      initialData: { pages: [initialSpells], pageParams: [undefined] },
     }
   );
 
@@ -33,20 +33,20 @@ export default function MountList({ session, initialMounts }: MountListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allMounts = data?.pages.flatMap((page) => page.mounts) ?? [];
+  const allSpells = data?.pages.flatMap((page) => page.spells) ?? [];
 
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allMounts.map((mount, index) => (
-              <div key={mount.id} ref={index === allMounts.length - 1 ? ref : undefined}>
-                <ItemCard item={mount} type="mounts" session={session} />
+            {allSpells.map((spell, index) => (
+              <div key={spell.id} ref={index === allSpells.length - 1 ? ref : undefined}>
+                <ItemCard item={spell} type="spells" session={session} />
               </div>
             ))}
           </div>

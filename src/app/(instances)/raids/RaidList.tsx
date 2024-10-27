@@ -4,25 +4,25 @@ import { useEffect, useMemo } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import InstanceCard from '../_components/InstanceCard';
+import InstanceCard from '@/app/_components/InstanceCard';
 
-type DungeonListOutput = RouterOutputs['dungeons']['getAll'];
-interface DungeonListProps {
-  initialDungeons: DungeonListOutput;
+type RaidListOutput = RouterOutputs['raids']['getAll'];
+interface RaidListProps {
+  initialRaids: RaidListOutput;
   session: Session | null;
 }
-export default function DungeonList({ initialDungeons, session }: DungeonListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.dungeons.getAll.useInfiniteQuery(
+export default function RaidList({ initialRaids, session }: RaidListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.raids.getAll.useInfiniteQuery(
     {
-      limit: 10,
+      limit: 20,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialDungeons], pageParams: [undefined] },
+      initialData: { pages: [initialRaids], pageParams: [undefined] },
     }
   );
 
-  const allDungeons = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
+  const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -36,17 +36,17 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
-    <div className="relative flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allDungeons.map((dungeon, index) => (
-              <div key={dungeon.id} ref={index === allDungeons.length - 1 ? ref : undefined}>
-                <InstanceCard instance={dungeon} session={session} />
+            {allRaids.map((raid, index) => (
+              <div key={raid.id} ref={index === allRaids.length - 1 ? ref : undefined}>
+                <InstanceCard instance={raid} session={session} />
               </div>
             ))}
           </div>

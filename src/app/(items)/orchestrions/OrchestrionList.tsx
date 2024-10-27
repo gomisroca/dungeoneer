@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import ItemCard from '../_components/ItemCard';
+import ItemCard from '@/app/_components/ItemCard';
 
-type SpellListOutput = RouterOutputs['spells']['getAll'];
-interface SpellListProps {
+type OrchestrionListOutput = RouterOutputs['orchestrions']['getAll'];
+interface OrchestrionListProps {
   session: Session | null;
-  initialSpells: SpellListOutput;
+  initialOrchestrions: OrchestrionListOutput;
 }
-export default function SpellList({ session, initialSpells }: SpellListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.spells.getAll.useInfiniteQuery(
+export default function OrchestrionList({ session, initialOrchestrions }: OrchestrionListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.orchestrions.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialSpells], pageParams: [undefined] },
+      initialData: { pages: [initialOrchestrions], pageParams: [undefined] },
     }
   );
 
@@ -33,7 +33,7 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allSpells = data?.pages.flatMap((page) => page.spells) ?? [];
+  const allOrchestrions = data?.pages.flatMap((page) => page.orchestrions) ?? [];
 
   return (
     <div className="flex flex-col space-y-4">
@@ -44,9 +44,9 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allSpells.map((spell, index) => (
-              <div key={spell.id} ref={index === allSpells.length - 1 ? ref : undefined}>
-                <ItemCard item={spell} type="spells" session={session} />
+            {allOrchestrions.map((orchestrion, index) => (
+              <div key={orchestrion.id} ref={index === allOrchestrions.length - 1 ? ref : undefined}>
+                <ItemCard item={orchestrion} type="orchestrions" session={session} />
               </div>
             ))}
           </div>

@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import ItemCard from '../_components/ItemCard';
+import ItemCard from '@/app/_components/ItemCard';
 
-type CardListOutput = RouterOutputs['cards']['getAll'];
-interface CardListProps {
+type MountListOutput = RouterOutputs['mounts']['getAll'];
+interface MountListProps {
   session: Session | null;
-  initialCards: CardListOutput;
+  initialMounts: MountListOutput;
 }
-export default function CardList({ session, initialCards }: CardListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.cards.getAll.useInfiniteQuery(
+export default function MountList({ session, initialMounts }: MountListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.mounts.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialCards], pageParams: [undefined] },
+      initialData: { pages: [initialMounts], pageParams: [undefined] },
     }
   );
 
@@ -33,20 +33,20 @@ export default function CardList({ session, initialCards }: CardListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
+  const allMounts = data?.pages.flatMap((page) => page.mounts) ?? [];
 
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allCards.map((card, index) => (
-              <div key={card.id} ref={index === allCards.length - 1 ? ref : undefined}>
-                <ItemCard item={card} type="cards" session={session} />
+            {allMounts.map((mount, index) => (
+              <div key={mount.id} ref={index === allMounts.length - 1 ? ref : undefined}>
+                <ItemCard item={mount} type="mounts" session={session} />
               </div>
             ))}
           </div>

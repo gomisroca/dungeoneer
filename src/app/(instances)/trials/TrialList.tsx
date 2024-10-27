@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import InstanceCard from '../_components/InstanceCard';
+import InstanceCard from '@/app/_components/InstanceCard';
 
 type TrialListtOutput = RouterOutputs['trials']['getAll'];
 interface TrialListtProps {

@@ -4,25 +4,25 @@ import { useEffect, useMemo } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import InstanceCard from '../_components/InstanceCard';
+import InstanceCard from '@/app/_components/InstanceCard';
 
-type RaidListOutput = RouterOutputs['raids']['getAll'];
-interface RaidListProps {
-  initialRaids: RaidListOutput;
+type VariantDungeonListOutput = RouterOutputs['variants']['getAll'];
+interface VariantDungeonListProps {
+  initialDungeons: VariantDungeonListOutput;
   session: Session | null;
 }
-export default function RaidList({ initialRaids, session }: RaidListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.raids.getAll.useInfiniteQuery(
+export default function VariantDungeonList({ initialDungeons, session }: VariantDungeonListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.variants.getAll.useInfiniteQuery(
     {
       limit: 20,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialRaids], pageParams: [undefined] },
+      initialData: { pages: [initialDungeons], pageParams: [undefined] },
     }
   );
 
-  const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
+  const allVariants = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -40,13 +40,13 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allRaids.map((raid, index) => (
-              <div key={raid.id} ref={index === allRaids.length - 1 ? ref : undefined}>
-                <InstanceCard instance={raid} session={session} />
+            {allVariants.map((dungeon, index) => (
+              <div key={dungeon.id} ref={index === allVariants.length - 1 ? ref : undefined}>
+                <InstanceCard instance={dungeon} session={session} />
               </div>
             ))}
           </div>

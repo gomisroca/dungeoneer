@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import ItemCard from '../_components/ItemCard';
+import ItemCard from '@/app/_components/ItemCard';
 
-type OrchestrionListOutput = RouterOutputs['orchestrions']['getAll'];
-interface OrchestrionListProps {
+type EmoteListOutput = RouterOutputs['emotes']['getAll'];
+interface EmoteListProps {
   session: Session | null;
-  initialOrchestrions: OrchestrionListOutput;
+  initialEmotes: EmoteListOutput;
 }
-export default function OrchestrionList({ session, initialOrchestrions }: OrchestrionListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.orchestrions.getAll.useInfiniteQuery(
+export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.emotes.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialOrchestrions], pageParams: [undefined] },
+      initialData: { pages: [initialEmotes], pageParams: [undefined] },
     }
   );
 
@@ -33,7 +33,7 @@ export default function OrchestrionList({ session, initialOrchestrions }: Orches
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allOrchestrions = data?.pages.flatMap((page) => page.orchestrions) ?? [];
+  const allEmotes = data?.pages.flatMap((page) => page.emotes) ?? [];
 
   return (
     <div className="flex flex-col space-y-4">
@@ -44,9 +44,9 @@ export default function OrchestrionList({ session, initialOrchestrions }: Orches
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allOrchestrions.map((orchestrion, index) => (
-              <div key={orchestrion.id} ref={index === allOrchestrions.length - 1 ? ref : undefined}>
-                <ItemCard item={orchestrion} type="orchestrions" session={session} />
+            {allEmotes.map((emote, index) => (
+              <div key={emote.id} ref={index === allEmotes.length - 1 ? ref : undefined}>
+                <ItemCard item={emote} type="emotes" session={session} />
               </div>
             ))}
           </div>
