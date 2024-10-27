@@ -27,14 +27,7 @@ export default function InstanceCard({
         </div>
       )}
       {instance.image && (
-        <Image
-          unoptimized
-          src={instance.image}
-          alt={instance.name}
-          width={300}
-          height={100}
-          className="w-full object-cover"
-        />
+        <Image src={instance.image} alt={instance.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{instance.name[0]?.toUpperCase() + instance.name.slice(1)}</h1>
       <div className="flex w-full flex-col gap-2">
