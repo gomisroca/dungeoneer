@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
+import InstanceFilter from '@/app/_components/InstanceFilter';
+import { useFilter } from '@/hooks/useFilter';
 
 type RaidListOutput = RouterOutputs['raids']['getAll'];
 interface RaidListProps {
@@ -23,6 +25,9 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
   );
 
   const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
+
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredRaids = useFilter(allRaids, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -43,9 +48,10 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
+          {session && <InstanceFilter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allRaids.map((raid, index) => (
-              <div key={raid.id} ref={index === allRaids.length - 1 ? ref : undefined}>
+            {filteredRaids.map((raid, index) => (
+              <div key={raid.id} ref={index === filteredRaids.length - 1 ? ref : undefined}>
                 <InstanceCard instance={raid} session={session} />
               </div>
             ))}

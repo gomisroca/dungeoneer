@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
+import { useFilter } from '@/hooks/useFilter';
+import InstanceFilter from '@/app/_components/InstanceFilter';
 
 type TrialListtOutput = RouterOutputs['trials']['getAll'];
 interface TrialListtProps {
@@ -23,6 +25,9 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
   );
 
   const allTrials = useMemo(() => data?.pages.flatMap((page) => page.trials) ?? [], [data]);
+
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredTrials = useFilter(allTrials, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -43,9 +48,10 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching trials</h1>
       ) : (
         <>
+          {session && <InstanceFilter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allTrials.map((trial, index) => (
-              <div key={trial.id} ref={index === allTrials.length - 1 ? ref : undefined}>
+            {filteredTrials.map((trial, index) => (
+              <div key={trial.id} ref={index === filteredTrials.length - 1 ? ref : undefined}>
                 <InstanceCard instance={trial} session={session} />
               </div>
             ))}
