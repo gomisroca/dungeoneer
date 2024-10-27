@@ -13,10 +13,11 @@ export default function InstanceCard({
   session: Session | null;
 }) {
   const allOwned = checkOwnership(instance, session);
+  const [title, subtitle] = instance.name.split(/[-:(]/).map((part) => part.trim());
   return (
     <div
       className={twMerge(
-        'relative flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700',
+        'relative flex h-full flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-zinc-200 bg-zinc-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-zinc-800 dark:bg-zinc-700',
         allOwned && 'opacity-50 hover:opacity-100'
       )}>
       {allOwned && (
@@ -36,7 +37,10 @@ export default function InstanceCard({
           unoptimized
         />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{instance.name[0]?.toUpperCase() + instance.name.slice(1)}</h1>
+      <div className="flex flex-col items-center justify-center gap-1">
+        {title && <h1 className="line-clamp-2 text-center text-xl">{title[0]!.toUpperCase() + title.slice(1)}</h1>}
+        {subtitle && <p className="text-center">{subtitle.split(/[)]/)[0]}</p>}
+      </div>
       <div className="flex w-full flex-col gap-2">
         {instance.minions.length > 0 && <ItemSelector items={instance.minions} type="minions" session={session} />}
         {instance.mounts.length > 0 && <ItemSelector items={instance.mounts} type="mounts" session={session} />}
