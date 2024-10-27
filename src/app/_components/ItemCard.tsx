@@ -82,8 +82,8 @@ export default function ItemCard({ item, type, session }: ItemCardProps) {
         </Button>
         {!session && (
           <div className="mt-2 flex w-full items-center justify-center gap-2">
-            <FaLock className="text-muted-foreground" />
-            <p className="text-muted-foreground text-sm">Log in to add to your collection.</p>
+            <FaLock className="text-neutral-500" />
+            <p className="text-sm text-neutral-500">Log in to add to your collection.</p>
           </div>
         )}
       </div>
