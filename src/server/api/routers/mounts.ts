@@ -42,13 +42,13 @@ export const mountsRouter = createTRPCRouter({
   addToUser: protectedProcedure
     .input(
       z.object({
-        mountId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const mount = await ctx.db.mount.findUnique({
         where: {
-          id: input.mountId,
+          id: input.id,
         },
         include: {
           owners: true,
@@ -106,13 +106,13 @@ export const mountsRouter = createTRPCRouter({
   removeFromUser: protectedProcedure
     .input(
       z.object({
-        mountId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const mount = await ctx.db.mount.findUnique({
         where: {
-          id: input.mountId,
+          id: input.id,
         },
         include: {
           owners: true,

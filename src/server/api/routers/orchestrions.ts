@@ -42,13 +42,13 @@ export const orchestrionsRouter = createTRPCRouter({
   addToUser: protectedProcedure
     .input(
       z.object({
-        orchestrionId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const orchestrion = await ctx.db.orchestrion.findUnique({
         where: {
-          id: input.orchestrionId,
+          id: input.id,
         },
         include: {
           owners: true,
@@ -106,13 +106,13 @@ export const orchestrionsRouter = createTRPCRouter({
   removeFromUser: protectedProcedure
     .input(
       z.object({
-        orchestrionId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const orchestrion = await ctx.db.orchestrion.findUnique({
         where: {
-          id: input.orchestrionId,
+          id: input.id,
         },
         include: {
           owners: true,

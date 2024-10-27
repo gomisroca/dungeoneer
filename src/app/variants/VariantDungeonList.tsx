@@ -1,61 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
-import Image from 'next/image';
-import { type ExpandedVariantDungeon } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/selectors/MinionSelector';
-import MountSelector from '../_components/selectors/MountSelector';
-import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
-import { twMerge } from 'tailwind-merge';
-import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/selectors/SpellSelector';
-import CardSelector from '../_components/selectors/CardSelector';
-import EmoteSelector from '../_components/selectors/EmoteSelector';
-import HairstyleSelector from '../_components/selectors/HairstyleSelector';
-
-function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedVariantDungeon; session: Session | null }) {
-  const allOwned = checkOwnership(dungeon, session);
-  return (
-    <div
-      className={twMerge(
-        'relative flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700',
-        allOwned && 'opacity-50 hover:opacity-100'
-      )}>
-      {allOwned && (
-        <div className="absolute right-[-25px] top-[-25px] flex contrast-200">
-          <span className="m-auto text-8xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
-            ✔
-          </span>
-        </div>
-      )}
-      {dungeon.image && (
-        <Image
-          unoptimized
-          src={dungeon.image}
-          alt={dungeon.name}
-          width={300}
-          height={100}
-          className="w-full object-cover"
-        />
-      )}
-      <h1 className="line-clamp-2 text-center text-xl">{dungeon.name[0]?.toUpperCase() + dungeon.name.slice(1)}</h1>
-      <div className="flex w-full flex-col gap-2">
-        {dungeon.minions.length > 0 && <MinionSelector minions={dungeon.minions} session={session} />}
-        {dungeon.mounts.length > 0 && <MountSelector mounts={dungeon.mounts} session={session} />}
-        {dungeon.orchestrions.length > 0 && (
-          <OrchestrionSelector orchestrions={dungeon.orchestrions} session={session} />
-        )}
-        {dungeon.spells.length > 0 && <SpellSelector spells={dungeon.spells} session={session} />}
-        {dungeon.cards.length > 0 && <CardSelector cards={dungeon.cards} session={session} />}
-        {dungeon.emotes.length > 0 && <EmoteSelector emotes={dungeon.emotes} session={session} />}
-        {dungeon.hairstyles.length > 0 && <HairstyleSelector hairstyles={dungeon.hairstyles} session={session} />}
-      </div>
-    </div>
-  );
-}
+import InstanceCard from '../_components/InstanceCard';
+import { useFilter } from '@/hooks/useFilter';
+import InstanceFilter from '../_components/InstanceFilter';
 
 type VariantDungeonListOutput = RouterOutputs['variants']['getAll'];
 interface VariantDungeonListProps {
@@ -73,6 +24,11 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
     }
   );
 
+  const allVariants = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
+
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredDungeons = useFilter(allVariants, filter, session);
+
   const { ref, entry } = useIntersection({
     root: null,
     threshold: 1,
@@ -84,8 +40,6 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allVariants = data?.pages.flatMap((page) => page.dungeons) ?? [];
-
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -94,10 +48,11 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
         <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
       ) : (
         <>
+          {session && <InstanceFilter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allVariants.map((dungeon, index) => (
-              <div key={dungeon.id} ref={index === allVariants.length - 1 ? ref : undefined}>
-                <VariantDungeonCard dungeon={dungeon} session={session} />
+            {filteredDungeons.map((dungeon, index) => (
+              <div key={dungeon.id} ref={index === filteredDungeons.length - 1 ? ref : undefined}>
+                <InstanceCard instance={dungeon} session={session} />
               </div>
             ))}
           </div>

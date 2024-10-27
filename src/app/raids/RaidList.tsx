@@ -1,52 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
-import Image from 'next/image';
-import { type ExpandedRaid } from 'types';
 import { type Session } from 'next-auth';
-import MinionSelector from '../_components/selectors/MinionSelector';
-import MountSelector from '../_components/selectors/MountSelector';
-import OrchestrionSelector from '../_components/selectors/OrchestrionSelector';
-import { twMerge } from 'tailwind-merge';
-import checkOwnership from '@/utils/checkOwnership';
-import SpellSelector from '../_components/selectors/SpellSelector';
-import CardSelector from '../_components/selectors/CardSelector';
-import EmoteSelector from '../_components/selectors/EmoteSelector';
-import HairstyleSelector from '../_components/selectors/HairstyleSelector';
-
-function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | null }) {
-  const allOwned = checkOwnership(raid, session);
-  return (
-    <div
-      className={twMerge(
-        'relative flex flex-col items-center justify-center gap-y-4 rounded-xl border-4 border-stone-200 bg-stone-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-700',
-        allOwned && 'opacity-50 hover:opacity-100'
-      )}>
-      {allOwned && (
-        <div className="absolute right-[-25px] top-[-25px] flex contrast-200">
-          <span className="m-auto text-8xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
-            ✔
-          </span>
-        </div>
-      )}
-      {raid.image && (
-        <Image unoptimized src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
-      )}
-      <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
-      <div className="flex w-full flex-col gap-2">
-        {raid.minions.length > 0 && <MinionSelector minions={raid.minions} session={session} />}
-        {raid.mounts.length > 0 && <MountSelector mounts={raid.mounts} session={session} />}
-        {raid.orchestrions.length > 0 && <OrchestrionSelector orchestrions={raid.orchestrions} session={session} />}
-        {raid.spells.length > 0 && <SpellSelector spells={raid.spells} session={session} />}
-        {raid.cards.length > 0 && <CardSelector cards={raid.cards} session={session} />}
-        {raid.emotes.length > 0 && <EmoteSelector emotes={raid.emotes} session={session} />}
-        {raid.hairstyles.length > 0 && <HairstyleSelector hairstyles={raid.hairstyles} session={session} />}
-      </div>
-    </div>
-  );
-}
+import InstanceCard from '../_components/InstanceCard';
+import { useFilter } from '@/hooks/useFilter';
+import InstanceFilter from '../_components/InstanceFilter';
 
 type RaidListOutput = RouterOutputs['raids']['getAll'];
 interface RaidListProps {
@@ -64,6 +24,11 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
     }
   );
 
+  const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
+
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredRaids = useFilter(allRaids, filter, session);
+
   const { ref, entry } = useIntersection({
     root: null,
     threshold: 1,
@@ -75,8 +40,6 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const allRaids = data?.pages.flatMap((page) => page.raids) ?? [];
-
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -85,10 +48,11 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
+          {session && <InstanceFilter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allRaids.map((raid, index) => (
-              <div key={raid.id} ref={index === allRaids.length - 1 ? ref : undefined}>
-                <RaidCard raid={raid} session={session} />
+            {filteredRaids.map((raid, index) => (
+              <div key={raid.id} ref={index === filteredRaids.length - 1 ? ref : undefined}>
+                <InstanceCard instance={raid} session={session} />
               </div>
             ))}
           </div>

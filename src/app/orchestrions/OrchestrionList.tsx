@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import OrchestrionCard from './OrchestrionCard';
+import ItemCard from '../_components/ItemCard';
 
 type OrchestrionListOutput = RouterOutputs['orchestrions']['getAll'];
 interface OrchestrionListProps {
@@ -46,7 +46,7 @@ export default function OrchestrionList({ session, initialOrchestrions }: Orches
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {allOrchestrions.map((orchestrion, index) => (
               <div key={orchestrion.id} ref={index === allOrchestrions.length - 1 ? ref : undefined}>
-                <OrchestrionCard orchestrion={orchestrion} session={session} />
+                <ItemCard item={orchestrion} type="orchestrions" session={session} />
               </div>
             ))}
           </div>

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import TTCard from './TTCard';
+import ItemCard from '../_components/ItemCard';
 
 type CardListOutput = RouterOutputs['cards']['getAll'];
 interface CardListProps {
@@ -46,7 +46,7 @@ export default function CardList({ session, initialCards }: CardListProps) {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {allCards.map((card, index) => (
               <div key={card.id} ref={index === allCards.length - 1 ? ref : undefined}>
-                <TTCard card={card} session={session} />
+                <ItemCard item={card} type="cards" session={session} />
               </div>
             ))}
           </div>

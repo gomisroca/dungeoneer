@@ -42,13 +42,13 @@ export const hairstylesRouter = createTRPCRouter({
   addToUser: protectedProcedure
     .input(
       z.object({
-        hairstyleId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const hairstyle = await ctx.db.hairstyle.findUnique({
         where: {
-          id: input.hairstyleId,
+          id: input.id,
         },
         include: {
           owners: true,
@@ -106,13 +106,13 @@ export const hairstylesRouter = createTRPCRouter({
   removeFromUser: protectedProcedure
     .input(
       z.object({
-        hairstyleId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const hairstyle = await ctx.db.hairstyle.findUnique({
         where: {
-          id: input.hairstyleId,
+          id: input.id,
         },
         include: {
           owners: true,

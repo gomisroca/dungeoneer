@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import HairstyleCard from './HairstyleCard';
+import ItemCard from '../_components/ItemCard';
 
 type HairstyleListOutput = RouterOutputs['hairstyles']['getAll'];
 interface HairstyleListProps {
@@ -46,7 +46,7 @@ export default function HairstyleList({ session, initialHairstyles }: HairstyleL
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {allHairstyles.map((hairstyle, index) => (
               <div key={hairstyle.id} ref={index === allHairstyles.length - 1 ? ref : undefined}>
-                <HairstyleCard hairstyle={hairstyle} session={session} />
+                <ItemCard item={hairstyle} type="hairstyles" session={session} />
               </div>
             ))}
           </div>

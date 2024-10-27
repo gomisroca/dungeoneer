@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import SpellCard from './SpellCard';
+import ItemCard from '../_components/ItemCard';
 
 type SpellListOutput = RouterOutputs['spells']['getAll'];
 interface SpellListProps {
@@ -46,7 +46,7 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {allSpells.map((spell, index) => (
               <div key={spell.id} ref={index === allSpells.length - 1 ? ref : undefined}>
-                <SpellCard spell={spell} session={session} />
+                <ItemCard item={spell} type="spells" session={session} />
               </div>
             ))}
           </div>

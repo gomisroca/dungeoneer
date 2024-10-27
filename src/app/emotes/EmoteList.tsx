@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import EmoteCard from './EmoteCard';
+import ItemCard from '../_components/ItemCard';
 
 type EmoteListOutput = RouterOutputs['emotes']['getAll'];
 interface EmoteListProps {
@@ -46,7 +46,7 @@ export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {allEmotes.map((emote, index) => (
               <div key={emote.id} ref={index === allEmotes.length - 1 ? ref : undefined}>
-                <EmoteCard emote={emote} session={session} />
+                <ItemCard item={emote} type="emotes" session={session} />
               </div>
             ))}
           </div>

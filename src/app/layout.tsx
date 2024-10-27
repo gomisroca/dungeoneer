@@ -34,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <MessagePopup />
               <main
                 role="main"
-                className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-50 via-stone-200/90 to-stone-800/40 px-4 pb-10 pt-20 dark:from-stone-950 dark:via-stone-900/95 dark:to-stone-900/60 xl:px-32">
+                className="flex min-h-screen items-center justify-center overflow-x-hidden bg-gradient-to-br from-stone-50 via-stone-200/90 to-stone-800/40 px-4 pb-10 pt-20 dark:from-stone-950 dark:via-stone-900/95 dark:to-stone-900/60 xl:px-32">
                 {children}
               </main>
             </div>

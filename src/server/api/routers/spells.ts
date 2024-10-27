@@ -42,13 +42,13 @@ export const spellsRouter = createTRPCRouter({
   addToUser: protectedProcedure
     .input(
       z.object({
-        spellId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const spell = await ctx.db.spell.findUnique({
         where: {
-          id: input.spellId,
+          id: input.id,
         },
         include: {
           owners: true,
@@ -106,13 +106,13 @@ export const spellsRouter = createTRPCRouter({
   removeFromUser: protectedProcedure
     .input(
       z.object({
-        spellId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const spell = await ctx.db.spell.findUnique({
         where: {
-          id: input.spellId,
+          id: input.id,
         },
         include: {
           owners: true,

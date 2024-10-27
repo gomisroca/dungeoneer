@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import MinionCard from './MinionCard';
+import ItemCard from '../_components/ItemCard';
 
 type MinionListOutput = RouterOutputs['minions']['getAll'];
 interface MinionListProps {
@@ -46,7 +46,7 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {allMinions.map((minion, index) => (
               <div key={minion.id} ref={index === allMinions.length - 1 ? ref : undefined}>
-                <MinionCard minion={minion} session={session} />
+                <ItemCard item={minion} type="minions" session={session} />
               </div>
             ))}
           </div>

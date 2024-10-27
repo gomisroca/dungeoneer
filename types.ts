@@ -93,3 +93,5 @@ export interface ExpandedTrial extends Trial {
   emotes: ExpandedEmote[];
   hairstyles: ExpandedHairstyle[];
 }
+
+export type ItemType = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';

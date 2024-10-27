@@ -42,13 +42,13 @@ export const minionsRouter = createTRPCRouter({
   addToUser: protectedProcedure
     .input(
       z.object({
-        minionId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const minion = await ctx.db.minion.findUnique({
         where: {
-          id: input.minionId,
+          id: input.id,
         },
         include: {
           owners: true,
@@ -106,13 +106,13 @@ export const minionsRouter = createTRPCRouter({
   removeFromUser: protectedProcedure
     .input(
       z.object({
-        minionId: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const minion = await ctx.db.minion.findUnique({
         where: {
-          id: input.minionId,
+          id: input.id,
         },
         include: {
           owners: true,

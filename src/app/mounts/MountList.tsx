@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import MountCard from './MountCard';
+import ItemCard from '../_components/ItemCard';
 
 type MountListOutput = RouterOutputs['mounts']['getAll'];
 interface MountListProps {
@@ -46,7 +46,7 @@ export default function MountList({ session, initialMounts }: MountListProps) {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {allMounts.map((mount, index) => (
               <div key={mount.id} ref={index === allMounts.length - 1 ? ref : undefined}>
-                <MountCard mount={mount} session={session} />
+                <ItemCard item={mount} type="mounts" session={session} />
               </div>
             ))}
           </div>
