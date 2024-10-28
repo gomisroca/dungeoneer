@@ -10,6 +10,7 @@ import SignOutButton from './SignOutButton';
 import SignInButton from './SignInButton';
 import ThemeButton from './themeButton';
 import { Separator } from '../ui/Separator';
+import SearchBar from './SearchBar';
 
 type NavbarMenuProps = {
   session: Session | null;
@@ -44,7 +45,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="Dungeon"
             width={50}
             height={50}
-            className="duration transition-200 h-[35px] w-[35px] object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
         <StyledLink href="/raids" className="group p-1">
@@ -54,7 +55,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="Raid"
             width={50}
             height={50}
-            className="duration transition-200 h-[35px] w-[35px] object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
         <StyledLink href="/trials" className="group p-1">
@@ -64,7 +65,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="Trial"
             width={50}
             height={50}
-            className="duration transition-200 h-[35px] w-[35px] object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
         <StyledLink href="/variants" className="group p-1">
@@ -74,11 +75,11 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="V&C Dungeon"
             width={50}
             height={50}
-            className="duration transition-200 h-[35px] w-[35px] object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
         <button
-          className="flex h-[35px] w-[35px] flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-0 font-semibold backdrop-blur-md transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700 md:h-full md:w-full md:p-4"
+          className="flex h-8 w-8 flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-0 font-semibold backdrop-blur-md transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700 md:h-full md:w-full md:p-4"
           onMouseEnter={() => setIsExpanded(true)}
           onMouseLeave={() => setIsExpanded(false)}
           onClick={toggleMenu}
@@ -90,30 +91,31 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
         className={`flex flex-col items-center justify-center gap-2 overflow-hidden py-2 transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[600px] overflow-visible opacity-100' : 'max-h-0 opacity-0'
         }`}>
-        <StyledLink href="/minions" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaDog size={20} />
         </StyledLink>
-        <StyledLink href="/mounts" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaHorse size={20} />
         </StyledLink>
-        <StyledLink href="/cards" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <TbCardsFilled size={20} />
         </StyledLink>
-        <StyledLink href="/orchestrions" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaMusic size={20} />
         </StyledLink>
-        <StyledLink href="/spells" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaWandMagicSparkles size={20} />
         </StyledLink>
-        <StyledLink href="/emotes" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaFaceLaugh size={20} />
         </StyledLink>
-        <StyledLink href="/hairstyles" className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaScissors size={20} />
         </StyledLink>
         <Separator className="bg-zinc-800 dark:bg-zinc-200" />
+        <SearchBar />
         {session ? <SignOutButton /> : <SignInButton />}
         <ThemeButton />
       </div>
