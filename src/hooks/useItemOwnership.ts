@@ -22,6 +22,7 @@ export function useItemOwnership<T extends OwnableItem>(item: T, session: Sessio
     } else {
       const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as OwnableItem[];
       setOwned(localItems.some((localItem: OwnableItem) => localItem.id === item.id));
+      window.dispatchEvent(new Event('storage'));
     }
   }, [item, session]);
 
