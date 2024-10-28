@@ -69,6 +69,7 @@ export default function useCheckOwnership(instance: InstanceType, session: Sessi
     };
     window.addEventListener('storage', listenStorageChange);
     return () => window.removeEventListener('storage', listenStorageChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
