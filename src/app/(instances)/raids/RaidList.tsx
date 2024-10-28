@@ -5,7 +5,7 @@ import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
-import InstanceFilter from '@/app/_components/InstanceFilter';
+import Filter from '@/app/_components/Filter';
 import { useFilter } from '@/hooks/useFilter';
 
 type RaidListOutput = RouterOutputs['raids']['getAll'];
@@ -48,7 +48,7 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching raids</h1>
       ) : (
         <>
-          {session && <InstanceFilter onFilterChange={setFilter} />}
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredRaids.map((raid, index) => (
               <div key={raid.id} ref={index === filteredRaids.length - 1 ? ref : undefined}>

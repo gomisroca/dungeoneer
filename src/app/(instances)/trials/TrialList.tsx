@@ -6,7 +6,7 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
 import { useFilter } from '@/hooks/useFilter';
-import InstanceFilter from '@/app/_components/InstanceFilter';
+import Filter from '@/app/_components/Filter';
 
 type TrialListtOutput = RouterOutputs['trials']['getAll'];
 interface TrialListtProps {
@@ -48,7 +48,7 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching trials</h1>
       ) : (
         <>
-          {session && <InstanceFilter onFilterChange={setFilter} />}
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredTrials.map((trial, index) => (
               <div key={trial.id} ref={index === filteredTrials.length - 1 ? ref : undefined}>
