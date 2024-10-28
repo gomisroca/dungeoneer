@@ -3,7 +3,6 @@
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
-import { FaLock } from 'react-icons/fa6';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
 import Button from './ui/Button';
 import { type ItemType } from 'types';
@@ -25,7 +24,7 @@ function ItemView({ item, type, session }: ItemViewProps) {
   const { owned, handleAddOrRemove } = useItemOwnership({ ...item, type }, session);
 
   return (
-    <Button onClick={handleAddOrRemove} disabled={!session} className="w-5/6 justify-start px-2 py-1 md:w-3/4">
+    <Button onClick={handleAddOrRemove} className="w-5/6 justify-start px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
         {item.image && (
           <Image
@@ -49,12 +48,6 @@ function ItemView({ item, type, session }: ItemViewProps) {
         <p className={twMerge('max-w-full flex-shrink overflow-x-hidden text-ellipsis', owned && 'text-neutral-500')}>
           {item.name}
         </p>
-        {!session && (
-          <div className="flex items-center justify-center gap-2 text-wrap text-start">
-            <FaLock className="text-neutral-500" />
-            <p className="m-auto text-sm text-neutral-500">Log in to add to your collection.</p>
-          </div>
-        )}
       </div>
     </Button>
   );

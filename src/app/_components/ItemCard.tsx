@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import { twMerge } from 'tailwind-merge';
-import { FaLock } from 'react-icons/fa6';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
 import { type ItemType } from 'types';
 import Button from './ui/Button';
@@ -76,17 +75,9 @@ export default function ItemCard({ item, type, session }: ItemCardProps) {
           ))}
         </div>
       )}
-      <div className="flex w-full flex-col items-start justify-start">
-        <Button className="w-full" onClick={handleAddOrRemove} disabled={!session}>
-          {owned ? 'Remove' : 'Add'}
-        </Button>
-        {!session && (
-          <div className="mt-2 flex w-full items-center justify-center gap-2">
-            <FaLock className="text-neutral-500" />
-            <p className="text-sm text-neutral-500">Log in to add to your collection.</p>
-          </div>
-        )}
-      </div>
+      <Button className="w-full" onClick={handleAddOrRemove}>
+        {owned ? 'Remove' : 'Add'}
+      </Button>
     </div>
   );
 }
