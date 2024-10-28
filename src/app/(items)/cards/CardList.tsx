@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import ItemCard from '@/app/_components/ItemCard';
+import Filter from '@/app/_components/Filter';
+import { useItemFilter } from '@/hooks/useItemFilter';
 
 type CardListOutput = RouterOutputs['cards']['getAll'];
 interface CardListProps {
@@ -35,6 +37,9 @@ export default function CardList({ session, initialCards }: CardListProps) {
 
   const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
 
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredCards = useItemFilter(allCards, filter, session);
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -43,9 +48,10 @@ export default function CardList({ session, initialCards }: CardListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allCards.map((card, index) => (
-              <div key={card.id} ref={index === allCards.length - 1 ? ref : undefined}>
+            {filteredCards.map((card, index) => (
+              <div key={card.id} ref={index === filteredCards.length - 1 ? ref : undefined}>
                 <ItemCard item={card} type="cards" session={session} />
               </div>
             ))}
