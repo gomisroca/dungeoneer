@@ -5,7 +5,7 @@ import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
-import { useFilter } from '@/hooks/useFilter';
+import { useInstanceFilter } from '@/hooks/useInstanceFilter';
 import Filter from '@/app/_components/Filter';
 
 type TrialListtOutput = RouterOutputs['trials']['getAll'];
@@ -27,7 +27,7 @@ export default function TrialList({ initialTrials, session }: TrialListtProps) {
   const allTrials = useMemo(() => data?.pages.flatMap((page) => page.trials) ?? [], [data]);
 
   const [filter, setFilter] = useState<boolean>(false);
-  const filteredTrials = useFilter(allTrials, filter, session);
+  const filteredTrials = useInstanceFilter(allTrials, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,

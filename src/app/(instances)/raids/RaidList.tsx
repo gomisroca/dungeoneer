@@ -6,7 +6,7 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
 import Filter from '@/app/_components/Filter';
-import { useFilter } from '@/hooks/useFilter';
+import { useInstanceFilter } from '@/hooks/useInstanceFilter';
 
 type RaidListOutput = RouterOutputs['raids']['getAll'];
 interface RaidListProps {
@@ -27,7 +27,7 @@ export default function RaidList({ initialRaids, session }: RaidListProps) {
   const allRaids = useMemo(() => data?.pages.flatMap((page) => page.raids) ?? [], [data]);
 
   const [filter, setFilter] = useState<boolean>(false);
-  const filteredRaids = useFilter(allRaids, filter, session);
+  const filteredRaids = useInstanceFilter(allRaids, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,

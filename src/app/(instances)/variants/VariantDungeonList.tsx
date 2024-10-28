@@ -6,7 +6,7 @@ import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
 import Filter from '@/app/_components/Filter';
-import { useFilter } from '@/hooks/useFilter';
+import { useInstanceFilter } from '@/hooks/useInstanceFilter';
 
 type VariantDungeonListOutput = RouterOutputs['variants']['getAll'];
 interface VariantDungeonListProps {
@@ -27,7 +27,7 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
   const allVariants = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
 
   const [filter, setFilter] = useState<boolean>(false);
-  const filteredVariants = useFilter(allVariants, filter, session);
+  const filteredVariants = useInstanceFilter(allVariants, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,
