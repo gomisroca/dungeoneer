@@ -1,3 +1,5 @@
+'use client';
+
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
