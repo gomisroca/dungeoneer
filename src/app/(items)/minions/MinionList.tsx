@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import ItemCard from '@/app/_components/ItemCard';
+import { useItemFilter } from '@/hooks/useItemFilter';
+import Filter from '@/app/_components/Filter';
 
 type MinionListOutput = RouterOutputs['minions']['getAll'];
 interface MinionListProps {
@@ -35,6 +37,9 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
 
   const allMinions = data?.pages.flatMap((page) => page.minions) ?? [];
 
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredMinions = useItemFilter(allMinions, filter, session);
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -43,9 +48,10 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allMinions.map((minion, index) => (
-              <div key={minion.id} ref={index === allMinions.length - 1 ? ref : undefined}>
+            {filteredMinions.map((minion, index) => (
+              <div key={minion.id} ref={index === filteredMinions.length - 1 ? ref : undefined}>
                 <ItemCard item={minion} type="minions" session={session} />
               </div>
             ))}

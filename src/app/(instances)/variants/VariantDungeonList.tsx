@@ -5,8 +5,8 @@ import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
-import InstanceFilter from '@/app/_components/InstanceFilter';
-import { useFilter } from '@/hooks/useFilter';
+import Filter from '@/app/_components/Filter';
+import { useInstanceFilter } from '@/hooks/useInstanceFilter';
 
 type VariantDungeonListOutput = RouterOutputs['variants']['getAll'];
 interface VariantDungeonListProps {
@@ -27,7 +27,7 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
   const allVariants = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
 
   const [filter, setFilter] = useState<boolean>(false);
-  const filteredVariants = useFilter(allVariants, filter, session);
+  const filteredVariants = useInstanceFilter(allVariants, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -48,7 +48,7 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
         <h1 className="p-4 text-xl font-bold">Error fetching dungeons</h1>
       ) : (
         <>
-          {session && <InstanceFilter onFilterChange={setFilter} />}
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredVariants.map((dungeon, index) => (
               <div key={dungeon.id} ref={index === filteredVariants.length - 1 ? ref : undefined}>

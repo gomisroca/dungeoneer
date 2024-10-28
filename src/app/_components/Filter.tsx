@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from './ui/Button';
 import { MdFilterList, MdFilterListOff } from 'react-icons/md';
 
-function InstanceFilter({ onFilterChange }: { onFilterChange: (filter: boolean) => void }) {
+function Filter({ onFilterChange }: { onFilterChange: (filter: boolean) => void }) {
   const [filter, setFilter] = useState(false);
 
   function handleFilterChange(filter: boolean) {
@@ -18,4 +18,4 @@ function InstanceFilter({ onFilterChange }: { onFilterChange: (filter: boolean) 
   );
 }
 
-export default InstanceFilter;
+export default Filter;

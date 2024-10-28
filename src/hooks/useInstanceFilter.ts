@@ -2,7 +2,7 @@ import checkOwnership from '@/utils/checkOwnership';
 import { type Session } from 'next-auth';
 import { type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial, type ExpandedVariantDungeon } from 'types';
 
-export function useFilter(
+export function useInstanceFilter(
   instances: ExpandedDungeon[] | ExpandedTrial[] | ExpandedRaid[] | ExpandedVariantDungeon[],
   filter: boolean,
   session: Session | null

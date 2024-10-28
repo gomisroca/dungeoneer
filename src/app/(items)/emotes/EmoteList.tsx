@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import ItemCard from '@/app/_components/ItemCard';
+import { useItemFilter } from '@/hooks/useItemFilter';
+import Filter from '@/app/_components/Filter';
 
 type EmoteListOutput = RouterOutputs['emotes']['getAll'];
 interface EmoteListProps {
@@ -35,6 +37,9 @@ export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
 
   const allEmotes = data?.pages.flatMap((page) => page.emotes) ?? [];
 
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredEmotes = useItemFilter(allEmotes, filter, session);
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -43,9 +48,10 @@ export default function EmoteList({ session, initialEmotes }: EmoteListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allEmotes.map((emote, index) => (
-              <div key={emote.id} ref={index === allEmotes.length - 1 ? ref : undefined}>
+            {filteredEmotes.map((emote, index) => (
+              <div key={emote.id} ref={index === filteredEmotes.length - 1 ? ref : undefined}>
                 <ItemCard item={emote} type="emotes" session={session} />
               </div>
             ))}

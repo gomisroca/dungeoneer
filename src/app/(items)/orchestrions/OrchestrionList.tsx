@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import ItemCard from '@/app/_components/ItemCard';
+import { useItemFilter } from '@/hooks/useItemFilter';
+import Filter from '@/app/_components/Filter';
 
 type OrchestrionListOutput = RouterOutputs['orchestrions']['getAll'];
 interface OrchestrionListProps {
@@ -35,6 +37,9 @@ export default function OrchestrionList({ session, initialOrchestrions }: Orches
 
   const allOrchestrions = data?.pages.flatMap((page) => page.orchestrions) ?? [];
 
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredOrchestrions = useItemFilter(allOrchestrions, filter, session);
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -43,9 +48,10 @@ export default function OrchestrionList({ session, initialOrchestrions }: Orches
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allOrchestrions.map((orchestrion, index) => (
-              <div key={orchestrion.id} ref={index === allOrchestrions.length - 1 ? ref : undefined}>
+            {filteredOrchestrions.map((orchestrion, index) => (
+              <div key={orchestrion.id} ref={index === filteredOrchestrions.length - 1 ? ref : undefined}>
                 <ItemCard item={orchestrion} type="orchestrions" session={session} />
               </div>
             ))}

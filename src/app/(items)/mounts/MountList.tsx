@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import ItemCard from '@/app/_components/ItemCard';
+import { useItemFilter } from '@/hooks/useItemFilter';
+import Filter from '@/app/_components/Filter';
 
 type MountListOutput = RouterOutputs['mounts']['getAll'];
 interface MountListProps {
@@ -35,6 +37,9 @@ export default function MountList({ session, initialMounts }: MountListProps) {
 
   const allMounts = data?.pages.flatMap((page) => page.mounts) ?? [];
 
+  const [filter, setFilter] = useState<boolean>(false);
+  const filteredMounts = useItemFilter(allMounts, filter, session);
+
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
@@ -43,9 +48,10 @@ export default function MountList({ session, initialMounts }: MountListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
       ) : (
         <>
+          {session && <Filter onFilterChange={setFilter} />}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-            {allMounts.map((mount, index) => (
-              <div key={mount.id} ref={index === allMounts.length - 1 ? ref : undefined}>
+            {filteredMounts.map((mount, index) => (
+              <div key={mount.id} ref={index === filteredMounts.length - 1 ? ref : undefined}>
                 <ItemCard item={mount} type="mounts" session={session} />
               </div>
             ))}

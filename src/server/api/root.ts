@@ -12,6 +12,7 @@ import { cardsRouter } from './routers/cards';
 import { variantsRouter } from './routers/variants';
 import { emotesRouter } from './routers/emotes';
 import { hairstylesRouter } from './routers/hairstyles';
+import { miscRouter } from './routers/misc';
 
 /**
  * This is the primary router for your server.
@@ -30,6 +31,7 @@ export const appRouter = createTRPCRouter({
   variants: variantsRouter,
   raids: raidsRouter,
   trials: trialsRouter,
+  misc: miscRouter,
 });
 
 // export type definition of API
