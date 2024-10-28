@@ -42,13 +42,15 @@ const SearchBar = () => {
         <LuSearch size={20} />
       </Button>
       {open && (
-        <input
-          className="absolute right-10 rounded-md bg-neutral-200 px-4 py-2 text-neutral-800 drop-shadow-md dark:bg-neutral-800 dark:text-neutral-200 md:right-14"
-          type="text"
-          value={searchTerm}
-          onChange={handleChange}
-          placeholder="Search..."
-        />
+        <div className="absolute right-5 z-[999] px-4 py-2 md:right-9">
+          <input
+            className="rounded-md bg-neutral-200 p-4 text-neutral-800 drop-shadow-md dark:bg-neutral-800 dark:text-neutral-200"
+            type="text"
+            value={searchTerm}
+            onChange={handleChange}
+            placeholder="Search..."
+          />
+        </div>
       )}
     </div>
   );
