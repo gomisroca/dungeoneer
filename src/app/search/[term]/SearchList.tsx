@@ -72,15 +72,15 @@ export default function SearchList({ items, session }: SearchListProps) {
     <div className="flex min-h-[80vh] w-5/6 flex-col items-center justify-start gap-4 p-4 md:w-2/3 lg:w-1/2 xl:w-[400px]">
       <div className="w-full">
         <input
-          className="w-full rounded-t-md bg-neutral-200 p-4 text-neutral-800 drop-shadow-md dark:bg-neutral-800 dark:text-neutral-200"
+          className="w-full rounded-t-md bg-zinc-200 p-4 drop-shadow-md dark:bg-zinc-800"
           type="text"
           value={searchTerm}
           onChange={handleChange}
           placeholder="Search..."
         />
-        <div className="h-1 w-full rounded-b-md bg-gray-200 dark:bg-gray-700">
+        <div className="h-1 w-full rounded-b-md bg-zinc-200 dark:bg-zinc-700">
           <div
-            className="duration-50 h-1 rounded-b-md bg-blue-600 transition-all ease-out dark:bg-blue-500"
+            className="duration-50 h-1 rounded-b-md bg-cyan-300 transition-all ease-out dark:bg-cyan-700"
             style={{ width: `${progress}%` }}></div>
         </div>
       </div>
