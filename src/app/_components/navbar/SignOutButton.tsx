@@ -13,7 +13,7 @@ import { MdOutlineExitToApp } from 'react-icons/md';
 
 function SignOutButton() {
   return (
-    <Button name="Sign Out" onClick={() => signOut()} className="h-[35px] w-[35px] p-0 md:h-full md:w-full md:p-4">
+    <Button name="Sign Out" onClick={() => signOut()} className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
       <MdOutlineExitToApp size={20} />
       <span className="sr-only">Sign Out</span>
     </Button>
