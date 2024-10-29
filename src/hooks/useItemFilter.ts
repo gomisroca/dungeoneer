@@ -1,6 +1,6 @@
 import { type Session } from 'next-auth';
 import {
-  type ItemType,
+  type Item,
   type ExpandedCard,
   type ExpandedEmote,
   type ExpandedHairstyle,
@@ -9,14 +9,6 @@ import {
   type ExpandedOrchestrion,
   type ExpandedSpell,
 } from 'types';
-
-interface OwnableItem {
-  id: string;
-  name: string;
-  image: string | null;
-  owners: { id: string }[];
-  type: ItemType;
-}
 
 export function useItemFilter(
   items:
@@ -37,8 +29,8 @@ export function useItemFilter(
       if (session) {
         return items.filter((item) => !item.owners.some((owner) => owner.id === session?.user?.id));
       } else {
-        const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as OwnableItem[];
-        return items.filter((item) => !localItems.some((localItem: OwnableItem) => localItem.id === item.id));
+        const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
+        return items.filter((item) => !localItems.some((localItem: Item) => localItem.id === item.id));
       }
   }
 }

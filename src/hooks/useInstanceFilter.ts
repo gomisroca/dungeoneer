@@ -12,7 +12,7 @@ import {
   type ExpandedSpell,
   type ExpandedHairstyle,
   type ExpandedEmote,
-  type ItemType,
+  type Item,
 } from 'types';
 
 type InstanceType = ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;
@@ -24,14 +24,6 @@ type ExpandedItemType =
   | ExpandedSpell
   | ExpandedHairstyle
   | ExpandedEmote;
-
-interface OwnableItem {
-  id: string;
-  name: string;
-  image: string | null;
-  owners: { id: string }[];
-  type: ItemType;
-}
 
 function checkOwnership(instance: InstanceType, userId: string | undefined, localItems: string[]) {
   const isOwned = (items: ExpandedItemType[]) =>
@@ -52,7 +44,7 @@ export function useInstanceFilter(instances: InstanceType[], filter: boolean, se
   return useMemo(() => {
     if (!filter) return instances;
 
-    const localStorageItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as OwnableItem[];
+    const localStorageItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
     const localItems = localStorageItems.map((item) => item.id);
 
     return instances.reduce<InstanceType[]>((acc, instance) => {
