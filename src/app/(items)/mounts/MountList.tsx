@@ -48,7 +48,7 @@ export default function MountList({ session, initialMounts }: MountListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
       ) : (
         <>
-          {session && <Filter onFilterChange={setFilter} />}
+          <Filter onFilterChange={setFilter} />
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {filteredMounts.map((mount, index) => (
               <div key={mount.id} ref={index === filteredMounts.length - 1 ? ref : undefined}>

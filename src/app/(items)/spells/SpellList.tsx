@@ -48,7 +48,7 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
         <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
-          {session && <Filter onFilterChange={setFilter} />}
+          <Filter onFilterChange={setFilter} />
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
             {filteredSpells.map((spell, index) => (
               <div key={spell.id} ref={index === filteredSpells.length - 1 ? ref : undefined}>

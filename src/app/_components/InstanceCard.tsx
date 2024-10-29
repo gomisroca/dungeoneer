@@ -1,9 +1,11 @@
-import checkOwnership from '@/utils/checkOwnership';
+'use client';
+
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import { type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial, type ExpandedVariantDungeon } from 'types';
 import ItemSelector from './ItemSelector';
+import useCheckOwnership from '@/hooks/useCheckOwnership';
 
 export default function InstanceCard({
   instance,
@@ -12,17 +14,17 @@ export default function InstanceCard({
   instance: ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;
   session: Session | null;
 }) {
-  const allOwned = checkOwnership(instance, session);
-  // subtitles has to be an array
+  const isCompleted = useCheckOwnership(instance, session);
+
   const [title, ...subtitles] = instance.name.split(/[-:(]/);
 
   return (
     <div
       className={twMerge(
         'relative flex h-full flex-col items-center justify-start gap-y-4 rounded-xl border-4 border-zinc-200 bg-zinc-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:rotate-2 hover:scale-125 hover:shadow-2xl dark:border-zinc-800 dark:bg-zinc-700',
-        allOwned && 'opacity-50 hover:opacity-100'
+        isCompleted && 'opacity-50 hover:opacity-100'
       )}>
-      {allOwned && (
+      {isCompleted && (
         <div className="absolute right-[-25px] top-[-25px] flex contrast-200">
           <span className="m-auto text-8xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
             ✔

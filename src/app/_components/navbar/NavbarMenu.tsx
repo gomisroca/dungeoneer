@@ -10,7 +10,7 @@ import SignOutButton from './SignOutButton';
 import SignInButton from './SignInButton';
 import ThemeButton from './themeButton';
 import { Separator } from '../ui/Separator';
-import SearchBar from './SearchBar';
+import { LuSearch } from 'react-icons/lu';
 
 type NavbarMenuProps = {
   session: Session | null;
@@ -115,7 +115,9 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
           <FaScissors size={20} />
         </StyledLink>
         <Separator className="bg-zinc-800 dark:bg-zinc-200" />
-        <SearchBar />
+        <StyledLink href="/search" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+          <LuSearch size={20} />
+        </StyledLink>
         {session ? <SignOutButton /> : <SignInButton />}
         <ThemeButton />
       </div>
