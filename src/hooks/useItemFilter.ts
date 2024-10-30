@@ -38,7 +38,7 @@ export function useItemFilter(
         return items.filter((item) => !item.owners.some((owner) => owner.id === session?.user?.id));
       } else {
         const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as OwnableItem[];
-        return items.filter((item) => localItems.some((localItem: OwnableItem) => localItem.id === item.id));
+        return items.filter((item) => !localItems.some((localItem: OwnableItem) => localItem.id === item.id));
       }
   }
 }

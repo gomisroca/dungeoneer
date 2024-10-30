@@ -37,6 +37,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 className="flex min-h-screen items-center justify-center overflow-x-hidden bg-gradient-to-br from-zinc-50 via-zinc-200/90 to-zinc-800/40 px-4 pb-10 pt-20 dark:from-zinc-950 dark:via-zinc-900/95 dark:to-zinc-900/60 xl:px-32">
                 {children}
               </main>
+              <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-0 flex flex-col items-end justify-end gap-1 p-2 text-xs opacity-20">
+                <p className="line-clamp-1 text-end">FINAL FANTASY XIV © SQUARE ENIX CO., LTD.</p>
+                <p className="line-clamp-2 text-end">
+                  FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.
+                </p>
+              </div>
             </div>
           </TRPCReactProvider>
         </ThemeProvider>
