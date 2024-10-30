@@ -1,17 +1,10 @@
 'use client';
 
-import InstanceCard from '@/app/_components/InstanceCard';
 import useDebounce from '@/hooks/useDebounce';
-import { type Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
-import { type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial, type ExpandedVariantDungeon } from 'types';
 
-interface SearchListProps {
-  items: ExpandedDungeon[] | ExpandedRaid[] | ExpandedTrial[] | ExpandedVariantDungeon[];
-  session: Session | null;
-}
-export default function SearchList({ items, session }: SearchListProps) {
+function SearchBar() {
   const router = useRouter();
 
   // Variables to track the search term
@@ -51,7 +44,7 @@ export default function SearchList({ items, session }: SearchListProps) {
   // Handles the search when the debounced search term changes
   useEffect(() => {
     if (debouncedSearch.trim().length > 0) {
-      router.push(`/search/${debouncedSearch}`);
+      router.replace(`?q=${debouncedSearch}`);
       setSearchTerm('');
       setProgress(0);
       if (progressIntervalRef.current) {
@@ -69,26 +62,22 @@ export default function SearchList({ items, session }: SearchListProps) {
   }, []);
 
   return (
-    <div className="flex min-h-[80vh] w-5/6 flex-col items-center justify-start gap-4 p-4 md:w-2/3 lg:w-1/2 xl:w-[400px]">
-      <div className="w-full">
-        <input
-          className="w-full rounded-t-md bg-zinc-200 p-4 drop-shadow-md dark:bg-zinc-800"
-          type="text"
-          value={searchTerm}
-          onChange={handleChange}
-          placeholder="Search..."
-        />
-        <div className="h-1 w-full rounded-b-md bg-zinc-200 dark:bg-zinc-700">
-          <div
-            className="duration-50 h-1 rounded-b-md bg-cyan-300 transition-all ease-out dark:bg-cyan-700"
-            style={{ width: `${progress}%` }}></div>
-        </div>
+    <div className="w-full">
+      <input
+        className="w-full rounded-t-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+        type="text"
+        value={searchTerm}
+        onChange={handleChange}
+        placeholder="Search..."
+      />
+      <div className="h-1 w-full rounded-b-md bg-zinc-200 dark:bg-zinc-700">
+        <div
+          className="duration-50 h-1 rounded-b-md bg-cyan-300 transition-all ease-out dark:bg-cyan-700"
+          style={{ width: `${progress}%` }}></div>
       </div>
-      {!items || items.length === 0 ? (
-        <p>No results were found 😞</p>
-      ) : (
-        items.map((item) => <InstanceCard key={item.id} instance={item} session={session} />)
-      )}
+      {progress > 80 && <p className="text-center">Searching...</p>}
     </div>
   );
 }
+
+export default SearchBar;
