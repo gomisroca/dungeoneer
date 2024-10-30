@@ -45,7 +45,6 @@ function SearchBar() {
   useEffect(() => {
     if (debouncedSearch.trim().length > 0) {
       router.replace(`?q=${debouncedSearch}`);
-      setSearchTerm('');
       setProgress(0);
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
@@ -75,7 +74,6 @@ function SearchBar() {
           className="duration-50 h-1 rounded-b-md bg-cyan-300 transition-all ease-out dark:bg-cyan-700"
           style={{ width: `${progress}%` }}></div>
       </div>
-      {progress > 80 && <p className="text-center">Searching...</p>}
     </div>
   );
 }
