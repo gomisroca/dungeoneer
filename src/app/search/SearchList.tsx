@@ -6,10 +6,9 @@ interface SearchListProps {
   items: ExpandedDungeon[] | ExpandedRaid[] | ExpandedTrial[] | ExpandedVariantDungeon[];
   session: Session | null;
 }
-
 export default function SearchList({ items, session }: SearchListProps) {
   return (
-    <div className="w-full">
+    <div className="flex w-full flex-col gap-4">
       {!items || items.length === 0 ? (
         <p>No results were found 😞</p>
       ) : (

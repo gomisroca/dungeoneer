@@ -11,11 +11,11 @@ function SearchBar() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [progress, setProgress] = useState<number>(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const debouncedSearch = useDebounce(searchTerm, 2500);
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
   const startProgressBar = () => {
     const intervalTime = 25;
-    const incrementAmount = (intervalTime / 2000) * 100;
+    const incrementAmount = (intervalTime / 500) * 100;
 
     progressIntervalRef.current = setInterval(() => {
       setProgress((prevProgress) => {
