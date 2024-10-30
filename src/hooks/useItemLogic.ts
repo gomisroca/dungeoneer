@@ -1,16 +1,8 @@
 import { api } from '@/trpc/react';
 import { addMessage } from '@/app/_components/ui/MessagePopup';
-import { type ItemType } from 'types';
+import { type Item } from 'types';
 import { useCallback, useEffect, useState } from 'react';
 import { type Session } from 'next-auth';
-
-interface Item {
-  id: string;
-  name: string;
-  image: string | null;
-  owners: { id: string }[];
-  type: ItemType;
-}
 
 export function useItemLogic<T extends Item>(item: T, session: Session | null) {
   const utils = api.useUtils();

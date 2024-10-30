@@ -1,17 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useItemLogic } from './useItemLogic';
 import { type Session } from 'next-auth';
-import { type ItemType } from 'types';
+import { type Item } from 'types';
 
-interface OwnableItem {
-  id: string;
-  name: string;
-  image: string | null;
-  owners: { id: string }[];
-  type: ItemType;
-}
-
-export function useItemOwnership<T extends OwnableItem>(item: T, session: Session | null) {
+export function useItemOwnership<T extends Item>(item: T, session: Session | null) {
   const { addToUser, removeFromUser } = useItemLogic(item, session);
 
   const [owned, setOwned] = useState(false);
@@ -20,8 +12,8 @@ export function useItemOwnership<T extends OwnableItem>(item: T, session: Sessio
     if (session) {
       setOwned(item.owners.some((owner) => owner.id === session.user?.id));
     } else {
-      const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as OwnableItem[];
-      setOwned(localItems.some((localItem: OwnableItem) => localItem.id === item.id));
+      const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
+      setOwned(localItems.some((localItem: Item) => localItem.id === item.id));
       window.dispatchEvent(new Event('storage'));
     }
   }, [item, session]);

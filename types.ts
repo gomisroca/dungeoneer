@@ -95,3 +95,11 @@ export interface ExpandedTrial extends Trial {
 }
 
 export type ItemType = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
+
+export interface Item {
+  id: string;
+  name: string;
+  image: string | null;
+  owners: { id: string }[];
+  type: ItemType;
+}
