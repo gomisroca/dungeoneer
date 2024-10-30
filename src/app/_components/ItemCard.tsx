@@ -68,7 +68,9 @@ export default function ItemCard({ item, type, session }: ItemCardProps) {
             )}
           />
         )}
-        <h1 className="line-clamp-2 text-center text-base md:text-lg">{item.name}</h1>
+        <div className="min-h-[calc(2*1.625rem)]">
+          <h1 className="line-clamp-2 text-center text-base leading-relaxed md:text-lg">{item.name}</h1>
+        </div>
       </div>
       {item.sources && (
         <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
