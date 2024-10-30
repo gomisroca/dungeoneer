@@ -21,7 +21,7 @@ export default function SyncButton({ session }: { session: Session | null }) {
     <Button
       onClick={syncCollection}
       disabled={isSyncing || syncCount === 0}
-      className={`${syncCount === 0 && 'hidden'}`}>
+      className={`${syncCount === 0 ? 'hidden' : 'h-8 w-8 p-0 md:h-full md:w-full md:p-4'} `}>
       <MdOutlineSync size={20} className={`${isSyncing && 'animate-spin'}`} />
     </Button>
   );
