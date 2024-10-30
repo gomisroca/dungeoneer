@@ -10,7 +10,7 @@ export default function SearchList({ items, session }: SearchListProps) {
   return (
     <div className="flex w-full flex-col gap-4">
       {!items || items.length === 0 ? (
-        <p>No results were found 😞</p>
+        <p className="text-center">No results were found 😞</p>
       ) : (
         items.map((item) => <InstanceCard key={item.id} instance={item} session={session} />)
       )}

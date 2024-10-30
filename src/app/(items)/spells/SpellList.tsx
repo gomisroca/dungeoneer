@@ -43,9 +43,9 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
   return (
     <div className="flex flex-col space-y-4">
       {status === 'pending' ? (
-        <h1 className="p-4 text-xl font-bold">Loading...</h1>
+        <h1 className="p-4 text-base font-bold md:text-xl">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
+        <h1 className="p-4 text-base font-bold md:text-xl">Error fetching posts</h1>
       ) : (
         <>
           <Filter onFilterChange={setFilter} />
@@ -57,7 +57,7 @@ export default function SpellList({ session, initialSpells }: SpellListProps) {
             ))}
           </div>
           {isFetchingNextPage && (
-            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
+            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-base font-bold dark:bg-cyan-700 md:text-xl">
               Loading more...
             </h1>
           )}
