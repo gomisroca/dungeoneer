@@ -17,6 +17,15 @@ export default function useItemSync({ session }: { session: Session | null }) {
   const hairstyleMutation = api.hairstyles.addToUser.useMutation();
   const emoteMutation = api.emotes.addToUser.useMutation();
 
+  const getLocalItems = () => {
+    try {
+      const storedItems = localStorage.getItem('userItems');
+      return storedItems ? (JSON.parse(storedItems) as Item[]) : [];
+    } catch (_error) {
+      return [];
+    }
+  };
+
   const syncCollection = useCallback(async () => {
     if (!session) {
       addMessage('Please sign in to sync your items.');
@@ -112,5 +121,5 @@ export default function useItemSync({ session }: { session: Session | null }) {
     utils,
   ]);
 
-  return { syncCollection, isSyncing };
+  return { syncCollection, isSyncing, getLocalItems };
 }

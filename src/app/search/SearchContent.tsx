@@ -26,7 +26,7 @@ export default function SearchContent({ session }: { session: Session | null }) 
     <div className="flex min-h-[80vh] w-5/6 flex-col items-center justify-start gap-4 p-4 md:w-2/3 lg:w-1/2 xl:w-[400px]">
       <SearchBar />
       {cleanTerm.length > 0 && (
-        <h1 className="text-center text-xl font-bold">Search Results for &ldquo;{cleanTerm}&rdquo;</h1>
+        <h1 className="text-center text-base font-bold md:text-xl">Search Results for &ldquo;{cleanTerm}&rdquo;</h1>
       )}
       {isLoading && <p>Loading...</p>}
       {items && <SearchList items={items} session={session} />}

@@ -42,7 +42,9 @@ export default function InstanceCard({
         />
       )}
       <div className="flex flex-col items-center justify-center gap-1">
-        {title && <h1 className="line-clamp-2 text-center text-lg">{title[0]!.toUpperCase() + title.slice(1)}</h1>}
+        {title && (
+          <h1 className="line-clamp-2 text-center text-base md:text-lg">{title[0]!.toUpperCase() + title.slice(1)}</h1>
+        )}
 
         {subtitles && (
           <div className="flex flex-row items-center justify-center gap-1">

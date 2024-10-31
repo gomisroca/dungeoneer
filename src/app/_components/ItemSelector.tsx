@@ -45,7 +45,11 @@ function ItemView({ item, type, session }: ItemViewProps) {
         )}
       </div>
       <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
-        <p className={twMerge('max-w-full flex-shrink overflow-x-hidden text-ellipsis', owned && 'text-neutral-500')}>
+        <p
+          className={twMerge(
+            'max-w-full flex-shrink overflow-x-hidden text-ellipsis text-sm md:text-base',
+            owned && 'text-neutral-500'
+          )}>
           {item.name}
         </p>
       </div>
