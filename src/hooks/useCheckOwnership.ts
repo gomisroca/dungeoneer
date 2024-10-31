@@ -52,6 +52,7 @@ function checkLocalStorageOwnership(instance: InstanceType) {
 
 export default function useCheckOwnership(instance: InstanceType, session: Session | null) {
   const [isOwned, setIsOwned] = useState(false);
+
   useEffect(() => {
     const listenStorageChange = () => {
       if (session?.user?.id) {
@@ -71,5 +72,17 @@ export default function useCheckOwnership(instance: InstanceType, session: Sessi
     }
   }, [instance, session]);
 
-  return isOwned;
+  if (
+    (!instance.minions || instance.minions.length === 0) &&
+    (!instance.mounts || instance.mounts.length === 0) &&
+    (!instance.orchestrions || instance.orchestrions.length === 0) &&
+    (!instance.spells || instance.spells.length === 0) &&
+    (!instance.cards || instance.cards.length === 0) &&
+    (!instance.emotes || instance.emotes.length === 0) &&
+    (!instance.hairstyles || instance.hairstyles.length === 0)
+  ) {
+    return 'empty';
+  } else {
+    return isOwned ? 'owned' : 'not-owned';
+  }
 }
