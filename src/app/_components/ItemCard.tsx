@@ -48,8 +48,8 @@ export default function ItemCard({ item, type, session }: ItemCardProps) {
         owned && 'opacity-50 hover:opacity-100'
       )}>
       {owned && (
-        <div className="absolute right-[-25px] top-[-25px] flex contrast-200">
-          <span className="m-auto text-8xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
+        <div className="absolute right-[-15px] top-[-15px] flex contrast-200">
+          <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
             ✔
           </span>
         </div>
