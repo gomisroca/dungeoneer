@@ -9,6 +9,15 @@ async function getMinions() {
 
 async function createMinion(minion) {
   try {
+    // Check if the minion already exists
+    const existingMinion = await db.minion.findFirst({
+      where: { name: minion.name },
+    });
+    if (existingMinion) {
+      console.log(`Minion ${minion.name} already exists. Skipping.`);
+      return null;
+    }
+
     let uploadedImageUrl = null;
     if (minion.image) {
       const fileName = `${minion.id}.${minion.image.split('.').pop()}`;
@@ -57,26 +66,29 @@ async function createMinion(minion) {
       data: minionData,
     });
   } catch (error) {
-    console.error(`Error creating minion ${minion.name}:`, error);
+    console.error(`Error processing minion ${minion.name}:`, error);
     return null;
   }
 }
 
 export default async function transformMinions() {
   const minions = await getMinions();
-  let successCount = 0;
+  let newCount = 0;
+  let existingCount = 0;
   let failCount = 0;
 
   for (let i = 0; i < minions.length; i++) {
     const minion = minions[i];
     const result = await createMinion(minion);
     if (result) {
-      successCount++;
+      newCount++;
+    } else if (result === null) {
+      existingCount++;
     } else {
       failCount++;
     }
-    console.log(`Processed ${i + 1} out of ${minions.length} minions. Success: ${successCount}, Failed: ${failCount}`);
+    console.log(`Processed ${i + 1} out of ${minions.length} minions. New: ${newCount}, Existing: ${existingCount}, Failed: ${failCount}`);
   }
 
-  console.log(`Finished processing all minions. Total Success: ${successCount}, Total Failed: ${failCount}`);
+  console.log(`Finished processing all minions. Total New: ${newCount}, Total Existing: ${existingCount}, Total Failed: ${failCount}`);
 }

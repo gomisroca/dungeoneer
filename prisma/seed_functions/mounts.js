@@ -9,6 +9,15 @@ async function getMounts() {
 
 async function createMount(mount) {
   try {
+    // Check if the mount already exists
+    const existingMount = await db.mount.findFirst({
+      where: { name: mount.name },
+    });
+    if (existingMount) {
+      console.log(`Mount ${mount.name} already exists. Skipping.`);
+      return null;
+    }
+
     let uploadedImageUrl = null;
     if (mount.image) {
       const fileName = `${mount.id}.${mount.image.split('.').pop()}`;
@@ -33,26 +42,29 @@ async function createMount(mount) {
       }
     });
   } catch (error) {
-    console.error(`Error creating mount ${mount.name}:`, error);
+    console.error(`Error processing mount ${mount.name}:`, error);
     return null;
   }
 }
 
 export default async function transformMounts() {
   const mounts = await getMounts();
-  let successCount = 0;
+  let newCount = 0;
+  let existingCount = 0;
   let failCount = 0;
 
   for (let i = 0; i < mounts.length; i++) {
     const mount = mounts[i];
     const result = await createMount(mount);
     if (result) {
-      successCount++;
+      newCount++;
+    } else if (result === null) {
+      existingCount++;
     } else {
       failCount++;
     }
-    console.log(`Processed ${i + 1} out of ${mounts.length} mounts. Success: ${successCount}, Failed: ${failCount}`);
+    console.log(`Processed ${i + 1} out of ${mounts.length} mounts. New: ${newCount}, Existing: ${existingCount}, Failed: ${failCount}`);
   }
 
-  console.log(`Finished processing all mounts. Total Success: ${successCount}, Total Failed: ${failCount}`);
+  console.log(`Finished processing all mounts. Total New: ${newCount}, Total Existing: ${existingCount}, Total Failed: ${failCount}`);
 }

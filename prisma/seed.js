@@ -9,20 +9,46 @@ import transformRaids from "./seed_functions/raids";
 import transformSpells from "./seed_functions/spells";
 import transformTrials from "./seed_functions/trials";
 import transformVariants from "./seed_functions/variant";
+import updateDungeons from "./relation_functions/updateDungeons";
+import updateRaids from "./relation_functions/updateRaids";
+import updateTrials from "./relation_functions/updateTrials";
+import updateVariants from "./relation_functions/updateVCDungeons";
 
 async function main() {
+  const seedFunctions = [
+    { name: 'Dungeons', fn: transformDungeons },
+    { name: 'Raids', fn: transformRaids },
+    { name: 'Trials', fn: transformTrials },
+    { name: 'Variant Dungeons', fn: transformVariants },
+    { name: 'Cards', fn: transformCards },
+    { name: 'Emotes', fn: transformEmotes },
+    { name: 'Hairstyles', fn: transformHairstyles },
+    { name: 'Minions', fn: transformMinions },
+    { name: 'Mounts', fn: transformMounts },
+    { name: 'Orchestrions', fn: transformOrchs },
+    { name: 'Spells', fn: transformSpells }
+  ];
+  const updateFunctions = [
+    { name: 'Dungeons', fn: updateDungeons },
+    { name: 'Raids', fn: updateRaids },
+    { name: 'Trials', fn: updateTrials },
+    { name: 'Variant Dungeons', fn: updateVariants },
+  ];
+
   try {
-    await transformMinions();
-    await transformMounts();
-    await transformDungeons();
-    await transformTrials();
-    await transformRaids();
-    await transformVariants();
-    await transformOrchs();
-    await transformSpells();
-    await transformCards();
-    await transformEmotes();
-    await transformHairstyles();
+    for (const { name, fn } of seedFunctions) {
+      console.log(`Starting to seed ${name}...`);
+      await fn();
+      console.log(`Finished seeding ${name}`);
+    }
+    console.log('All transformations completed successfully!');
+
+    for (const { name, fn } of updateFunctions) {
+      console.log(`Starting to update ${name}...`);
+      await fn();
+      console.log(`Finished updating ${name}`);
+    }
+    console.log('All updates completed successfully!');
   } catch (e) {
     console.error("An error occurred during the seeding process:", e);
     process.exit(1);
