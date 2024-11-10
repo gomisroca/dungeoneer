@@ -9,6 +9,15 @@ async function getHairstyles() {
 
 async function createHairstyle(hairstyle) {
   try {
+      // Check if the hairstyle already exists
+    const existingHairstyle = await db.hairstyle.findFirst({
+      where: { name: hairstyle.name },
+    });
+    if (existingHairstyle) {
+      console.log(`Hairstyle ${hairstyle.name} already exists. Skipping.`);
+      return null;
+    }
+
     let uploadedImageUrl = null;
     if (hairstyle.icon) {
       const fileName = `${hairstyle.id}.${hairstyle.icon.split('.').pop()}`;
@@ -32,26 +41,29 @@ async function createHairstyle(hairstyle) {
       }
     });
   } catch (error) {
-    console.error(`Error creating hairstyle ${hairstyle.name}:`, error);
+    console.error(`Error processing hairstyle ${hairstyle.name}:`, error);
     return null;
   }
 }
 
 export default async function transformHairstyles() {
   const hairstyles = await getHairstyles();
-  let successCount = 0;
+  let newCount = 0;
+  let existingCount = 0;
   let failCount = 0;
 
   for (let i = 0; i < hairstyles.length; i++) {
     const hairstyle = hairstyles[i];
     const result = await createHairstyle(hairstyle);
     if (result) {
-      successCount++;
+      newCount++;
+    } else if (result === null) {
+      existingCount++;
     } else {
       failCount++;
     }
-    console.log(`Processed ${i + 1} out of ${hairstyles.length} hairstyles. Success: ${successCount}, Failed: ${failCount}`);
+    console.log(`Processed ${i + 1} out of ${hairstyles.length} hairstyles. New: ${newCount}, Existing: ${existingCount}, Failed: ${failCount}`);
   }
 
-  console.log(`Finished processing all hairstyles. Total Success: ${successCount}, Total Failed: ${failCount}`);
+  console.log(`Finished processing all hairstyles. Total New: ${newCount}, Total Existing: ${existingCount}, Total Failed: ${failCount}`);
 }

@@ -9,6 +9,15 @@ async function getEmotes() {
 
 async function createEmote(emote) {
   try {
+    // Check if the emote already exists
+    const existingEmote = await db.emote.findFirst({
+      where: { name: emote.name },
+    });
+    if (existingEmote) {
+      console.log(`Emote ${emote.name} already exists. Skipping.`);
+      return null;
+    }
+
     let uploadedImageUrl = null;
     if (emote.icon) {
       const fileName = `${emote.id}.${emote.icon.split('.').pop()}`;
@@ -38,19 +47,22 @@ async function createEmote(emote) {
 
 export default async function transformEmotes() {
   const emotes = await getEmotes();
-  let successCount = 0;
+  let newCount = 0;
+  let existingCount = 0;
   let failCount = 0;
 
   for (let i = 0; i < emotes.length; i++) {
     const emote = emotes[i];
     const result = await createEmote(emote);
     if (result) {
-      successCount++;
+      newCount++;
+    } else if (result === null) {
+      existingCount++;
     } else {
       failCount++;
     }
-    console.log(`Processed ${i + 1} out of ${emotes.length} emotes. Success: ${successCount}, Failed: ${failCount}`);
+    console.log(`Processed ${i + 1} out of ${emotes.length} emotes. New: ${newCount}, Existing: ${existingCount}, Failed: ${failCount}`);
   }
 
-  console.log(`Finished processing all emotes. Total Success: ${successCount}, Total Failed: ${failCount}`);
+  console.log(`Finished processing all emotes. Total New: ${newCount}, Total Existing: ${existingCount}, Total Failed: ${failCount}`);
 }

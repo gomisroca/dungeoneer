@@ -9,6 +9,15 @@ async function getCards() {
 
 async function createCard(card) {
   try {
+    // Check if the mount already exists
+    const existingCard = await db.card.findFirst({
+      where: { name: card.name },
+    });
+    if (existingCard) {
+      console.log(`Card ${card.name} already exists. Skipping.`);
+      return null;
+    }
+
     let uploadedImageUrl = null;
     if (card.image) {
       const fileName = `${card.id}.${card.image.split('.').pop()}`;
@@ -73,26 +82,30 @@ async function createCard(card) {
       data: cardData,
     });
   } catch (error) {
-    console.error(`Error creating card ${card.name}:`, error);
+    console.error(`Error processing card ${card.name}:`, error);
     return null;
   }
 }
 
 export default async function transformCards() {
   const cards = await getCards();
-  let successCount = 0;
+  let newCount = 0;
+  let existingCount = 0;
   let failCount = 0;
+
 
   for (let i = 0; i < cards.length; i++) {
     const card = cards[i];
     const result = await createCard(card);
     if (result) {
-      successCount++;
+      newCount++;
+    } else if (result === null) {
+      existingCount++;
     } else {
       failCount++;
     }
-    console.log(`Processed ${i + 1} out of ${cards.length} cards. Success: ${successCount}, Failed: ${failCount}`);
+    console.log(`Processed ${i + 1} out of ${cards.length} cards. New: ${newCount}, Existing: ${existingCount}, Failed: ${failCount}`);
   }
 
-  console.log(`Finished processing all cards. Total Success: ${successCount}, Total Failed: ${failCount}`);
+  console.log(`Finished processing all cards. Total New: ${newCount}, Total Existing: ${existingCount}, Total Failed: ${failCount}`);
 }
