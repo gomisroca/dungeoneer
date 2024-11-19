@@ -17,9 +17,7 @@ export const spellsRouter = createTRPCRouter({
       const spells: ExpandedSpell[] = await ctx.db.spell.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
-        orderBy: {
-          id: 'desc',
-        },
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         include: {
           owners: true,
           sources: true,

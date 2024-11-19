@@ -18,6 +18,7 @@ export const trialsRouter = createTRPCRouter({
       const trials: ExpandedTrial[] = await ctx.db.trial.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         where: {
           OR: [
             { minions: { some: {} } },

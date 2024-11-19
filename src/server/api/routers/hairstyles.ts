@@ -17,9 +17,7 @@ export const hairstylesRouter = createTRPCRouter({
       const hairstyles: ExpandedHairstyle[] = await ctx.db.hairstyle.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
-        orderBy: {
-          id: 'desc',
-        },
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         include: {
           owners: true,
           sources: true,
