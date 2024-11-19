@@ -2,15 +2,9 @@ import { db } from '../../src/server/db';
 import uploadImageToSupabase from './uploadImageToSupabase';
 
 async function getRaids() {
-  const raids = [];
-  // Raid IDs go from 30001 to 30142 (as of patch 7.05)
-  for (let i = 30135; i < 30143; i++) {
-    const raid = await fetch(`https://xivapi.com/instanceContent/${i}?columns=Name,Banner,Description&language=en`);
-    const raidData = await raid.json();
-    
-    raids.push(raidData);
-  }
-  return raids;
+  const raidsFetch = await fetch(`https://beta.xivapi.com/api/1/search?sheets=ContentFinderCondition&fields=Name,Image&transient=Description&query=ContentType.Name="Raids"&limit=500`);
+  const raids = await raidsFetch.json();
+  return raids.results;
 }
 
 async function createRaid(raid) {
@@ -18,19 +12,19 @@ async function createRaid(raid) {
     // First check if the raid already exists
     const existingRaid = await db.raid.findFirst({
       where: {
-        name: raid.Name
+        name: raid.fields.Name
       }
     });
 
     if (existingRaid) {
-      console.log(`Raid "${raid.Name}" already exists, skipping...`);
+      console.log(`Raid "${raid.fields.Name}" already exists, skipping...`);
       return null;
     }
 
     let uploadedImageUrl = null;
-    if (raid.Banner) {
-      const imageUrl = 'https://xivapi.com' + raid.Banner;
-      const fileName = imageUrl.split('/').pop().split('.png')[0];
+    if (raid.fields.Image) {
+      const imageUrl = `https://beta.xivapi.com/api/1/asset?path=${raid.fields.Image.path}&format=png`;
+      const fileName = `${raid.fields.Image.id}.png`;
       uploadedImageUrl = await uploadImageToSupabase(imageUrl, 'raids', fileName);
     }
 
@@ -46,13 +40,13 @@ async function createRaid(raid) {
     return await db.raid.create({
       data: {
         id: nextId,
-        name: raid.Name,
-        description: raid.Description,
+        name: raid.fields.Name,
+        description: raid.transient.Description,
         image: uploadedImageUrl,
       },
     });
   } catch (error) {
-    console.error(`Error creating raid ${raid.Name}:`, error);
+    console.error(`Error creating raid ${raid.fields.Name}:`, error);
     return null;
   }
 }
@@ -65,7 +59,7 @@ export default async function transformRaids() {
 
   for (let i = 0; i < raids.length; i++) {
     const raid = raids[i];
-    if (raid.Name && raid.Description && raid.Banner) {
+    if (raid.fields.Name && raid.transient.Description && raid.fields.Image.path) {
       const result = await createRaid(raid);
       if (result) {
         successCount++;

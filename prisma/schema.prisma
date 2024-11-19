@@ -93,11 +93,11 @@ model Minion {
   owned            String
   sources          MinionSource[]
   verminion        VerminionStats?
+  dungeons         Dungeon[]        @relation("DungeonToMinion")
+  raids            Raid[]           @relation("MinionToRaid")
+  trials           Trial[]          @relation("MinionToTrial")
   owners           User[]           @relation("MinionToUser")
-  dungeons         Dungeon[]
-  variants         VariantDungeon[]
-  trials           Trial[]
-  raids            Raid[]
+  variants         VariantDungeon[] @relation("MinionToVariantDungeon")
 }
 
 model MinionSource {
@@ -118,11 +118,11 @@ model Mount {
   image            String?
   owned            String
   sources          MountSource[]
+  dungeons         Dungeon[]        @relation("DungeonToMount")
+  raids            Raid[]           @relation("MountToRaid")
+  trials           Trial[]          @relation("MountToTrial")
   owners           User[]           @relation("MountToUser")
-  dungeons         Dungeon[]
-  variants         VariantDungeon[]
-  trials           Trial[]
-  raids            Raid[]
+  variants         VariantDungeon[] @relation("MountToVariantDungeon")
 }
 
 model MountSource {
@@ -142,12 +142,12 @@ model Orchestrion {
   number      String
   image       String?
   owned       String
-  owners      User[]              @relation("OrchestrionToUser")
   sources     OrchestrionSource[]
-  dungeons    Dungeon[]
-  variants    VariantDungeon[]
-  trials      Trial[]
-  raids       Raid[]
+  dungeons    Dungeon[]           @relation("DungeonToOrchestrion")
+  raids       Raid[]              @relation("OrchestrionToRaid")
+  trials      Trial[]             @relation("OrchestrionToTrial")
+  owners      User[]              @relation("OrchestrionToUser")
+  variants    VariantDungeon[]    @relation("OrchestrionToVariantDungeon")
 }
 
 model OrchestrionSource {
@@ -163,15 +163,15 @@ model Spell {
   name        String
   description String
   patch       String
-  number      Int
   image       String?
   owned       String
-  owners      User[]           @relation("SpellToUser")
+  number      Int
   sources     SpellSource[]
-  dungeons    Dungeon[]
-  variants    VariantDungeon[]
-  trials      Trial[]
-  raids       Raid[]
+  dungeons    Dungeon[]        @relation("DungeonToSpell")
+  raids       Raid[]           @relation("RaidToSpell")
+  trials      Trial[]          @relation("SpellToTrial")
+  owners      User[]           @relation("SpellToUser")
+  variants    VariantDungeon[] @relation("SpellToVariantDungeon")
 }
 
 model SpellSource {
@@ -197,24 +197,24 @@ model Card {
   name        String
   description String
   patch       String
-  stars       Int
   number      String
   image       String?
   owned       String
-  stats       CardStats?
-  owners      User[]           @relation("CardToUser")
+  stars       Int
   sources     CardSource[]
-  dungeons    Dungeon[]
-  variants    VariantDungeon[]
-  trials      Trial[]
-  raids       Raid[]
+  stats       CardStats?
+  dungeons    Dungeon[]        @relation("CardToDungeon")
+  raids       Raid[]           @relation("CardToRaid")
+  trials      Trial[]          @relation("CardToTrial")
+  owners      User[]           @relation("CardToUser")
+  variants    VariantDungeon[] @relation("CardToVariantDungeon")
 }
 
 model CardSource {
   id     String  @id @default(cuid())
-  type   String
-  text   String
   cardId String?
+  text   String
+  type   String
   card   Card?   @relation(fields: [cardId], references: [id])
 }
 
@@ -226,12 +226,12 @@ model Hairstyle {
   tradeable   Boolean
   image       String?
   owned       String
-  owners      User[]            @relation("HairstyleToUser")
   sources     HairstyleSource[]
-  dungeons    Dungeon[]
-  variants    VariantDungeon[]
-  trials      Trial[]
-  raids       Raid[]
+  dungeons    Dungeon[]         @relation("DungeonToHairstyle")
+  raids       Raid[]            @relation("HairstyleToRaid")
+  trials      Trial[]           @relation("HairstyleToTrial")
+  owners      User[]            @relation("HairstyleToUser")
+  variants    VariantDungeon[]  @relation("HairstyleToVariantDungeon")
 }
 
 model HairstyleSource {
@@ -249,12 +249,12 @@ model Emote {
   tradeable Boolean
   image     String?
   owned     String
-  owners    User[]           @relation("EmoteToUser")
   sources   EmoteSource[]
-  dungeons  Dungeon[]
-  variants  VariantDungeon[]
-  trials    Trial[]
-  raids     Raid[]
+  dungeons  Dungeon[]        @relation("DungeonToEmote")
+  raids     Raid[]           @relation("EmoteToRaid")
+  trials    Trial[]          @relation("EmoteToTrial")
+  owners    User[]           @relation("EmoteToUser")
+  variants  VariantDungeon[] @relation("EmoteToVariantDungeon")
 }
 
 model EmoteSource {
@@ -270,13 +270,14 @@ model Dungeon {
   name         String
   description  String
   image        String?
-  minions      Minion[]
-  mounts       Mount[]
-  orchestrions Orchestrion[]
-  spells       Spell[]
-  cards        Card[]
-  hairstyles   Hairstyle[]
-  emotes       Emote[]
+  patch        String?
+  cards        Card[]        @relation("CardToDungeon")
+  emotes       Emote[]       @relation("DungeonToEmote")
+  hairstyles   Hairstyle[]   @relation("DungeonToHairstyle")
+  minions      Minion[]      @relation("DungeonToMinion")
+  mounts       Mount[]       @relation("DungeonToMount")
+  orchestrions Orchestrion[] @relation("DungeonToOrchestrion")
+  spells       Spell[]       @relation("DungeonToSpell")
 }
 
 model VariantDungeon {
@@ -284,13 +285,14 @@ model VariantDungeon {
   name         String
   description  String
   image        String?
-  minions      Minion[]
-  mounts       Mount[]
-  orchestrions Orchestrion[]
-  spells       Spell[]
-  cards        Card[]
-  hairstyles   Hairstyle[]
-  emotes       Emote[]
+  patch        String?
+  cards        Card[]        @relation("CardToVariantDungeon")
+  emotes       Emote[]       @relation("EmoteToVariantDungeon")
+  hairstyles   Hairstyle[]   @relation("HairstyleToVariantDungeon")
+  minions      Minion[]      @relation("MinionToVariantDungeon")
+  mounts       Mount[]       @relation("MountToVariantDungeon")
+  orchestrions Orchestrion[] @relation("OrchestrionToVariantDungeon")
+  spells       Spell[]       @relation("SpellToVariantDungeon")
 }
 
 model Trial {
@@ -298,25 +300,27 @@ model Trial {
   name         String
   description  String
   image        String?
-  minions      Minion[]
-  mounts       Mount[]
-  orchestrions Orchestrion[]
-  spells       Spell[]
-  cards        Card[]
-  hairstyles   Hairstyle[]
-  emotes       Emote[]
+  patch        String?
+  cards        Card[]        @relation("CardToTrial")
+  emotes       Emote[]       @relation("EmoteToTrial")
+  hairstyles   Hairstyle[]   @relation("HairstyleToTrial")
+  minions      Minion[]      @relation("MinionToTrial")
+  mounts       Mount[]       @relation("MountToTrial")
+  orchestrions Orchestrion[] @relation("OrchestrionToTrial")
+  spells       Spell[]       @relation("SpellToTrial")
 }
 
 model Raid {
-  id           Int           @id @default(autoincrement())
+  id           Int           @id @unique @default(autoincrement())
   name         String
   description  String
   image        String?
-  minions      Minion[]
-  mounts       Mount[]
-  orchestrions Orchestrion[]
-  spells       Spell[]
-  cards        Card[]
-  hairstyles   Hairstyle[]
-  emotes       Emote[]
+  patch        String?
+  cards        Card[]        @relation("CardToRaid")
+  emotes       Emote[]       @relation("EmoteToRaid")
+  hairstyles   Hairstyle[]   @relation("HairstyleToRaid")
+  minions      Minion[]      @relation("MinionToRaid")
+  mounts       Mount[]       @relation("MountToRaid")
+  orchestrions Orchestrion[] @relation("OrchestrionToRaid")
+  spells       Spell[]       @relation("RaidToSpell")
 }

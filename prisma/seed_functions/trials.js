@@ -2,14 +2,9 @@ import { db } from '../../src/server/db';
 import uploadImageToSupabase from './uploadImageToSupabase';
 
 async function getTrials() {
-  const trials = [];
-  // Trial IDs go from 20008 to 20097 (as of patch 7.05)
-  for (let i = 20008; i < 20098; i++) {
-    const trial = await fetch(`https://xivapi.com/instanceContent/${i}?columns=Name,Banner,Description&language=en`);
-    const trialData = await trial.json();
-    trials.push(trialData);
-  }
-  return trials;
+  const trialsFetch = await fetch(`https://beta.xivapi.com/api/1/search?sheets=ContentFinderCondition&fields=Name,Image&transient=Description&query=ContentType.Name="Trials"&limit=500`);
+  const trials = await trialsFetch.json();
+  return trials.results;
 }
 
 async function createTrial(trial) {
@@ -17,18 +12,18 @@ async function createTrial(trial) {
     // First check if the raid already exists
     const existingTrial = await db.trial.findFirst({
       where: {
-        name: trial.Name
+        name: trial.fields.Name
       }
     });
 
     if (existingTrial) {
-      console.log(`Trial "${trial.Name}" already exists, skipping...`);
+      console.log(`Trial "${trial.fields.Name}" already exists, skipping...`);
       return null;
     }
     let uploadedImageUrl = null;
-    if (trial.Banner) {
-      const imageUrl = 'https://xivapi.com' + trial.Banner;
-      const fileName = imageUrl.split('/').pop().split('.png')[0];
+    if (trial.fields.Image) {
+      const imageUrl = `https://beta.xivapi.com/api/1/asset?path=${trial.fields.Image.path}&format=png`;
+      const fileName = `${trial.fields.Image.id}.png`;
       uploadedImageUrl = await uploadImageToSupabase(imageUrl, 'trials', fileName);
     }
 
@@ -44,13 +39,13 @@ async function createTrial(trial) {
     return await db.trial.create({
       data: {
         id: nextId,
-        name: trial.Name,
-        description: trial.Description,
+        name: trial.fields.Name,
+        description: trial.transient.Description,
         image: uploadedImageUrl,
       },
     });
   } catch (error) {
-    console.error(`Error creating trial ${trial.name}:`, error);
+    console.error(`Error creating trial ${trial.fields.Name}:`, error);
     return null;
   }
 }
@@ -63,7 +58,7 @@ export default async function transformTrials() {
 
   for (let i = 0; i < trials.length; i++) {
     const trial = trials[i];
-    if(trial.Name && trial.Description && trial.Banner){
+    if(trial.fields.Name && trial.transient.Description && trial.fields.Image.path){
       const result = await createTrial(trial);
       if (result) {
         successCount++;

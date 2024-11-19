@@ -2,7 +2,7 @@ import { db } from '../../src/server/db';
 import uploadImageToSupabase from './uploadImageToSupabase';
 
 async function getCards() {
-  const res = await fetch('https://triad.raelys.com/api/cards');
+  const res = await fetch('https://ffxivcollect.com/api/triad/cards');
   const data = await res.json();
   return data.results;
 }
@@ -32,41 +32,13 @@ async function createCard(card) {
       image: uploadedImageUrl ?? card.image,
       owned: card.owned,  
       sources: {
-        create: []
+        create: card.sources.map((source) => ({
+          type: source.type,
+          text: source.text,
+        })),
       }
     };
-
-    for (const drop of card.sources.drops) {
-      let type = drop.split(':')[0];
-      let text = drop.split(':')[1];
-      if (text === undefined) {
-        text = type;
-        type = 'Other';
-      }
-      cardData.sources.create.push({
-        type,
-        text,
-      });
-    }
-
-    for (const npc of card.sources.npcs) {
-      const type = 'NPC';
-      const text = npc.name;
-      cardData.sources.create.push({
-        type,
-        text,
-      });
-    }
-
-    for (const pack of card.sources.packs){
-      const type = 'Pack';
-      const text = pack.name;
-      cardData.sources.create.push({
-        type,
-        text,
-      });
-    }
-
+    
     if (card.stats) {
       cardData.stats = {
         create: {

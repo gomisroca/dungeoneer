@@ -17,9 +17,7 @@ export const minionsRouter = createTRPCRouter({
       const minions: ExpandedMinion[] = await ctx.db.minion.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
-        orderBy: {
-          id: 'desc',
-        },
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         include: {
           owners: true,
           sources: true,

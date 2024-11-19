@@ -18,6 +18,7 @@ export const variantsRouter = createTRPCRouter({
       const dungeons: ExpandedVariantDungeon[] = await ctx.db.variantDungeon.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         where: {
           OR: [
             { minions: { some: {} } },

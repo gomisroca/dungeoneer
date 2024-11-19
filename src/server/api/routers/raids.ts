@@ -18,6 +18,7 @@ export const raidsRouter = createTRPCRouter({
       const raids: ExpandedRaid[] = await ctx.db.raid.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         where: {
           OR: [
             { minions: { some: {} } },

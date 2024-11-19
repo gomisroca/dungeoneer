@@ -2,14 +2,9 @@ import { db } from '../../src/server/db';
 import uploadImageToSupabase from './uploadImageToSupabase';
 
 async function getDungeons() {
-  const dungeons = [];
-  // Dungeon IDs go from 1 to 99 (as of patch 7.05)
-  for (let i = 1; i < 100; i++) {
-    const dungeon = await fetch(`https://xivapi.com/instanceContent/${i}?columns=Name,Banner,Description&language=en`);
-    const dungeonData = await dungeon.json();
-    dungeons.push(dungeonData);
-  }
-  return dungeons;
+  const dungeonsFetch = await fetch(`https://beta.xivapi.com/api/1/search?sheets=ContentFinderCondition&fields=Name,Image&transient=Description&query=ContentType.Name="Dungeons"&limit=500`);
+  const dungeons = await dungeonsFetch.json();
+  return dungeons.results;
 }
 
 async function createDungeon(dungeon) {
@@ -17,19 +12,19 @@ async function createDungeon(dungeon) {
     // First check if the raid already exists
     const existingDungeon = await db.dungeon.findFirst({
       where: {
-        name: dungeon.Name
+        name: dungeon.fields.Name
       }
     });
 
     if (existingDungeon) {
-      console.log(`Dungeon "${dungeon.Name}" already exists, skipping...`);
+      console.log(`Dungeon "${dungeon.fields.Name}" already exists, skipping...`);
       return null;
     }
 
     let uploadedImageUrl = null;
-    if (dungeon.Banner) {
-      const imageUrl = 'https://xivapi.com' + dungeon.Banner;
-      const fileName = imageUrl.split('/').pop().split('.png')[0];
+    if (dungeon.fields.Image) {
+      const imageUrl = `https://beta.xivapi.com/api/1/asset?path=${dungeon.fields.Image.path}&format=png`;
+      const fileName = `${dungeon.fields.Image.id}.png`;
       uploadedImageUrl = await uploadImageToSupabase(imageUrl, 'dungeons', fileName);
     }
 
@@ -45,13 +40,13 @@ async function createDungeon(dungeon) {
     return await db.dungeon.create({
       data: {
         id: nextId,
-        name: dungeon.Name,
-        description: dungeon.Description,
+        name: dungeon.fields.Name,
+        description: dungeon.transient.Description,
         image: uploadedImageUrl,
       },
     });
   } catch (error) {
-    console.error(`Error creating dungeon ${dungeon.name}:`, error);
+    console.error(`Error creating dungeon ${dungeon.fields.Name}:`, error);
     return null;
   }
 }
@@ -64,7 +59,7 @@ export default async function transformDungeons() {
 
   for (let i = 0; i < dungeons.length; i++) {
     const dungeon = dungeons[i];
-    if(dungeon.Name && dungeon.Description && dungeon.Banner){
+    if(dungeon.fields.Name && dungeon.transient.Description && dungeon.fields.Image.path){
       const result = await createDungeon(dungeon);
       if (result) {
         successCount++;

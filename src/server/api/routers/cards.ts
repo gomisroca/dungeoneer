@@ -17,9 +17,7 @@ export const cardsRouter = createTRPCRouter({
       const cards: ExpandedCard[] = await ctx.db.card.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
-        orderBy: {
-          id: 'desc',
-        },
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         include: {
           owners: true,
           sources: true,

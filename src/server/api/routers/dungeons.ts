@@ -18,6 +18,7 @@ export const dungeonsRouter = createTRPCRouter({
       const dungeons: ExpandedDungeon[] = await ctx.db.dungeon.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         where: {
           OR: [
             { minions: { some: {} } },
