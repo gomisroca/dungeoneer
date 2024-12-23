@@ -14,6 +14,7 @@ import { twMerge } from 'tailwind-merge';
 
 interface ButtonProps {
   name?: string
+  arialabel?: string;
   type?: "button" | "submit" | "reset"
   onClick?: () => void
   className?: string;
@@ -21,10 +22,10 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-function Button({ name, type = 'button', disabled = false, onClick, className, children }: ButtonProps) {
+function Button({ name, arialabel, type = 'button', disabled = false, onClick, className, children }: ButtonProps) {
   return (
     <button 
-    aria-label={name || 'button'}
+    aria-label={arialabel || 'button'}
     name={name || 'Button'}
     type={type} 
     onClick={onClick} 

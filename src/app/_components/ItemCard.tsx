@@ -79,7 +79,7 @@ export default function ItemCard({ item, type, session }: ItemCardProps) {
           ))}
         </div>
       )}
-      <Button className="w-full text-sm md:text-base" onClick={handleAddOrRemove}>
+      <Button arialabel={owned ? 'Remove' : 'Add'} className="w-full text-sm md:text-base" onClick={handleAddOrRemove}>
         {owned ? 'Remove' : 'Add'}
       </Button>
     </div>
