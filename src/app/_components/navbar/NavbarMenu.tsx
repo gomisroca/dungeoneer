@@ -89,6 +89,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </button>
       </div>
       <div
+        data-testid="expandable-menu"
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
         className={`flex flex-col items-center justify-center gap-2 overflow-hidden py-2 transition-all duration-300 ease-in-out ${
