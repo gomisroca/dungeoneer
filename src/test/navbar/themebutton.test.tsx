@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, vi, expect } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, vi, expect, type Mock } from 'vitest';
 import { useTheme } from 'next-themes';
-import ThemeButton from '../app/_components/navbar/themeButton';
+import ThemeButton from '@/app/_components/navbar/themeButton';
 
 // Mock the useTheme hook
 vi.mock('next-themes', () => ({
@@ -11,7 +11,7 @@ vi.mock('next-themes', () => ({
 describe('Theme Button', () => {
   it('renders the theme button with icons', () => {
     // Mock the theme state as light initially
-    (useTheme as jest.Mock).mockReturnValue({
+    (useTheme as Mock).mockReturnValue({
       theme: 'light',
       setTheme: vi.fn(),
     });
@@ -19,25 +19,27 @@ describe('Theme Button', () => {
     render(<ThemeButton />);
 
     // Check if button and icon are rendered
-    expect(screen.getByRole('button', { name: /dark/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /dark/i })).toContainHTML('svg');
+    expect(screen.getByRole('button', { name: 'Dark Mode' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Dark Mode' })).toContainHTML('svg');
   });
 
   it('toggles the theme from light to dark when clicked', () => {
     const setThemeMock = vi.fn();
 
     // Mock the theme state as light initially
-    (useTheme as jest.Mock).mockReturnValue({
+    (useTheme as Mock).mockReturnValue({
       theme: 'light',
       setTheme: setThemeMock,
     });
 
     render(<ThemeButton />);
 
-    const button = screen.getByRole('button', { name: /dark/i });
+    const button = screen.getByRole('button', { name: 'Dark Mode' });
 
     // Simulate clicking the button
-    fireEvent.click(button);
+    act(() => {
+      fireEvent.click(button);
+    });
 
     // Ensure setTheme is called with 'dark'
     expect(setThemeMock).toHaveBeenCalledWith('dark');
@@ -47,17 +49,19 @@ describe('Theme Button', () => {
     const setThemeMock = vi.fn();
 
     // Mock the theme state as dark initially
-    (useTheme as jest.Mock).mockReturnValue({
+    (useTheme as Mock).mockReturnValue({
       theme: 'dark',
       setTheme: setThemeMock,
     });
 
     render(<ThemeButton />);
 
-    const button = screen.getByRole('button', { name: /light/i });
+    const button = screen.getByRole('button', { name: 'Light Mode' });
 
     // Simulate clicking the button
-    fireEvent.click(button);
+    act(() => {
+      fireEvent.click(button);
+    });
 
     // Ensure setTheme is called with 'light'
     expect(setThemeMock).toHaveBeenCalledWith('light');
