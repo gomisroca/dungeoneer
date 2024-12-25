@@ -24,7 +24,7 @@ function ItemView({ item, type, session }: ItemViewProps) {
   const { owned, handleAddOrRemove } = useItemOwnership({ ...item, type }, session);
 
   return (
-    <Button onClick={handleAddOrRemove} className="w-5/6 justify-start px-2 py-1 md:w-3/4">
+    <Button arialabel="item-view" onClick={handleAddOrRemove} className="w-5/6 justify-start px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
         {item.image && (
           <Image

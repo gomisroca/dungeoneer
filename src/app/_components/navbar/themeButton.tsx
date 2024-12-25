@@ -24,6 +24,7 @@ function ThemeButton() {
   if (!mounted) return null;
   return (
     <Button
+      arialabel={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
       className="group h-8 w-8 p-0 md:h-full md:w-full md:p-4"
       name={theme === 'dark' ? 'Light' : 'Dark'}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
