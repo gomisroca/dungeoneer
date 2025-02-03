@@ -51,7 +51,7 @@ export default function InstanceCard({
         )}
 
         {subtitles && (
-          <div className="flex flex-row items-center justify-center gap-1">
+          <div className="flex flex-row items-center justify-center gap-1 text-sm">
             {subtitles.map((sub, i) => (
               <p key={i} className="text-center">
                 {sub.split(')')[0]}

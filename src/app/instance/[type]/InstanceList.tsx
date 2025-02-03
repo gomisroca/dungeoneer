@@ -7,7 +7,9 @@ import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
 import { useInstanceFilter } from '@/hooks/useInstanceFilter';
 import Filter from '@/app/_components/Filter';
+import ViewToggler from '@/app/_components/ViewToggler';
 import { type Instance } from 'types';
+import InstanceListItem from './InstanceListItem';
 
 type InstanceListOutput<T> = {
   items: T[];
@@ -40,6 +42,7 @@ export default function InstanceList<T extends Instance>({
   const allInstances = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
 
   const [filter, setFilter] = useState<boolean>(false);
+  const [view, setView] = useState<boolean>(false);
   const filteredInstances = useInstanceFilter(allInstances, filter, session);
 
   const { ref, entry } = useIntersection({
@@ -54,21 +57,32 @@ export default function InstanceList<T extends Instance>({
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
-    <div className="relative flex flex-col space-y-4">
+    <div className="relative flex flex-col">
       {status === 'pending' ? (
         <h1 className="p-4 text-base font-bold md:text-xl">Loading...</h1>
       ) : status === 'error' ? (
         <h1 className="p-4 text-base font-bold md:text-xl">Error fetching {routeKey}</h1>
       ) : (
         <>
+          <ViewToggler onViewChange={setView} />
           <Filter onFilterChange={setFilter} />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {filteredInstances.map((instance, index) => (
-              <div key={instance.id} ref={index === filteredInstances.length - 1 ? ref : undefined}>
-                <InstanceCard instance={instance} session={session} />
-              </div>
-            ))}
-          </div>
+          {view ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredInstances.map((instance, index) => (
+                <div key={instance.id} ref={index === filteredInstances.length - 1 ? ref : undefined}>
+                  <InstanceCard instance={instance} session={session} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col space-y-2">
+              {filteredInstances.map((instance, index) => (
+                <div key={instance.id} ref={index === filteredInstances.length - 1 ? ref : undefined}>
+                  <InstanceListItem instance={instance} session={session} />
+                </div>
+              ))}
+            </div>
+          )}
           {isFetchingNextPage && (
             <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-base font-bold dark:bg-cyan-700 md:text-xl">
               Loading more...
