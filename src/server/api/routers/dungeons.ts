@@ -77,7 +77,7 @@ export const dungeonsRouter = createTRPCRouter({
       }
 
       return {
-        dungeons: dungeons.slice(0, limit),
+        items: dungeons.slice(0, limit),
         nextCursor,
       };
     }),

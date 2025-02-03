@@ -77,7 +77,7 @@ export const raidsRouter = createTRPCRouter({
       }
 
       return {
-        raids: raids.slice(0, limit),
+        items: raids.slice(0, limit),
         nextCursor,
       };
     }),

@@ -2,32 +2,45 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
-import { api, type RouterOutputs } from '@/trpc/react';
+import { api } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
-import Filter from '@/app/_components/Filter';
 import { useInstanceFilter } from '@/hooks/useInstanceFilter';
+import Filter from '@/app/_components/Filter';
+import { type Instance } from 'types';
 
-type VariantDungeonListOutput = RouterOutputs['variants']['getAll'];
-interface VariantDungeonListProps {
-  initialDungeons: VariantDungeonListOutput;
+type InstanceListOutput<T> = {
+  items: T[];
+  nextCursor: number | undefined;
+};
+
+interface InstanceListProps<T extends Instance> {
+  initialInstances: InstanceListOutput<T>;
   session: Session | null;
+  routeKey: 'dungeons' | 'raids' | 'trials' | 'variants';
+  itemsPerPage?: number;
 }
-export default function VariantDungeonList({ initialDungeons, session }: VariantDungeonListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.variants.getAll.useInfiniteQuery(
+
+export default function InstanceList<T extends Instance>({
+  initialInstances,
+  session,
+  routeKey,
+  itemsPerPage = 9,
+}: InstanceListProps<T>) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api[routeKey].getAll.useInfiniteQuery(
     {
-      limit: 20,
+      limit: itemsPerPage,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialDungeons], pageParams: [undefined] },
+      initialData: { pages: [initialInstances], pageParams: [undefined] },
     }
   );
 
-  const allVariants = useMemo(() => data?.pages.flatMap((page) => page.dungeons) ?? [], [data]);
+  const allInstances = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
 
   const [filter, setFilter] = useState<boolean>(false);
-  const filteredVariants = useInstanceFilter(allVariants, filter, session);
+  const filteredInstances = useInstanceFilter(allInstances, filter, session);
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -41,18 +54,18 @@ export default function VariantDungeonList({ initialDungeons, session }: Variant
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="relative flex flex-col space-y-4">
       {status === 'pending' ? (
         <h1 className="p-4 text-base font-bold md:text-xl">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-base font-bold md:text-xl">Error fetching dungeons</h1>
+        <h1 className="p-4 text-base font-bold md:text-xl">Error fetching {routeKey}</h1>
       ) : (
         <>
           <Filter onFilterChange={setFilter} />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {filteredVariants.map((dungeon, index) => (
-              <div key={dungeon.id} ref={index === filteredVariants.length - 1 ? ref : undefined}>
-                <InstanceCard instance={dungeon} session={session} />
+            {filteredInstances.map((instance, index) => (
+              <div key={instance.id} ref={index === filteredInstances.length - 1 ? ref : undefined}>
+                <InstanceCard instance={instance} session={session} />
               </div>
             ))}
           </div>
