@@ -118,3 +118,5 @@ export type Instance = {
   orchestrions: ExpandedOrchestrion[];
   spells: ExpandedSpell[];
 };
+
+export type ExpandedInstance = ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;

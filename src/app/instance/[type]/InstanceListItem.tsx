@@ -2,7 +2,7 @@
 
 import { type Session } from 'next-auth';
 import { twMerge } from 'tailwind-merge';
-import { type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial, type ExpandedVariantDungeon } from 'types';
+import { type ExpandedInstance } from 'types';
 import useCheckOwnership from '@/hooks/useCheckOwnership';
 import ItemSelector from '@/app/_components/ItemSelector';
 
@@ -10,7 +10,7 @@ export default function InstanceListItem({
   instance,
   session,
 }: {
-  instance: ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;
+  instance: ExpandedInstance;
   session: Session | null;
 }) {
   const isCompleted = useCheckOwnership(instance, session);

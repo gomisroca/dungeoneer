@@ -1,10 +1,6 @@
 import { useMemo } from 'react';
 import { type Session } from 'next-auth';
 import {
-  type ExpandedDungeon,
-  type ExpandedRaid,
-  type ExpandedTrial,
-  type ExpandedVariantDungeon,
   type ExpandedMinion,
   type ExpandedMount,
   type ExpandedCard,
@@ -13,9 +9,9 @@ import {
   type ExpandedHairstyle,
   type ExpandedEmote,
   type Item,
+  type ExpandedInstance,
 } from 'types';
 
-type InstanceType = ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;
 type ExpandedItemType =
   | ExpandedMinion
   | ExpandedMount
@@ -25,7 +21,7 @@ type ExpandedItemType =
   | ExpandedHairstyle
   | ExpandedEmote;
 
-function checkOwnership(instance: InstanceType, userId: string | undefined, localItems: string[]) {
+function checkOwnership(instance: ExpandedInstance, userId: string | undefined, localItems: string[]) {
   const isOwned = (items: ExpandedItemType[]) =>
     items.every((item) => (userId && item.owners.some((owner) => owner.id === userId)) ?? localItems.includes(item.id));
 
@@ -40,14 +36,14 @@ function checkOwnership(instance: InstanceType, userId: string | undefined, loca
   );
 }
 
-export function useInstanceFilter(instances: InstanceType[], filter: boolean, session: Session | null) {
+export function useInstanceFilter(instances: ExpandedInstance[], filter: boolean, session: Session | null) {
   return useMemo(() => {
     if (!filter) return instances;
 
     const localStorageItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
     const localItems = localStorageItems.map((item) => item.id);
 
-    return instances.reduce<InstanceType[]>((acc, instance) => {
+    return instances.reduce<ExpandedInstance[]>((acc, instance) => {
       if (!checkOwnership(instance, session?.user?.id, localItems)) {
         const copyInstance = { ...instance };
         const filterItems = <T extends ExpandedItemType>(items: T[]) =>

@@ -36,7 +36,7 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
             alt={item.name}
             width={compact ? 25 : 50}
             height={compact ? 25 : 50}
-            className={twMerge('flex-shrink-0 rounded-xl', owned && 'opacity-75')}
+            className={twMerge('flex-shrink-0 rounded-xl', owned && 'opacity-75', compact && 'rounded-lg')}
             unoptimized
           />
         )}

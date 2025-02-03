@@ -3,17 +3,11 @@
 import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
-import { type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial, type ExpandedVariantDungeon } from 'types';
+import { type ExpandedInstance } from 'types';
 import ItemSelector from './ItemSelector';
 import useCheckOwnership from '@/hooks/useCheckOwnership';
 
-export default function InstanceCard({
-  instance,
-  session,
-}: {
-  instance: ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;
-  session: Session | null;
-}) {
+export default function InstanceCard({ instance, session }: { instance: ExpandedInstance; session: Session | null }) {
   const isCompleted = useCheckOwnership(instance, session);
 
   const [title, ...subtitles] = instance.name.split(/[-:(]/);
