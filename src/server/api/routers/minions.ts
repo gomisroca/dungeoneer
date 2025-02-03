@@ -32,7 +32,7 @@ export const minionsRouter = createTRPCRouter({
       }
 
       return {
-        minions,
+        items: minions.slice(0, limit),
         nextCursor,
       };
     }),

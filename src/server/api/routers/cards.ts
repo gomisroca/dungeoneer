@@ -32,7 +32,7 @@ export const cardsRouter = createTRPCRouter({
       }
 
       return {
-        cards,
+        items: cards.slice(0, limit),
         nextCursor,
       };
     }),

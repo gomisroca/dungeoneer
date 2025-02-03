@@ -32,7 +32,7 @@ export const emotesRouter = createTRPCRouter({
       }
 
       return {
-        emotes,
+        items: emotes.slice(0, limit),
         nextCursor,
       };
     }),

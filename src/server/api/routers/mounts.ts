@@ -32,7 +32,7 @@ export const mountsRouter = createTRPCRouter({
       }
 
       return {
-        mounts,
+        items: mounts.slice(0, limit),
         nextCursor,
       };
     }),

@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './Tool
 import { useSignal, useSignalEffect } from '@preact-signals/safe-react'
 import { AnimatePresence, motion } from 'framer-motion';
 
-function Source({ source }: { source: MinionSource | MountSource | OrchestrionSource | SpellSource | EmoteSource | HairstyleSource | CardSource }) {
+function Source({ source, compact = false }: { source: MinionSource | MountSource | OrchestrionSource | SpellSource | EmoteSource | HairstyleSource | CardSource; compact?: boolean }) {
   const isOpen = useSignal(false);
   const triggerRef = useSignal<HTMLButtonElement | null>(null);
 
@@ -38,8 +38,8 @@ function Source({ source }: { source: MinionSource | MountSource | OrchestrionSo
             unoptimized
               src={`/sources/${source.type}.png`}
               alt={source.type}
-              width={50}
-              height={50}
+              width={compact ? 30 : 50}
+              height={compact ? 30 : 50}
               className='active:scale-110 active:contrast-125 active:duration-100 hover:scale-110 transition duration-200 ease-in-out hover:contrast-125 h-12 object-contain'
             />
           </TooltipTrigger>

@@ -95,25 +95,25 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         className={`flex flex-col items-center justify-center gap-2 overflow-hidden py-2 transition-all duration-300 ease-in-out ${
           isExpanded ? 'max-h-[600px] overflow-visible opacity-100' : 'max-h-0 opacity-0'
         }`}>
-        <StyledLink href="/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaDog size={20} />
         </StyledLink>
-        <StyledLink href="/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/collectible/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaHorse size={20} />
         </StyledLink>
-        <StyledLink href="/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/collectible/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <TbCardsFilled size={20} />
         </StyledLink>
-        <StyledLink href="/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/collectible/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaMusic size={20} />
         </StyledLink>
-        <StyledLink href="/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/collectible/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaWandMagicSparkles size={20} />
         </StyledLink>
-        <StyledLink href="/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/collectible/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaFaceLaugh size={20} />
         </StyledLink>
-        <StyledLink href="/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <StyledLink href="/collectible/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
           <FaScissors size={20} />
         </StyledLink>
         <Separator className="bg-zinc-800 dark:bg-zinc-200" />

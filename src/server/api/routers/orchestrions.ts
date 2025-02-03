@@ -32,7 +32,7 @@ export const orchestrionsRouter = createTRPCRouter({
       }
 
       return {
-        orchestrions,
+        items: orchestrions.slice(0, limit),
         nextCursor,
       };
     }),

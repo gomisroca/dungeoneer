@@ -32,7 +32,7 @@ export const hairstylesRouter = createTRPCRouter({
       }
 
       return {
-        hairstyles,
+        items: hairstyles.slice(0, limit),
         nextCursor,
       };
     }),
