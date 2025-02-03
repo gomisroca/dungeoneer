@@ -69,7 +69,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
-        <StyledLink href="/instances/variants" className="group p-1">
+        <StyledLink href="/instance/variants" className="group p-1">
           <Image
             unoptimized
             src="/sources/V&C Dungeon.png"
