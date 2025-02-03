@@ -1,10 +1,8 @@
 import { type Session } from 'next-auth';
 import { useState, useEffect } from 'react';
-import { type Item, type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial } from 'types';
+import { type Item, type ExpandedInstance } from 'types';
 
-type InstanceType = ExpandedDungeon | ExpandedRaid | ExpandedTrial;
-
-function checkDatabaseOwnership(instance: InstanceType, userId: string | undefined) {
+function checkDatabaseOwnership(instance: ExpandedInstance, userId: string | undefined) {
   if (!userId) return false;
 
   const allMinionsOwned = instance.minions.every((minion) => minion.owners.some((m) => m.id === userId));
@@ -26,7 +24,7 @@ function checkDatabaseOwnership(instance: InstanceType, userId: string | undefin
   );
 }
 
-function checkLocalStorageOwnership(instance: InstanceType) {
+function checkLocalStorageOwnership(instance: ExpandedInstance) {
   const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
 
   const allMinionsOwned = instance.minions.every((minion) => localItems.some((item) => item.id === minion.id));
@@ -50,7 +48,7 @@ function checkLocalStorageOwnership(instance: InstanceType) {
   );
 }
 
-export default function useCheckOwnership(instance: InstanceType, session: Session | null) {
+export default function useCheckOwnership(instance: ExpandedInstance, session: Session | null) {
   const [isOwned, setIsOwned] = useState(false);
 
   useEffect(() => {

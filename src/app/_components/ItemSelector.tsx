@@ -18,24 +18,33 @@ interface ItemViewProps {
   item: BaseItem;
   type: ItemType;
   session: Session | null;
+  compact?: boolean;
 }
 
-function ItemView({ item, type, session }: ItemViewProps) {
+function ItemView({ item, type, session, compact = false }: ItemViewProps) {
   const { owned, handleAddOrRemove } = useItemOwnership({ ...item, type }, session);
 
   return (
-    <Button arialabel="item-view" onClick={handleAddOrRemove} className="w-5/6 justify-start px-2 py-1 md:w-3/4">
+    <Button
+      arialabel="item-view"
+      onClick={handleAddOrRemove}
+      className={twMerge('w-5/6 justify-start px-2 py-1 md:w-3/4', compact && 'w-[200px] md:w-fit')}>
       <div className="relative flex-shrink-0">
-        {item.image && (
-          <Image
-            src={item.image}
-            alt={item.name}
-            width={50}
-            height={50}
-            className={twMerge('flex-shrink-0 rounded-xl', owned && 'opacity-75')}
-            unoptimized
-          />
-        )}
+        <div className={twMerge('relative', compact ? 'h-6 w-6' : 'h-12 w-12')}>
+          {item.image && (
+            <Image
+              src={item.image}
+              alt={item.name}
+              fill
+              className={twMerge(
+                'flex-shrink-0 rounded-xl object-contain',
+                owned && 'opacity-75',
+                compact && 'rounded-lg'
+              )}
+              unoptimized
+            />
+          )}
+        </div>
         {owned && (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-4xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
@@ -61,13 +70,14 @@ interface ItemSelectorProps {
   items: BaseItem[];
   type: ItemType;
   session: Session | null;
+  compact?: boolean;
 }
 
-export default function ItemSelector({ items, type, session }: ItemSelectorProps) {
+export default function ItemSelector({ items, type, session, compact = false }: ItemSelectorProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2">
+    <div className="flex flex-wrap items-center justify-start gap-2">
       {items.map((item) => (
-        <ItemView key={item.id} item={item} type={type} session={session} />
+        <ItemView key={item.id} item={item} type={type} session={session} compact={compact} />
       ))}
     </div>
   );

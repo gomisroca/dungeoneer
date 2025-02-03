@@ -39,7 +39,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
   return (
     <div ref={menuRef} className="pointer-events-auto relative flex flex-col">
       <div className="flex flex-col items-center justify-center gap-2">
-        <StyledLink href="/dungeons" className="group p-1">
+        <StyledLink href="/instance/dungeons" className="group p-1">
           <Image
             unoptimized
             src="/sources/Dungeon.png"
@@ -49,7 +49,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
-        <StyledLink href="/raids" className="group p-1">
+        <StyledLink href="/instance/raids" className="group p-1">
           <Image
             unoptimized
             src="/sources/Raid.png"
@@ -59,7 +59,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
-        <StyledLink href="/trials" className="group p-1">
+        <StyledLink href="/instance/trials" className="group p-1">
           <Image
             unoptimized
             src="/sources/Trial.png"
@@ -69,7 +69,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
-        <StyledLink href="/variants" className="group p-1">
+        <StyledLink href="/instance/variants" className="group p-1">
           <Image
             unoptimized
             src="/sources/V&C Dungeon.png"

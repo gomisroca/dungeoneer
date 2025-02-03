@@ -103,3 +103,20 @@ export interface Item {
   owners: { id: string }[];
   type: ItemType;
 }
+
+export type Instance = {
+  id: number;
+  name: string;
+  description: string;
+  image: string | null;
+  patch: string | null;
+  cards: ExpandedCard[];
+  emotes: ExpandedEmote[];
+  hairstyles: ExpandedHairstyle[];
+  minions: ExpandedMinion[];
+  mounts: ExpandedMount[];
+  orchestrions: ExpandedOrchestrion[];
+  spells: ExpandedSpell[];
+};
+
+export type ExpandedInstance = ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;

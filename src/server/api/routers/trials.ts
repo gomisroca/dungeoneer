@@ -77,7 +77,7 @@ export const trialsRouter = createTRPCRouter({
       }
 
       return {
-        trials: trials.slice(0, limit),
+        items: trials.slice(0, limit),
         nextCursor,
       };
     }),
