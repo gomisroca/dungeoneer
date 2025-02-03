@@ -109,7 +109,7 @@ export type Instance = {
   name: string;
   description: string;
   image: string | null;
-  patch: string;
+  patch: string | null;
   cards: ExpandedCard[];
   emotes: ExpandedEmote[];
   hairstyles: ExpandedHairstyle[];
