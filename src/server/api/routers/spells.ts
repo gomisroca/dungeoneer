@@ -32,7 +32,7 @@ export const spellsRouter = createTRPCRouter({
       }
 
       return {
-        spells,
+        items: spells.slice(0, limit),
         nextCursor,
       };
     }),

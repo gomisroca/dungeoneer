@@ -1,20 +1,20 @@
 import { test, expect } from '@playwright/test';
 
 test('has object cards', async ({ page }) => {
-  await page.goto('/minions');
+  await page.goto('/collectible/minions');
 
   await expect(page.getByText('Wind-up Cursor')).toBeVisible();
   await expect(page.getByText('Wind-up Dalamud')).toBeVisible();
 });
 
 test('object cards have source content', async ({ page }) => {
-  await page.goto('/minions');
+  await page.goto('/collectible/minions');
 
   await expect(page.getByRole('button', { name: 'Achievement' }).first()).toBeVisible();
 });
 
 test('sources content displays tooltip', async ({ page }) => {
-  await page.goto('/minions');
+  await page.goto('/collectible/minions');
 
   const source = page.getByRole('button', { name: 'Achievement' }).first();
   await source.hover();
@@ -24,7 +24,7 @@ test('sources content displays tooltip', async ({ page }) => {
 });
 
 test('add button is clickable', async ({ page }) => {
-  await page.goto('/minions');
+  await page.goto('/collectible/minions');
 
   const button = page.locator('.relative > button').first();
   await button.click();

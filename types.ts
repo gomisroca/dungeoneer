@@ -95,7 +95,6 @@ export interface ExpandedTrial extends Trial {
 }
 
 export type ItemType = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
-
 export interface Item {
   id: string;
   name: string;
@@ -120,3 +119,11 @@ export type Instance = {
 };
 
 export type ExpandedInstance = ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;
+export type ExpandedCollectible =
+  | ExpandedCard
+  | ExpandedMinion
+  | ExpandedMount
+  | ExpandedOrchestrion
+  | ExpandedSpell
+  | ExpandedEmote
+  | ExpandedHairstyle;
