@@ -4,7 +4,7 @@ test('has instance cards', async ({ page }) => {
   await page.goto('/instance/dungeons');
 
   await expect(page.getByText('Sastasha')).toBeVisible();
-  await expect(page.getByText('Copperbell Mines')).toBeVisible();
+  await expect(page.getByText('The Aurum Vale')).toBeVisible();
 });
 
 test('instance cards have object content', async ({ page }) => {
