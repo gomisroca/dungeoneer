@@ -30,16 +30,21 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
       onClick={handleAddOrRemove}
       className={twMerge('w-5/6 justify-start px-2 py-1 md:w-3/4', compact && 'w-[200px] md:w-fit')}>
       <div className="relative flex-shrink-0">
-        {item.image && (
-          <Image
-            src={item.image}
-            alt={item.name}
-            width={compact ? 25 : 50}
-            height={compact ? 25 : 50}
-            className={twMerge('flex-shrink-0 rounded-xl', owned && 'opacity-75', compact && 'rounded-lg')}
-            unoptimized
-          />
-        )}
+        <div className={twMerge('relative', compact ? 'h-6 w-6' : 'h-12 w-12')}>
+          {item.image && (
+            <Image
+              src={item.image}
+              alt={item.name}
+              fill
+              className={twMerge(
+                'flex-shrink-0 rounded-xl object-contain',
+                owned && 'opacity-75',
+                compact && 'rounded-lg'
+              )}
+              unoptimized
+            />
+          )}
+        </div>
         {owned && (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-4xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
