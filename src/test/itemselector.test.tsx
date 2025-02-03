@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { expect, describe, it, vi } from 'vitest';
 import ItemSelector from '@/app/_components/ItemSelector';
 import { type ItemType } from 'types';
