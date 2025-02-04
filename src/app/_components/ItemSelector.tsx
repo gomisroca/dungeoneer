@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
 import Button from './ui/Button';
-import { type ItemType } from 'types';
+import { type ExpandedInstance, type ItemType } from 'types';
+import { COLLECTIBLE_TYPES } from '@/utils/consts';
 
 interface BaseItem {
   id: string;
@@ -41,7 +42,6 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
                 owned && 'opacity-75',
                 compact && 'rounded-lg'
               )}
-              unoptimized
             />
           )}
         </div>
@@ -73,12 +73,34 @@ interface ItemSelectorProps {
   compact?: boolean;
 }
 
-export default function ItemSelector({ items, type, session, compact = false }: ItemSelectorProps) {
+export function ItemSelector({ items, type, session, compact = false }: ItemSelectorProps) {
   return (
-    <div className="flex flex-wrap items-center justify-start gap-2">
+    <>
       {items.map((item) => (
         <ItemView key={item.id} item={item} type={type} session={session} compact={compact} />
       ))}
-    </div>
+    </>
+  );
+}
+
+interface ItemSelectorsProps {
+  instance: ExpandedInstance;
+  session: Session | null;
+  compact?: boolean;
+}
+
+export default function ItemSelectors({ instance, session, compact = false }: ItemSelectorsProps) {
+  return (
+    <>
+      {COLLECTIBLE_TYPES.map((type) => (
+        <ItemSelector
+          key={type}
+          items={instance[type as ItemType]}
+          type={type as ItemType}
+          session={session}
+          compact={compact}
+        />
+      ))}
+    </>
   );
 }
