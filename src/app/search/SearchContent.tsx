@@ -5,6 +5,7 @@ import SearchBar from './SearchBar';
 import { type Session } from 'next-auth';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/trpc/react';
+import LoadingSpinner from '../_components/ui/LoadingSpinner';
 
 export default function SearchContent({ session }: { session: Session | null }) {
   const params = useSearchParams();
@@ -28,7 +29,7 @@ export default function SearchContent({ session }: { session: Session | null }) 
       {cleanTerm.length > 0 && (
         <h1 className="text-center text-base font-bold md:text-xl">Search Results for &ldquo;{cleanTerm}&rdquo;</h1>
       )}
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <LoadingSpinner />}
       {items && <SearchList items={items} session={session} />}
     </div>
   );
