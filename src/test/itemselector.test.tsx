@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { expect, describe, it, vi } from 'vitest';
-import ItemSelector from '@/app/_components/ItemSelector';
+import { ItemSelector } from '@/app/_components/ItemSelector';
 import { type ItemType } from 'types';
 
 vi.mock('@/hooks/useItemOwnership', () => ({
@@ -15,7 +15,7 @@ const props = {
     {
       id: 'item-id',
       name: 'Item Name',
-      image: 'item-image',
+      image: 'http://example.com/image.png',
       owners: [{ id: 'owner-id' }],
     },
   ],

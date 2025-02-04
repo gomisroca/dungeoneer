@@ -4,7 +4,7 @@ import { type Session } from 'next-auth';
 import { twMerge } from 'tailwind-merge';
 import { type ExpandedInstance } from 'types';
 import useCheckOwnership from '@/hooks/useCheckOwnership';
-import ItemSelector from '@/app/_components/ItemSelector';
+import ItemSelectors from '@/app/_components/ItemSelector';
 
 export default function InstanceListItem({
   instance,
@@ -52,27 +52,7 @@ export default function InstanceListItem({
         )}
       </div>
       <div className="flex flex-wrap gap-2 border-l border-zinc-200 px-2 dark:border-zinc-800">
-        {instance.minions.length > 0 && (
-          <ItemSelector items={instance.minions} type="minions" session={session} compact={true} />
-        )}
-        {instance.mounts.length > 0 && (
-          <ItemSelector items={instance.mounts} type="mounts" session={session} compact={true} />
-        )}
-        {instance.orchestrions.length > 0 && (
-          <ItemSelector items={instance.orchestrions} type="orchestrions" session={session} compact={true} />
-        )}
-        {instance.spells.length > 0 && (
-          <ItemSelector items={instance.spells} type="spells" session={session} compact={true} />
-        )}
-        {instance.cards.length > 0 && (
-          <ItemSelector items={instance.cards} type="cards" session={session} compact={true} />
-        )}
-        {instance.emotes.length > 0 && (
-          <ItemSelector items={instance.emotes} type="emotes" session={session} compact={true} />
-        )}
-        {instance.hairstyles.length > 0 && (
-          <ItemSelector items={instance.hairstyles} type="hairstyles" session={session} compact={true} />
-        )}
+        <ItemSelectors instance={instance} session={session} compact={true} />
       </div>
     </div>
   );

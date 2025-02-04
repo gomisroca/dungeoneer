@@ -4,8 +4,8 @@ import { type Session } from 'next-auth';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import { type ExpandedInstance } from 'types';
-import ItemSelector from './ItemSelector';
 import useCheckOwnership from '@/hooks/useCheckOwnership';
+import ItemSelectors from './ItemSelector';
 
 export default function InstanceCard({ instance, session }: { instance: ExpandedInstance; session: Session | null }) {
   const isCompleted = useCheckOwnership(instance, session);
@@ -55,17 +55,7 @@ export default function InstanceCard({ instance, session }: { instance: Expanded
         )}
       </div>
       <div className="flex w-full flex-col gap-2">
-        {instance.minions.length > 0 && <ItemSelector items={instance.minions} type="minions" session={session} />}
-        {instance.mounts.length > 0 && <ItemSelector items={instance.mounts} type="mounts" session={session} />}
-        {instance.orchestrions.length > 0 && (
-          <ItemSelector items={instance.orchestrions} type="orchestrions" session={session} />
-        )}
-        {instance.spells.length > 0 && <ItemSelector items={instance.spells} type="spells" session={session} />}
-        {instance.cards.length > 0 && <ItemSelector items={instance.cards} type="cards" session={session} />}
-        {instance.emotes.length > 0 && <ItemSelector items={instance.emotes} type="emotes" session={session} />}
-        {instance.hairstyles.length > 0 && (
-          <ItemSelector items={instance.hairstyles} type="hairstyles" session={session} />
-        )}
+        <ItemSelectors instance={instance} session={session} />
       </div>
     </div>
   );

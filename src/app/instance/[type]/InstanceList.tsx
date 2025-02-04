@@ -10,6 +10,7 @@ import Filter from '@/app/_components/Filter';
 import ViewToggler from '@/app/_components/ViewToggler';
 import { type Instance } from 'types';
 import InstanceListItem from './InstanceListItem';
+import LoadingSpinner from '@/app/_components/ui/LoadingSpinner';
 
 type InstanceListOutput<T> = {
   items: T[];
@@ -59,7 +60,7 @@ export default function InstanceList<T extends Instance>({
   return (
     <div className="relative flex flex-col">
       {status === 'pending' ? (
-        <h1 className="p-4 text-base font-bold md:text-xl">Loading...</h1>
+        <LoadingSpinner />
       ) : status === 'error' ? (
         <h1 className="p-4 text-base font-bold md:text-xl">Error fetching {routeKey}</h1>
       ) : (
@@ -83,11 +84,7 @@ export default function InstanceList<T extends Instance>({
               ))}
             </div>
           )}
-          {isFetchingNextPage && (
-            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-base font-bold dark:bg-cyan-700 md:text-xl">
-              Loading more...
-            </h1>
-          )}
+          {isFetchingNextPage && <LoadingSpinner />}
         </>
       )}
     </div>
