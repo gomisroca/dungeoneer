@@ -17,6 +17,49 @@ type NavbarMenuProps = {
   session: Session | null;
 };
 
+function ExpandedMenu({ session }: { session: Session | null }) {
+  return (
+    <div
+      data-testid="expandable-menu"
+      className="mt-2 flex max-h-[600px] flex-col items-center justify-center gap-2 py-2">
+      <StyledLink href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <FaDog size={20} />
+      </StyledLink>
+      <StyledLink href="/collectible/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <FaHorse size={20} />
+      </StyledLink>
+      <StyledLink href="/collectible/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <TbCardsFilled size={20} />
+      </StyledLink>
+      <StyledLink href="/collectible/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <FaMusic size={20} />
+      </StyledLink>
+      <StyledLink href="/collectible/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <FaWandMagicSparkles size={20} />
+      </StyledLink>
+      <StyledLink href="/collectible/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <FaFaceLaugh size={20} />
+      </StyledLink>
+      <StyledLink href="/collectible/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <FaScissors size={20} />
+      </StyledLink>
+      <Separator className="bg-zinc-800 dark:bg-zinc-200" />
+      <StyledLink href="/search" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+        <LuSearch size={20} />
+      </StyledLink>
+      {session ? (
+        <>
+          <SyncButton session={session} />
+          <SignOutButton />
+        </>
+      ) : (
+        <SignInButton />
+      )}
+      <ThemeButton />
+    </div>
+  );
+}
+
 export default function NavbarMenu({ session }: NavbarMenuProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -41,7 +84,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
       <div className="flex flex-col items-center justify-center gap-2">
         <StyledLink href="/instance/dungeons" className="group p-1">
           <Image
-            unoptimized
+            priority={true}
             src="/sources/Dungeon.png"
             alt="Dungeon"
             width={50}
@@ -51,7 +94,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </StyledLink>
         <StyledLink href="/instance/raids" className="group p-1">
           <Image
-            unoptimized
+            priority={true}
             src="/sources/Raid.png"
             alt="Raid"
             width={50}
@@ -61,7 +104,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </StyledLink>
         <StyledLink href="/instance/trials" className="group p-1">
           <Image
-            unoptimized
+            priority={true}
             src="/sources/Trial.png"
             alt="Trial"
             width={50}
@@ -71,7 +114,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </StyledLink>
         <StyledLink href="/instance/variants" className="group p-1">
           <Image
-            unoptimized
+            priority={true}
             src="/sources/V&C Dungeon.png"
             alt="V&C Dungeon"
             width={50}
@@ -79,56 +122,16 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
         </StyledLink>
-        <button
-          className="flex h-8 w-8 flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-0 font-semibold backdrop-blur-md transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700 md:h-full md:w-full md:p-4"
-          onMouseEnter={() => setIsExpanded(true)}
-          onMouseLeave={() => setIsExpanded(false)}
-          onClick={toggleMenu}
-          aria-label="Expand menu">
-          <FaCaretDown size={20} />
-        </button>
-      </div>
-      <div
-        data-testid="expandable-menu"
-        onMouseEnter={() => setIsExpanded(true)}
-        onMouseLeave={() => setIsExpanded(false)}
-        className={`flex flex-col items-center justify-center gap-2 overflow-hidden py-2 transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-[600px] overflow-visible opacity-100' : 'max-h-0 opacity-0'
-        }`}>
-        <StyledLink href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <FaDog size={20} />
-        </StyledLink>
-        <StyledLink href="/collectible/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <FaHorse size={20} />
-        </StyledLink>
-        <StyledLink href="/collectible/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <TbCardsFilled size={20} />
-        </StyledLink>
-        <StyledLink href="/collectible/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <FaMusic size={20} />
-        </StyledLink>
-        <StyledLink href="/collectible/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <FaWandMagicSparkles size={20} />
-        </StyledLink>
-        <StyledLink href="/collectible/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <FaFaceLaugh size={20} />
-        </StyledLink>
-        <StyledLink href="/collectible/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <FaScissors size={20} />
-        </StyledLink>
-        <Separator className="bg-zinc-800 dark:bg-zinc-200" />
-        <StyledLink href="/search" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
-          <LuSearch size={20} />
-        </StyledLink>
-        {session ? (
-          <>
-            <SyncButton session={session} />
-            <SignOutButton />
-          </>
-        ) : (
-          <SignInButton />
-        )}
-        <ThemeButton />
+        <div onMouseLeave={() => setIsExpanded(false)}>
+          <button
+            className="flex h-8 w-8 flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-0 font-semibold transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700 md:h-full md:w-full md:p-4"
+            onMouseEnter={() => setIsExpanded(true)}
+            onClick={toggleMenu}
+            aria-label="Expand menu">
+            <FaCaretDown size={20} />
+          </button>
+          {isExpanded && <ExpandedMenu session={session} />}
+        </div>
       </div>
     </div>
   );

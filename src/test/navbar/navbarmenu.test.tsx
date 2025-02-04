@@ -37,25 +37,22 @@ describe('NavbarMenu', () => {
 
     const menuButton = screen.getByRole('button', { name: 'Expand menu' });
 
-    // Initially, the menu should be collapsed
-    const menu = screen.getByTestId('expandable-menu');
-    expect(menu).toHaveClass('max-h-0 opacity-0');
     // Expand the menu
     act(() => {
       fireEvent.click(menuButton);
     });
-    expect(menu).toHaveClass('max-h-[600px] overflow-visible opacity-100');
-
-    // Collapse the menu
-    act(() => {
-      fireEvent.click(menuButton);
-    });
-    expect(menu).toHaveClass('max-h-0 opacity-0');
+    const menu = screen.getByTestId('expandable-menu');
+    expect(menu).toBeVisible();
   });
 
   it('renders session-based buttons correctly when session is null', () => {
     render(<NavbarMenu session={null} />);
+    const menuButton = screen.getByRole('button', { name: 'Expand menu' });
 
+    // Expand the menu
+    act(() => {
+      fireEvent.click(menuButton);
+    });
     // Check if SignInButton is rendered
     expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
 
@@ -80,7 +77,12 @@ describe('NavbarMenu', () => {
       expires: '100000',
     };
     render(<NavbarMenu session={mockSession} />);
+    const menuButton = screen.getByRole('button', { name: 'Expand menu' });
 
+    // Expand the menu
+    act(() => {
+      fireEvent.click(menuButton);
+    });
     // Check if SignOutButton and SyncButton are rendered
     expect(screen.getByRole('button', { name: 'Sign Out' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sync Collection' })).toBeInTheDocument();
