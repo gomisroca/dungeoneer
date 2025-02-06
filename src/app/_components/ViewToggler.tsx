@@ -10,7 +10,7 @@ function ViewToggler({ onViewChange }: { onViewChange: (view: boolean) => void }
     setView(view);
   }
   return (
-    <div className="fixed right-20 top-1 z-20 flex flex-col items-end justify-end gap-2 p-4 md:right-32">
+    <div className="fixed right-[5.5rem] top-1 z-20 flex flex-col items-end justify-end gap-2 p-4 md:right-[8.5rem]">
       <Button onClick={() => handleViewChange(!view)} className="h-[32px] w-[32px] p-2 md:h-full md:w-fit md:p-3">
         <span className="sr-only">{view ? 'Compact View' : 'Compact View Off'}</span>
         {view ? <LuShrink size={20} /> : <LuExpand size={20} />}
