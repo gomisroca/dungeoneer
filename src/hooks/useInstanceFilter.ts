@@ -36,7 +36,15 @@ function checkOwnership(instance: ExpandedInstance, userId: string | undefined, 
   );
 }
 
-export function useInstanceFilter(instances: ExpandedInstance[], filter: boolean, session: Session | null) {
+export function useInstanceFilter({
+  instances,
+  filter,
+  session,
+}: {
+  instances: ExpandedInstance[];
+  filter: boolean;
+  session: Session | null;
+}) {
   return useMemo(() => {
     if (!filter) return instances;
 
