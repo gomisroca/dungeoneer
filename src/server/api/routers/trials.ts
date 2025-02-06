@@ -9,6 +9,7 @@ export const trialsRouter = createTRPCRouter({
       z.object({
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.number().nullish(),
+        expansion: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -20,6 +21,7 @@ export const trialsRouter = createTRPCRouter({
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: [{ patch: 'asc' }, { id: 'asc' }],
         where: {
+          AND: [{ patch: { contains: input.expansion } }],
           OR: [
             { minions: { some: {} } },
             { mounts: { some: {} } },

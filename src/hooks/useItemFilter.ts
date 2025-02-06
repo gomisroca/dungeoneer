@@ -10,7 +10,11 @@ import {
   type ExpandedSpell,
 } from 'types';
 
-export function useItemFilter(
+export function useItemFilter({
+  items,
+  filter,
+  session,
+}: {
   items:
     | ExpandedCard[]
     | ExpandedMinion[]
@@ -18,10 +22,10 @@ export function useItemFilter(
     | ExpandedOrchestrion[]
     | ExpandedSpell[]
     | ExpandedHairstyle[]
-    | ExpandedEmote[],
-  filter: boolean,
-  session: Session | null
-) {
+    | ExpandedEmote[];
+  filter: boolean;
+  session: Session | null;
+}) {
   switch (filter) {
     case false:
       return items;

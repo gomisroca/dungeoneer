@@ -6,11 +6,13 @@ import { api } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import InstanceCard from '@/app/_components/InstanceCard';
 import { useInstanceFilter } from '@/hooks/useInstanceFilter';
-import Filter from '@/app/_components/Filter';
+import FilterMenu from '@/app/_components/FilterMenu';
 import ViewToggler from '@/app/_components/ViewToggler';
 import { type Instance } from 'types';
 import InstanceListItem from './InstanceListItem';
 import LoadingSpinner from '@/app/_components/ui/LoadingSpinner';
+import { useSearchParams } from 'next/navigation';
+import { EXPANSIONS } from '@/utils/consts';
 
 type InstanceListOutput<T> = {
   items: T[];
@@ -28,11 +30,17 @@ export default function InstanceList<T extends Instance>({
   initialInstances,
   session,
   routeKey,
-  itemsPerPage = 9,
+  itemsPerPage = 20,
 }: InstanceListProps<T>) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api[routeKey].getAll.useInfiniteQuery(
+  const searchParams = useSearchParams();
+  const expansion = searchParams.get('ex') ?? undefined;
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, refetch } = api[
+    routeKey
+  ].getAll.useInfiniteQuery(
     {
       limit: itemsPerPage,
+      expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -44,12 +52,16 @@ export default function InstanceList<T extends Instance>({
 
   const [filter, setFilter] = useState<boolean>(false);
   const [view, setView] = useState<boolean>(false);
-  const filteredInstances = useInstanceFilter(allInstances, filter, session);
+  const filteredInstances = useInstanceFilter({ instances: allInstances, filter, session });
 
   const { ref, entry } = useIntersection({
     root: null,
     threshold: 1,
   });
+
+  useEffect(() => {
+    void refetch();
+  }, [expansion, refetch]);
 
   useEffect(() => {
     if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -66,7 +78,7 @@ export default function InstanceList<T extends Instance>({
       ) : (
         <>
           <ViewToggler onViewChange={setView} />
-          <Filter onFilterChange={setFilter} />
+          <FilterMenu onFilterChange={setFilter} />
           {view ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {filteredInstances.map((instance, index) => (
