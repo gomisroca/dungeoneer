@@ -9,6 +9,7 @@ export const spellsRouter = createTRPCRouter({
       z.object({
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.string().nullish(),
+        expansion: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -18,6 +19,9 @@ export const spellsRouter = createTRPCRouter({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+        where: {
+          patch: { contains: input.expansion },
+        },
         include: {
           owners: true,
           sources: true,
