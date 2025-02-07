@@ -15,7 +15,10 @@ export const notifications = signal<Notification[]>([])
 let nextId = 1;
 
 export function addMessage(message: string) {
-  notifications.value = [...notifications.value, { id: nextId++, message }]
+  notifications.value = [
+    ...notifications.value.slice(Math.max(notifications.value.length - 2, 0)), // Keep the last 2 items
+    { id: nextId++, message }
+  ];
 }
 
 export default function MessagePopup() {
@@ -35,10 +38,11 @@ export default function MessagePopup() {
 
   
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed top-4 right-4 z-50 space-y-2 flex flex-col items-end">
       <AnimatePresence>
         {notifications.value.map((notification) => (
           <motion.div
+            className='w-full'
             key={notification.id}
             initial={{ opacity: 0, y: -50, scale: 0.3 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -46,8 +50,10 @@ export default function MessagePopup() {
             transition={{ type: "spring", stiffness: 500, damping: 25 }}
           >
             <Alert>
-              <FaX onClick={() => removeNotification(notification.id)} className='cursor-pointer' />
-              <AlertTitle>{notification.message}</AlertTitle>
+              <AlertTitle>
+                <FaX onClick={() => removeNotification(notification.id)} className='cursor-pointer mr-2' />
+                <span className='flex-1'>{notification.message}</span>
+              </AlertTitle>
             </Alert>
           </motion.div>
         ))}
