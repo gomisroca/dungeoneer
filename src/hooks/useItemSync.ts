@@ -81,13 +81,11 @@ export default function useItemSync({ session }: { session: Session | null }) {
         }
 
         await mutation.mutateAsync({ id: item.id });
-        addMessage(`Added ${item.name} to your account.`);
         syncedItems.push(item.id);
       } catch (error) {
         if (error instanceof TRPCClientError) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           if (error.data?.code === 'CONFLICT') {
-            addMessage(`${item.name} already exists in your collection.`);
             syncedItems.push(item.id);
           } else {
             addMessage(`Failed to sync ${item.name}. Please try adding it manually.`);
