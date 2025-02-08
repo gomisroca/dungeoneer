@@ -316,7 +316,7 @@ Commit messages must follow the [Conventional Commits](https://www.conventionalc
   If you wish to use a non-relational database (e.g. MongoDB), Prisma will help make the transition easier, but you will have to tinker the schema. You can read more about it in this [MongoDB article](https://www.mongodb.com/resources/compare/mongodb-postgresql/dsl-migrating-postgres-to-mongodb) and in the [Prisma documentation](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/mongodb-typescript-mongodb).
   <h3 id="image-handling">🖼️ Image Handling</h3>
 
-  By default we use [Supabase Buckets](https://supabase.com/docs/guides/storage) for image handling. If you want to switch to a different method, you can remove the *src/supabase.js* file and adjust the settings in *src/utils/uploadImage.ts*. Furthermore, in *src/utils/uploadChecks.ts* you can modify which types of files and sizes are allowed.
+  By default we use [Supabase Buckets](https://supabase.com/docs/guides/storage) for image handling. If you want to switch to a different method, you can remove the *src/utils/supabase.js* file and adjust the settings in *src/utils/uploadImage.ts*. Furthermore, in *src/utils/uploadChecks.ts* you can modify which types of files and sizes are allowed.
 
   The implementation of each image hosting method is beyond the scope of this documentation, but easy steps to follow should be provided by the option you choose.
 
