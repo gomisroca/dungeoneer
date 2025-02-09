@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { type LodestoneCharacter } from 'types';
-
 interface LodestoneSearchListProps {
   characters: LodestoneCharacter[];
 }
@@ -11,13 +11,13 @@ export default function LodestoneSearchList({ characters }: LodestoneSearchListP
         <p className="text-center">No characters were found 😞</p>
       ) : (
         characters.map((character) => (
-          <div key={character.id}>
+          <Link key={character.id} href={`/lodestone/${character.id}`}>
             <h1>{character.name}</h1>
             <Image src={character.avatar} alt={character.name} width={100} height={100} className="rounded-full" />
             <p>
               {character.server} - {character.data_center}
             </p>
-          </div>
+          </Link>
         ))
       )}
     </div>
