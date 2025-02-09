@@ -26,6 +26,12 @@ const config = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'img2.finalfantasyxiv.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
