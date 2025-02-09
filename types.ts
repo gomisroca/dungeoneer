@@ -134,6 +134,8 @@ export type LodestoneCharacter = {
   avatar: string;
   server: string;
   data_center: string;
+  total_mounts: number;
+  total_minions: number;
 };
 
 export type LodestoneCollectable = {
