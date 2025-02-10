@@ -40,7 +40,7 @@ export default async function LodestoneWrapper({ params }: { params: Promise<{ i
           {character.server} - {character.data_center}
         </p>
       </section>
-      {!character.minions.public ? (
+      {!character.minions?.public ? (
         <p>This character&apos;s minion collection is not public.</p>
       ) : (
         <div className="w-full">
@@ -48,7 +48,7 @@ export default async function LodestoneWrapper({ params }: { params: Promise<{ i
           <ProgressBar count={character.minions.count} total={character.minions.total} />
         </div>
       )}
-      {!character.mounts.public ? (
+      {!character.mounts?.public ? (
         <p>This character&apos;s mount collection is not public.</p>
       ) : (
         <div className="w-full">
