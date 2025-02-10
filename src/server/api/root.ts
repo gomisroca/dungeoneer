@@ -12,6 +12,7 @@ import { cardsRouter } from './routers/cards';
 import { variantsRouter } from './routers/variants';
 import { emotesRouter } from './routers/emotes';
 import { hairstylesRouter } from './routers/hairstyles';
+import { lodestoneRouter } from './routers/lodestone';
 import { miscRouter } from './routers/misc';
 
 /**
@@ -31,6 +32,7 @@ export const appRouter = createTRPCRouter({
   variants: variantsRouter,
   raids: raidsRouter,
   trials: trialsRouter,
+  lodestone: lodestoneRouter,
   misc: miscRouter,
 });
 

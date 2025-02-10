@@ -1,0 +1,25 @@
+import StyledLink from '@/app/_components/ui/StyledLink';
+import Image from 'next/image';
+import { type LodestoneCharacter } from 'types';
+interface LodestoneSearchListProps {
+  characters: LodestoneCharacter[];
+}
+export default function LodestoneSearchList({ characters }: LodestoneSearchListProps) {
+  if (!characters || characters.length === 0) return <p className="text-center">No characters were found 😞</p>;
+  return (
+    <div className="flex w-full flex-wrap justify-center gap-4">
+      {characters.map((character) => (
+        <StyledLink
+          key={character.id}
+          href={`/lodestone/character/${character.id}`}
+          className="flex flex-col items-center justify-center gap-y-2">
+          <Image src={character.avatar} alt={character.name} width={100} height={100} className="rounded-full" />
+          <h1 className="text-2xl font-bold">{character.name}</h1>
+          <p className="text-sm">
+            {character.server} - {character.data_center}
+          </p>
+        </StyledLink>
+      ))}
+    </div>
+  );
+}
