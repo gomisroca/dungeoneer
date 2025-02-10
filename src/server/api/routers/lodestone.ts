@@ -1,16 +1,8 @@
 import { z } from 'zod';
-import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { CharacterSearch } from '@xivapi/nodestone';
-import { type LodestoneCharacter, type LodestoneCollectable } from 'types';
-
-interface NodestoneCharacter {
-  ID: number;
-  Name: string;
-  Avatar: string;
-  World: string;
-  DC: string;
-}
+import { type LodestoneCharacter } from 'types';
+import puppeteer from 'puppeteer';
 
 export const lodestoneRouter = createTRPCRouter({
   search: publicProcedure
@@ -19,42 +11,89 @@ export const lodestoneRouter = createTRPCRouter({
         name: z.string(),
         server: z.string().optional(),
         dc: z.string().optional(),
-        page: z.number(),
+        page: z.string(),
       })
     )
     .query(async ({ input }) => {
       try {
-        const characterSearchParser = new CharacterSearch();
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
 
-        const query: Record<string, string> = {
-          name: input.name,
-          ...(input.server && { server: input.server }),
-          ...(!input.server && input.dc && { dc: input.dc }),
-          ...(input.page > 0 ? { page: input.page.toString() } : {}),
-        };
+        const baseUrl = 'https://eu.finalfantasyxiv.com/lodestone/character/';
+        const params = new URLSearchParams();
 
-        // @ts-expect-error Nodestone parse
-        const characterSearch: {
-          List: NodestoneCharacter[];
-          Pagination: { Page: number; PageTotal: number; PageNext: number; PagePrev: number };
-        } =
-          // @ts-expect-error Nodestone parse
-          await characterSearchParser.parse({ query });
+        params.append('q', input.name);
+        if (input.server) {
+          params.append('worldname', input.server); // If server is provided, use it directly
+        } else if (input.dc) {
+          params.append('worldname', `_dc_${input.dc}`); // If data center is provided, prefix it
+        } else {
+          params.append('worldname', ''); // If neither server nor data center is provided, use the default world
+        }
+        params.append('page', input.page);
+        const searchUrl = `${baseUrl}?${params.toString()}`;
 
+        await page.goto(searchUrl, {
+          waitUntil: 'networkidle2',
+        });
+
+        const noResults = await page.$('.parts__zero');
+        if (noResults) {
+          await browser.close();
+          return [];
+        }
+
+        let characters = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('.entry')).map((entry) => ({
+            name: entry.querySelector('.entry__name')?.textContent?.trim() ?? 'Unknown',
+            avatar: entry.querySelector('.entry__chara__face > img')?.getAttribute('src') ?? '',
+            id:
+              entry
+                .querySelector('.entry__link')
+                ?.getAttribute('href')
+                ?.match(/lodestone\/character\/(\d*)\//)?.[1] ?? '',
+            world: entry.querySelector('.entry__world')?.textContent?.match(/(\w*)\s+\[(\w*)\]/)![1],
+            dataCenter: entry.querySelector('.entry__world')?.textContent?.match(/(\w*)\s+\[(\w*)\]/)![2],
+          }));
+        });
+        characters = characters.filter((character) => character.name.toLowerCase().includes(input.name.toLowerCase()));
+
+        const pagination = await page.evaluate(() => {
+          return {
+            current: document
+              .querySelector('ul.btn__pager > li:nth-child(3)')
+              ?.textContent?.match(/\D*(\d+)\D*(\d+)/)![1],
+            total: document
+              .querySelector('ul.btn__pager > li:nth-child(3)')
+              ?.textContent?.match(/\D*(\d+)\D*(\d+)/)![2],
+            prev: document.querySelector('ul.btn__pager > li:nth-child(1) > a:nth-child(1)')?.getAttribute('href'),
+            next: document.querySelector('ul.btn__pager > li:nth-child(4) > a:nth-child(1)')?.getAttribute('href'),
+          };
+        });
+
+        await browser.close();
         return {
-          characters: characterSearch.List.map((character) => ({
-            id: character.ID,
-            name: character.Name,
-            avatar: character.Avatar,
-            server: character.World,
-            data_center: character.DC,
-          })) as LodestoneCharacter[],
+          characters: characters.map((character) => ({
+            id: character.id,
+            name: character.name,
+            avatar: character.avatar,
+            server: character.world,
+            data_center: character.dataCenter,
+          })),
           pagination: {
-            page: characterSearch.Pagination.Page,
-            total: characterSearch.Pagination.PageTotal,
-            next: characterSearch.Pagination.PageNext,
-            prev: characterSearch.Pagination.PagePrev,
+            current: pagination.current,
+            total: pagination.total,
+            next: pagination.next,
+            prev: pagination.prev,
           },
+        } as {
+          characters: LodestoneCharacter[];
+          pagination: {
+            current: string;
+            total: string;
+            next: string | null;
+            prev: string | null;
+          };
         };
       } catch (error) {
         if (error instanceof TRPCError) {
@@ -70,49 +109,97 @@ export const lodestoneRouter = createTRPCRouter({
         lodestoneId: z.string(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        const url = `https://ffxivcollect.com/api/characters/${input.lodestoneId}`;
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
 
-        // Fetch all responses in parallel
-        const res = await fetch(url);
+        await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/`, {
+          waitUntil: 'networkidle2',
+        });
+        const character = await page.evaluate(() => {
+          return {
+            name:
+              document.querySelector('div.frame__chara__box:nth-child(2) > .frame__chara__name')?.textContent?.trim() ??
+              'Unknown',
+            avatar: document.querySelector('.frame__chara__face > img:nth-child(1)')?.getAttribute('src') ?? '',
+            server:
+              document
+                .querySelector('p.frame__chara__world')
+                ?.textContent?.match(/(?<World>\w+)\s+\[(?<DC>\w+)\]/)![1] ?? 'Unknown',
+            data_center:
+              document
+                .querySelector('p.frame__chara__world')
+                ?.textContent?.match(/(?<World>\w+)\s+\[(?<DC>\w+)\]/)![2] ?? 'Unknown',
+          };
+        });
 
-        // Ensure all responses are OK
-        if (!res.ok) {
-          throw new Error(`Failed to fetch data. Status codes: ${res.status}`);
-        }
+        await page.setUserAgent(
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1'
+        );
+        // Navigate the page to target website
+        await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/mount/`, {
+          waitUntil: 'networkidle2',
+        });
 
-        // Parse JSON responses
-        const character = (await res.json()) as LodestoneCharacter;
+        // Get the text content of the page's body
+        const dbMounts = await ctx.db.mount.count();
+        const mounts = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('.mount__list__item')).map((mount) => ({
+            name: mount.querySelector('.mount__name')?.textContent?.trim() ?? 'Unknown',
+          }));
+        });
+
+        // Navigate the page to target website
+        await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/minion/`, {
+          waitUntil: 'networkidle2',
+        });
+
+        const dbMinions = await ctx.db.minion.count();
+        const minions = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('.minion__list__item')).map((minion) => ({
+            name: minion.querySelector('.minion__name')?.textContent?.trim() ?? 'Unknown',
+          }));
+        });
+
+        // Close the browser
+        await browser.close();
 
         return {
           name: character.name,
           avatar: character.avatar,
           server: character.server,
           data_center: character.data_center,
-          total_mounts: character.total_mounts,
-          total_minions: character.total_minions,
-        };
+          mounts: {
+            count: mounts.length,
+            total: dbMounts,
+            public: mounts.length > 0,
+          },
+          minions: {
+            count: minions.length,
+            total: dbMinions,
+            public: minions.length > 0,
+          },
+        } as LodestoneCharacter;
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
         } else {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Character not found' });
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Failed to fetch character' });
         }
       }
     }),
-  sync: publicProcedure
+  sync: protectedProcedure
     .input(
       z.object({
         lodestoneId: z.string(),
-        userId: z.string().optional(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       try {
         const user = await ctx.db.user.findUnique({
           where: {
-            id: input.userId,
+            id: ctx.session.user.id,
           },
           include: {
             mounts: true,
@@ -121,25 +208,49 @@ export const lodestoneRouter = createTRPCRouter({
         });
         if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
 
-        const urls = [
-          `https://ffxivcollect.com/api/characters/${input.lodestoneId}/mounts/owned`,
-          `https://ffxivcollect.com/api/characters/${input.lodestoneId}/minions/owned`,
-        ];
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
 
-        // Fetch all responses in parallel
-        const responses = await Promise.all(urls.map((url) => fetch(url)));
+        await page.setUserAgent(
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1'
+        );
+        // Navigate the page to target website
+        await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/mount/`, {
+          waitUntil: 'networkidle2',
+        });
+        const mounts = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('.mount__list__item')).map((mount) => ({
+            name: mount.querySelector('.mount__name')?.textContent?.trim() ?? 'Unknown',
+          }));
+        });
 
-        // Ensure all responses are OK
-        if (responses.some((res) => !res.ok)) {
-          throw new Error(`Failed to fetch data. Status codes: ${responses.map((res) => res.status).join(', ')}`);
-        }
+        // Navigate the page to target website
+        await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/minion/`, {
+          waitUntil: 'networkidle2',
+        });
 
-        // Parse JSON responses
-        const mounts = (await responses[1]?.json()) as LodestoneCollectable[];
-        const minions = (await responses[2]?.json()) as LodestoneCollectable[];
+        const minions = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('.minion__list__item')).map((minion) => ({
+            name: minion.querySelector('.minion__name')?.textContent?.trim() ?? 'Unknown',
+          }));
+        });
 
-        // Here we get the localstorage or database data, and we do a process similar to when we sync localstorage to database
-        // If collectable is not in collection, add it, if it is and it shouldn't be, remove it
+        // Extract mount and minion names
+        const mountNames = mounts.map((mount) => mount.name);
+        const minionNames = minions.map((minion) => minion.name);
+
+        // Batch query mounts and minions in a single query each
+        const [dbMounts, dbMinions] = await Promise.all([
+          ctx.db.mount.findMany({
+            where: { name: { in: mountNames } },
+            select: { id: true },
+          }),
+          ctx.db.minion.findMany({
+            where: { name: { in: minionNames } },
+            select: { id: true },
+          }),
+        ]);
+
         await ctx.db.user.update({
           where: {
             id: user.id,
@@ -154,49 +265,21 @@ export const lodestoneRouter = createTRPCRouter({
           },
         });
 
-        for (const mount of mounts) {
-          const dbMount = await ctx.db.mount.findFirst({
-            where: {
-              name: mount.name,
+        await ctx.db.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            mounts: {
+              connect: dbMounts.map((mount) => ({ id: mount.id })),
             },
-          });
-          if (dbMount) {
-            await ctx.db.user.update({
-              where: {
-                id: user.id,
-              },
-              data: {
-                mounts: {
-                  connect: {
-                    id: dbMount.id,
-                  },
-                },
-              },
-            });
-          }
-        }
+            minions: {
+              connect: dbMinions.map((minion) => ({ id: minion.id })),
+            },
+          },
+        });
 
-        for (const minion of minions) {
-          const dbMinion = await ctx.db.minion.findFirst({
-            where: {
-              name: minion.name,
-            },
-          });
-          if (dbMinion) {
-            await ctx.db.user.update({
-              where: {
-                id: user.id,
-              },
-              data: {
-                minions: {
-                  connect: {
-                    id: dbMinion.id,
-                  },
-                },
-              },
-            });
-          }
-        }
+        await browser.close();
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
