@@ -21,7 +21,7 @@ function ExpandedMenu({ session }: { session: Session | null }) {
   return (
     <div
       data-testid="expandable-menu"
-      className="mt-2 flex max-h-[600px] flex-col items-center justify-center gap-2 py-2">
+      className="mt-2 flex max-h-[800px] flex-col items-center justify-center gap-2 py-2">
       <StyledLink href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaDog size={20} />
       </StyledLink>
