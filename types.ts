@@ -129,13 +129,21 @@ export type ExpandedCollectible =
   | ExpandedHairstyle;
 
 export type LodestoneCharacter = {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
   server: string;
   data_center: string;
-  total_mounts: number;
-  total_minions: number;
+  mounts?: {
+    count: number;
+    total: number;
+    public: boolean;
+  };
+  minions?: {
+    count: number;
+    total: number;
+    public: boolean;
+  };
 };
 
 export type LodestoneCollectable = {
