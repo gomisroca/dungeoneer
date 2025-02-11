@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
 import { type LodestoneCharacter } from 'types';
-import puppeteer from 'puppeteer';
+import { getPage } from '@/utils/puppeteer';
 
 export const lodestoneRouter = createTRPCRouter({
   search: publicProcedure
@@ -16,9 +16,11 @@ export const lodestoneRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       try {
-        const browser = await puppeteer.launch({ headless: true });
-        const page = await browser.newPage();
+        const page = await getPage();
 
+        await page.setUserAgent(
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        );
         const baseUrl = 'https://eu.finalfantasyxiv.com/lodestone/character/';
         const params = new URLSearchParams();
 
@@ -35,11 +37,12 @@ export const lodestoneRouter = createTRPCRouter({
 
         await page.goto(searchUrl, {
           waitUntil: 'networkidle2',
+          timeout: 60000,
         });
+        console.log('Page loaded:', await page.title());
 
         const noResults = await page.$('.parts__zero');
         if (noResults) {
-          await browser.close();
           return [];
         }
 
@@ -71,7 +74,6 @@ export const lodestoneRouter = createTRPCRouter({
           };
         });
 
-        await browser.close();
         return {
           characters: characters.map((character) => ({
             id: character.id,
@@ -99,7 +101,7 @@ export const lodestoneRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         } else {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'No characters were found' });
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'No characters were found', cause: error });
         }
       }
     }),
@@ -111,12 +113,13 @@ export const lodestoneRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       try {
-        const browser = await puppeteer.launch({ headless: true });
-        const page = await browser.newPage();
+        const page = await getPage();
 
         await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/`, {
           waitUntil: 'networkidle2',
         });
+        console.log('Page loaded:', await page.title());
+
         const character = await page.evaluate(() => {
           return {
             name:
@@ -140,30 +143,24 @@ export const lodestoneRouter = createTRPCRouter({
         // Navigate the page to target website
         await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/mount/`, {
           waitUntil: 'networkidle2',
+          timeout: 60000,
         });
 
         // Get the text content of the page's body
         const dbMounts = await ctx.db.mount.count();
         const mounts = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('.mount__list__item')).map((mount) => ({
-            name: mount.querySelector('.mount__name')?.textContent?.trim() ?? 'Unknown',
-          }));
+          return document.querySelector('.minion__sort__total > span:nth-child(1)')?.textContent?.trim() ?? '0';
         });
-
         // Navigate the page to target website
         await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/minion/`, {
           waitUntil: 'networkidle2',
+          timeout: 60000,
         });
 
         const dbMinions = await ctx.db.minion.count();
         const minions = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('.minion__list__item')).map((minion) => ({
-            name: minion.querySelector('.minion__name')?.textContent?.trim() ?? 'Unknown',
-          }));
+          return document.querySelector('.minion__sort__total > span:nth-child(1)')?.textContent?.trim() ?? '0';
         });
-
-        // Close the browser
-        await browser.close();
 
         return {
           name: character.name,
@@ -171,21 +168,21 @@ export const lodestoneRouter = createTRPCRouter({
           server: character.server,
           data_center: character.data_center,
           mounts: {
-            count: mounts.length,
+            count: Number(mounts),
             total: dbMounts,
-            public: mounts.length > 0,
+            public: Number(mounts) > 0,
           },
           minions: {
-            count: minions.length,
+            count: Number(minions),
             total: dbMinions,
-            public: minions.length > 0,
+            public: Number(minions) > 0,
           },
         } as LodestoneCharacter;
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
         } else {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Failed to fetch character' });
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Failed to fetch character', cause: error });
         }
       }
     }),
@@ -208,8 +205,7 @@ export const lodestoneRouter = createTRPCRouter({
         });
         if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
 
-        const browser = await puppeteer.launch({ headless: true });
-        const page = await browser.newPage();
+        const page = await getPage();
 
         await page.setUserAgent(
           'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1'
@@ -217,6 +213,7 @@ export const lodestoneRouter = createTRPCRouter({
         // Navigate the page to target website
         await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/mount/`, {
           waitUntil: 'networkidle2',
+          timeout: 60000,
         });
         const mounts = await page.evaluate(() => {
           return Array.from(document.querySelectorAll('.mount__list__item')).map((mount) => ({
@@ -227,6 +224,7 @@ export const lodestoneRouter = createTRPCRouter({
         // Navigate the page to target website
         await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/minion/`, {
           waitUntil: 'networkidle2',
+          timeout: 60000,
         });
 
         const minions = await page.evaluate(() => {
@@ -278,8 +276,6 @@ export const lodestoneRouter = createTRPCRouter({
             },
           },
         });
-
-        await browser.close();
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
