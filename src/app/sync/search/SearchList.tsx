@@ -11,7 +11,7 @@ export default function LodestoneSearchList({ characters }: LodestoneSearchListP
       {characters.map((character) => (
         <StyledLink
           key={character.id}
-          href={`/lodestone/character/${character.id}`}
+          href={`/sync/character/${character.id}`}
           className="flex flex-col items-center justify-center gap-y-2">
           <Image src={character.avatar} alt={character.name} width={100} height={100} className="rounded-full" />
           <h1 className="text-2xl font-bold">{character.name}</h1>
