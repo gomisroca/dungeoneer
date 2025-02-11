@@ -117,6 +117,7 @@ export const lodestoneRouter = createTRPCRouter({
 
         await page.goto(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/`, {
           waitUntil: 'networkidle2',
+          timeout: 60000,
         });
         console.log('Page loaded:', await page.title());
 
@@ -136,6 +137,7 @@ export const lodestoneRouter = createTRPCRouter({
                 ?.textContent?.match(/(?<World>\w+)\s+\[(?<DC>\w+)\]/)![2] ?? 'Unknown',
           };
         });
+        console.log(character);
 
         await page.setUserAgent(
           'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1'
