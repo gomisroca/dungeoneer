@@ -56,24 +56,28 @@ export default function LodestoneSearch() {
         <h1 className="text-center text-base font-bold md:text-xl">Search Results for &ldquo;{name}&rdquo;</h1>
       )}
       {isLoading && <LoadingSpinner />}
-      {data?.characters && <LodestoneSearchList characters={data.characters} />}
-      <section className="flex items-center justify-center gap-2">
-        {data?.pagination?.prev !== 'javascript:void(0);' && (
-          <Button
-            onClick={() => handlePageChange(Number(page) - 1)}
-            disabled={isLoading || page === '1' || !data?.pagination?.prev}>
-            {Number(page) - 1}
-          </Button>
-        )}
-        <span className="rounded-xl p-4 text-lg font-bold">{data?.pagination?.current}</span>
-        {data?.pagination?.next !== 'javascript:void(0);' && (
-          <Button
-            onClick={() => handlePageChange(Number(page) + 1)}
-            disabled={isLoading || page === data?.pagination.total || !data?.pagination?.next}>
-            {Number(page) + 1}
-          </Button>
-        )}
-      </section>
+      {data?.characters && (
+        <>
+          <LodestoneSearchList characters={data.characters} />
+          <section className="flex items-center justify-center gap-2">
+            {data?.pagination?.prev !== 'javascript:void(0);' && (
+              <Button
+                onClick={() => handlePageChange(Number(page) - 1)}
+                disabled={isLoading || page === '1' || !data?.pagination?.prev}>
+                {Number(page) - 1}
+              </Button>
+            )}
+            <span className="rounded-xl p-4 text-lg font-bold">{data?.pagination?.current}</span>
+            {data?.pagination?.next !== 'javascript:void(0);' && (
+              <Button
+                onClick={() => handlePageChange(Number(page) + 1)}
+                disabled={isLoading || page === data?.pagination.total || !data?.pagination?.next}>
+                {Number(page) + 1}
+              </Button>
+            )}
+          </section>
+        </>
+      )}
     </div>
   );
 }
