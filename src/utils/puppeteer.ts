@@ -1,3 +1,4 @@
+import { env } from '@/env';
 import puppeteer, { type Browser, type Page } from 'puppeteer';
 
 declare global {
@@ -10,9 +11,13 @@ global._browser = global._browser ?? null;
 export const getBrowser = async (): Promise<Browser> => {
   if (!global._browser) {
     console.log('Launching new Puppeteer instance...');
-    global._browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    const launchArgs = JSON.stringify({
+      headless: false,
+      timeout: 60000,
+    });
+
+    global._browser = await puppeteer.connect({
+      browserWSEndpoint: `wss://production-sfo.browserless.io?token=${env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
     });
   }
   return global._browser;
