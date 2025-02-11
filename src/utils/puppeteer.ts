@@ -17,7 +17,7 @@ export const getBrowser = async (): Promise<Browser> => {
     });
 
     global._browser = await puppeteer.connect({
-      browserWSEndpoint: `wss://production-sfo.browserless.io?token=${env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
+      browserWSEndpoint: `wss://chrome.browserless.io?token=${env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
     });
   }
   return global._browser;
