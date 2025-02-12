@@ -3,7 +3,7 @@ import { Separator } from './_components/ui/Separator';
 
 export default async function Home() {
   return (
-    <div className="relative rounded-xl bg-slate-300/20 p-4 text-base font-semibold shadow-md dark:bg-slate-700/20 md:text-xl">
+    <div className="relative rounded-xl bg-zinc-300/20 p-4 text-base font-semibold shadow-md dark:bg-zinc-700/20 md:text-xl">
       <Image
         unoptimized
         src="/xivlogo.png"
