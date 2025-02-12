@@ -22,7 +22,6 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     SUPABASE_ANON_KEY: z.string(),
     SUPABASE_PROJECT_URL: z.string(),
-    BROWSERLESS_TOKEN: z.string(),
   },
 
   /**
@@ -49,7 +48,6 @@ export const env = createEnv({
     NEXT_PUBLIC_IMAGE_PROXY_HOSTNAME: process.env.NEXT_PUBLIC_IMAGE_PROXY_HOSTNAME,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     SUPABASE_PROJECT_URL: process.env.SUPABASE_PROJECT_URL,
-    BROWSERLESS_TOKEN: process.env.BROWSERLESS_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
