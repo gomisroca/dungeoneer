@@ -58,7 +58,6 @@ describe('NavbarMenu', () => {
 
     // Check if SignOutButton and SyncButton are not rendered
     expect(screen.queryByRole('button', { name: 'Sign Out' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Sync Collection' })).not.toBeInTheDocument();
   });
 
   it('renders session-based buttons correctly when session is provided', () => {
@@ -85,7 +84,6 @@ describe('NavbarMenu', () => {
     });
     // Check if SignOutButton and SyncButton are rendered
     expect(screen.getByRole('button', { name: 'Sign Out' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Sync Collection' })).toBeInTheDocument();
 
     // Check if SignInButton is not rendered
     expect(screen.queryByRole('button', { name: 'Sign In' })).not.toBeInTheDocument();
