@@ -35,14 +35,16 @@ function SyncButton({ session, lodestoneId }: { session: Session | null; lodesto
     <section className="flex flex-col items-center justify-center gap-2">
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button disabled={!session || syncLodestone.isPending}>Sync Character</Button>
+          <Button className="mx-auto w-64" disabled={!session || syncLodestone.isPending}>
+            Sync Character
+          </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will update your minion and mount collections to match those of the character on Lodestone. Your
-              current collection will be replaced.
+              <p>This will update your minion and mount collections to match those of the character on Lodestone.</p>
+              <p>Your current collection will be replaced.</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

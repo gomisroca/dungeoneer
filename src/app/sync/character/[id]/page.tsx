@@ -32,7 +32,7 @@ export default async function LodestoneWrapper({ params }: { params: Promise<{ i
   });
 
   return (
-    <main className="flex min-w-96 flex-col items-center justify-center gap-y-10 rounded-xl bg-zinc-200/20 p-10 dark:bg-zinc-900/20">
+    <main className="flex min-w-64 flex-col items-center justify-center gap-y-10 rounded-xl bg-zinc-200/20 p-10 dark:bg-zinc-900/20 md:min-w-96">
       <section className="flex flex-col items-center justify-center">
         <Image src={character.avatar} alt={character.name} width={100} height={100} className="rounded-full" />
         <h1 className="text-2xl font-bold">{character.name}</h1>

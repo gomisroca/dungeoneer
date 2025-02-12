@@ -18,7 +18,7 @@ function ServerSelect({
   return (
     <div className="flex flex-col gap-2">
       <select
-        className="w-full rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+        className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
         onChange={(e) => {
           setSelectedDataCenter(e.target.value);
           setSelectedWorld('');
@@ -33,7 +33,7 @@ function ServerSelect({
 
       {selectedDataCenter && (
         <select
-          className="w-full rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+          className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
           onChange={(e) => setSelectedWorld(e.target.value)}>
           <option value="">Select a world</option>
           {(DATA_CENTERS[selectedDataCenter as keyof typeof DATA_CENTERS] || []).map((world) => (
@@ -69,9 +69,9 @@ function SearchBar() {
   };
 
   return (
-    <div className="flex w-5/6 flex-col gap-2 md:w-2/3 lg:w-1/2 xl:w-[400px]">
+    <div className="flex w-full flex-col gap-2 md:w-2/3 lg:w-1/2 xl:w-[400px]">
       <input
-        className="w-full rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+        className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
         type="text"
         value={searchTerm}
         onChange={handleChange}
@@ -82,7 +82,7 @@ function SearchBar() {
         setSelectedDataCenter={setSelectedDataCenter}
         setSelectedWorld={setSelectedWorld}
       />
-      <Button onClick={handleSearch} disabled={searchTerm.trim().length === 0}>
+      <Button onClick={handleSearch} disabled={searchTerm.trim().length === 0} className="mx-auto w-64">
         <MdSearch size={20} /> Search
         <span className="sr-only">Search</span>
       </Button>
