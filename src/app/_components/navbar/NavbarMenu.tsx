@@ -11,7 +11,7 @@ import SignInButton from './SignInButton';
 import ThemeButton from './themeButton';
 import { Separator } from '../ui/Separator';
 import { LuSearch } from 'react-icons/lu';
-import SyncButton from './SyncButton';
+import { MdOutlineSync } from 'react-icons/md';
 
 type NavbarMenuProps = {
   session: Session | null;
@@ -21,7 +21,7 @@ function ExpandedMenu({ session }: { session: Session | null }) {
   return (
     <div
       data-testid="expandable-menu"
-      className="mt-2 flex max-h-[600px] flex-col items-center justify-center gap-2 py-2">
+      className="mt-2 flex max-h-[800px] flex-col items-center justify-center gap-2 py-2">
       <StyledLink href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaDog size={20} />
       </StyledLink>
@@ -49,7 +49,10 @@ function ExpandedMenu({ session }: { session: Session | null }) {
       </StyledLink>
       {session ? (
         <>
-          <SyncButton session={session} />
+          <StyledLink href="/sync" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+            <MdOutlineSync size={20} />
+            <span className="sr-only">Sync Collection</span>
+          </StyledLink>
           <SignOutButton />
         </>
       ) : (

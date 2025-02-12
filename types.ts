@@ -127,3 +127,34 @@ export type ExpandedCollectible =
   | ExpandedSpell
   | ExpandedEmote
   | ExpandedHairstyle;
+
+export type LodestoneCharacter = {
+  id: string;
+  name: string;
+  avatar: string;
+  server: string;
+  data_center: string;
+  mounts?: {
+    count: number;
+    total: number;
+    public: boolean;
+  };
+  minions?: {
+    count: number;
+    total: number;
+    public: boolean;
+  };
+};
+
+export type LodestoneCollectable = {
+  id: number;
+  name: string;
+  patch: string;
+  image: string;
+  sources: [
+    {
+      type: string;
+      text: string;
+    },
+  ];
+};
