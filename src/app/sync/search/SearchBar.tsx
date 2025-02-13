@@ -75,6 +75,7 @@ function SearchBar() {
         type="text"
         value={searchTerm}
         onChange={handleChange}
+        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         placeholder="Search..."
       />
       <ServerSelect
