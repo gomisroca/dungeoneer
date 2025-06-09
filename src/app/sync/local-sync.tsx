@@ -27,7 +27,7 @@ function LocalSyncButton({ isSyncing, syncCollection, syncCount, session }: Loca
   );
 }
 
-export default function LocalSyncSection({ session }: { session: Session | null }) {
+export default function LocalSync({ session }: { session: Session | null }) {
   const [syncCount, setSyncCount] = useState(0);
   const { syncCollection, isSyncing, getLocalItems } = useItemSync({ session });
 
