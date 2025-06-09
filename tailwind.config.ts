@@ -5,6 +5,5 @@ export default {
     hoverOnlyWhenSupported: true,
   },
   content: ['./src/**/*.tsx'],
-  darkMode: ['class'],
   plugins: [],
 } satisfies Config;

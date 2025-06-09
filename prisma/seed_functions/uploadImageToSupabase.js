@@ -1,4 +1,4 @@
-import supabase from '../../src/utils/supabase';
+import supabase from './supabase';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;

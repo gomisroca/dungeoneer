@@ -22,6 +22,8 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     SUPABASE_ANON_KEY: z.string(),
     SUPABASE_PROJECT_URL: z.string(),
+    UPSTASH_REDIS_REST_URL: z.string().url(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
   },
 
   /**
@@ -48,6 +50,8 @@ export const env = createEnv({
     NEXT_PUBLIC_IMAGE_PROXY_HOSTNAME: process.env.NEXT_PUBLIC_IMAGE_PROXY_HOSTNAME,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     SUPABASE_PROJECT_URL: process.env.SUPABASE_PROJECT_URL,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
