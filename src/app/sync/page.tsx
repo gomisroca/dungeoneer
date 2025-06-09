@@ -1,9 +1,9 @@
-import { getServerAuthSession } from '@/server/auth';
+import { auth } from '@/server/auth';
 import StyledLink from '../_components/ui/StyledLink';
 import { MdOutlineSearch } from 'react-icons/md';
-import LocalSyncSection from './LocalSyncSection';
+import LocalSync from './local-sync';
 
-function LodestoneSection() {
+function LodestoneSync() {
   return (
     <section>
       You can also look up a Lodestone character and sync their mount and minion collections.
@@ -16,11 +16,11 @@ function LodestoneSection() {
 }
 
 async function Sync() {
-  const session = await getServerAuthSession();
+  const session = await auth();
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      <LocalSyncSection session={session} />
-      <LodestoneSection />
+      <LocalSync session={session} />
+      <LodestoneSync />
     </div>
   );
 }

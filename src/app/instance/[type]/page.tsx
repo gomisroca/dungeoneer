@@ -1,4 +1,4 @@
-import { getServerAuthSession } from '@/server/auth';
+import { auth } from '@/server/auth';
 import { api } from '@/trpc/server';
 import { Suspense } from 'react';
 import Loading from './loading';
@@ -25,7 +25,7 @@ export default async function InstanceListWrapper({
     limit: 20,
     expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
   });
-  const session = await getServerAuthSession();
+  const session = await auth();
   return (
     <Suspense fallback={<Loading />}>
       <InstanceList session={session} initialInstances={initialInstances} routeKey={routeKey} />

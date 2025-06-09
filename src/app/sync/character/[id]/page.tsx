@@ -1,8 +1,8 @@
-import { api } from '@/trpc/server';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import SyncButton from './SyncButton';
-import { getServerAuthSession } from '@/server/auth';
+import SyncButton from './sync-button';
+import { auth } from '@/server/auth';
+import { fetchUniqueLodestoneCharacter } from '@/server/queries/lodestone';
 
 interface ProgressBarProps {
   count: number;
@@ -23,16 +23,14 @@ function ProgressBar({ count, total }: ProgressBarProps) {
 }
 
 export default async function LodestoneWrapper({ params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
   const lodestoneId = (await params).id;
   if (!lodestoneId) return notFound();
 
-  const character = await api.lodestone.character({
-    lodestoneId: lodestoneId,
-  });
+  const character = await fetchUniqueLodestoneCharacter({ lodestoneId });
 
   return (
-    <main className="flex min-w-64 flex-col items-center justify-center gap-y-10 rounded-xl bg-zinc-200/20 p-10 dark:bg-zinc-900/20 md:min-w-96">
+    <div className="flex min-w-64 flex-col items-center justify-center gap-y-10 rounded-xl bg-zinc-200/20 p-10 md:min-w-96 dark:bg-zinc-900/20">
       <section className="flex flex-col items-center justify-center">
         <Image src={character.avatar} alt={character.name} width={100} height={100} className="rounded-full" />
         <h1 className="text-2xl font-bold">{character.name}</h1>
@@ -57,6 +55,6 @@ export default async function LodestoneWrapper({ params }: { params: Promise<{ i
         </div>
       )}
       <SyncButton session={session} lodestoneId={lodestoneId} />
-    </main>
+    </div>
   );
 }
