@@ -1,10 +1,12 @@
 import StyledLink from '@/app/_components/ui/StyledLink';
 import Image from 'next/image';
 import { type LodestoneCharacter } from 'types';
+
 interface LodestoneSearchListProps {
   characters: LodestoneCharacter[];
 }
-export default function LodestoneSearchList({ characters }: LodestoneSearchListProps) {
+
+export default async function LodestoneSearchList({ characters }: LodestoneSearchListProps) {
   if (!characters || characters.length === 0) return <p className="text-center">No characters were found 😞</p>;
   return (
     <div className="flex w-full flex-1 flex-wrap justify-center gap-4">

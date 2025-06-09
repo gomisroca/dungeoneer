@@ -18,7 +18,7 @@ function ServerSelect({
   return (
     <div className="flex flex-col gap-2">
       <select
-        className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+        className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:ring-1 focus-visible:ring-cyan-300 focus-visible:outline-none dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
         onChange={(e) => {
           setSelectedDataCenter(e.target.value);
           setSelectedWorld('');
@@ -33,7 +33,7 @@ function ServerSelect({
 
       {selectedDataCenter && (
         <select
-          className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+          className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:ring-1 focus-visible:ring-cyan-300 focus-visible:outline-none dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
           onChange={(e) => setSelectedWorld(e.target.value)}>
           <option value="">Select a world</option>
           {(DATA_CENTERS[selectedDataCenter as keyof typeof DATA_CENTERS] || []).map((world) => (
@@ -47,7 +47,7 @@ function ServerSelect({
   );
 }
 
-function SearchBar() {
+export default function SearchBar() {
   const router = useRouter();
 
   // Variables to track the search term
@@ -71,7 +71,7 @@ function SearchBar() {
   return (
     <div className="flex w-full flex-col gap-2 md:w-2/3 lg:w-1/2 xl:w-[400px]">
       <input
-        className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+        className="mx-auto w-64 rounded-md bg-zinc-200 p-4 drop-shadow-md focus-visible:ring-1 focus-visible:ring-cyan-300 focus-visible:outline-none dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
         type="text"
         value={searchTerm}
         onChange={handleChange}
@@ -90,5 +90,3 @@ function SearchBar() {
     </div>
   );
 }
-
-export default SearchBar;
