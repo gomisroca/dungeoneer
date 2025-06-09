@@ -1,63 +1,53 @@
-'use client'
+'use client';
 
-import { signal, useSignalEffect } from '@preact-signals/safe-react';
-import { Alert, AlertTitle } from './Alert'
-import { FaX } from 'react-icons/fa6';
-import { motion, AnimatePresence } from 'framer-motion'
+/**
+ * Display a message to the user, with an optional error state. Uses jotai's atoms to store the message.
+ *
+ * @example
+ * setMessage({ content: 'Hello, world!', error: false })
+ */
 
-interface Notification {
-  id: number
-  message: string
-}
+import { messageAtom } from '@/atoms/message';
+import { useAtom } from 'jotai';
+import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-export const notifications = signal<Notification[]>([])
+const Message = () => {
+  const [message, setMessage] = useAtom(messageAtom); // Hook to get and set the message atom
 
-let nextId = 1;
+  const pathname = usePathname(); // Get the current path
 
-export function addMessage(message: string) {
-  notifications.value = [
-    ...notifications.value.slice(Math.max(notifications.value.length - 2, 0)), // Keep the last 2 items
-    { id: nextId++, message }
-  ];
-}
-
-export default function MessagePopup() {
-
-  useSignalEffect(() => {
-    if (notifications.value.length > 0) {
-      const timer = setTimeout(() => {
-        notifications.value = notifications.value.slice(1)
-      }, 3000)
-      return () => clearTimeout(timer)
+  // Clear message and error on route change
+  useEffect(() => {
+    if (message) {
+      setMessage(null);
     }
-  })
+  }, [pathname]);
 
-  const removeNotification = (id: number) => {
-    notifications.value = notifications.value.filter(notification => notification.id !== id)
-  }
+  // Automatically hide popup after 5 seconds
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setMessage(null);
+    }, 5000);
 
-  
+    // Cleanup timeout when popup state changes
+    return () => clearTimeout(timeout);
+  }, [message]);
+
+  if (!message) return null;
+
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2 flex flex-col items-end">
-      <AnimatePresence>
-        {notifications.value.map((notification) => (
-          <motion.div
-            className='w-full'
-            key={notification.id}
-            initial={{ opacity: 0, y: -50, scale: 0.3 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -50, scale: 0.3, transition: { duration: 0.2 } }}
-            transition={{ type: "spring", stiffness: 500, damping: 25 }}
-          >
-            <Alert>
-              <AlertTitle>
-                <FaX onClick={() => removeNotification(notification.id)} className='cursor-pointer mr-2' />
-                <span className='flex-1'>{notification.message}</span>
-              </AlertTitle>
-            </Alert>
-          </motion.div>
-        ))}
-      </AnimatePresence>
-    </div>
-  )
-}
+    <dialog
+      className={twMerge(
+        'fixed right-0 bottom-10 left-0 z-[9999] m-auto flex w-[90vw] skew-x-2 skew-y-1 flex-col items-center justify-center gap-2 bg-black p-2 font-semibold text-zinc-50 transition duration-200 ease-in-out md:w-2/3 xl:w-[30vw] dark:bg-white dark:text-zinc-200',
+        message?.error && 'bg-red-500 dark:bg-red-600'
+      )}>
+      <div className=":text-2xl flex w-full skew-x-2 skew-y-[0.5deg] items-center justify-center bg-sky-500 p-2 md:text-lg dark:bg-sky-600">
+        {message?.content ?? 'hello'}
+      </div>
+    </dialog>
+  );
+};
+
+export default Message;
