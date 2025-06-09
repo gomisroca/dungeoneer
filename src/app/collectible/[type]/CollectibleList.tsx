@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
-import { api } from '@/trpc/react';
 import { type Session } from 'next-auth';
 import { useItemFilter } from '@/hooks/useItemFilter';
 import ViewToggler from '@/app/_components/ViewToggler';
@@ -13,6 +12,8 @@ import LoadingSpinner from '@/app/_components/ui/LoadingSpinner';
 import FilterMenu from '@/app/_components/FilterMenu';
 import { useSearchParams } from 'next/navigation';
 import { EXPANSIONS } from '@/utils/consts';
+import { fetchItems } from '@/server/queries/items';
+import { itemKeytoModel } from '@/utils/mappers';
 
 type CollectibleListOutput<T> = {
   items: T[];
@@ -35,22 +36,33 @@ export default function CollectibleList<T extends ExpandedCollectible>({
   const searchParams = useSearchParams();
   const expansion = searchParams.get('ex') ?? undefined;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, refetch } = api[
-    routeKey
-  ].getAll.useInfiniteQuery(
-    {
-      limit: itemsPerPage,
-      expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      // @ts-expect-error ExpandedCollectible join
-      initialData: { pages: [initialCollectibles], pageParams: [undefined] },
-    }
-  );
+  const [pages, setPages] = useState([initialCollectibles]);
+  const [isLoadingNextPage, setIsLoadingNextPage] = useState(false);
+  const [nextCursor, setNextCursor] = useState(initialCollectibles.nextCursor);
+  const [hasMore, setHasMore] = useState(!!initialCollectibles.nextCursor);
 
-  // @ts-expect-error ExpandedCollectible join
-  const allCollectibles = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
+  const allCollectibles = useMemo(() => pages.flatMap((page) => page.items), [pages]);
+
+  const loadNextPage = async () => {
+    if (!hasMore || isLoadingNextPage) return;
+    setIsLoadingNextPage(true);
+
+    const model = itemKeytoModel[routeKey];
+
+    const nextPage = await fetchItems(model, {
+      limit: itemsPerPage,
+      cursor: nextCursor,
+      expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
+    });
+
+    if (nextPage) {
+      setPages((prev) => [...prev, nextPage]);
+      setNextCursor(nextPage.nextCursor);
+      setHasMore(!!nextPage.nextCursor);
+    }
+
+    setIsLoadingNextPage(false);
+  };
 
   const [filter, setFilter] = useState<boolean>(false);
   const [view, setView] = useState<boolean>(false);
@@ -63,21 +75,33 @@ export default function CollectibleList<T extends ExpandedCollectible>({
   });
 
   useEffect(() => {
-    void refetch();
-  }, [expansion, refetch]);
+    const fetchInitial = async () => {
+      const model = itemKeytoModel[routeKey];
+      const fresh = await fetchItems(model, {
+        limit: itemsPerPage,
+        expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
+      });
+
+      if (fresh) {
+        setPages([fresh]);
+        setNextCursor(fresh.nextCursor);
+        setHasMore(!!fresh.nextCursor);
+      }
+    };
+
+    void fetchInitial();
+  }, [expansion, routeKey]);
 
   useEffect(() => {
-    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-      void fetchNextPage();
+    if (entry?.isIntersecting && hasMore && !isLoadingNextPage) {
+      void loadNextPage();
     }
-  }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [entry, hasMore, isLoadingNextPage]);
 
   return (
     <div className="relative flex flex-col">
-      {status === 'pending' ? (
+      {pages.length === 0 ? (
         <LoadingSpinner />
-      ) : status === 'error' ? (
-        <h1 className="p-4 text-base font-bold md:text-xl">Error fetching {routeKey}</h1>
       ) : (
         <>
           <ViewToggler onViewChange={setView} />
@@ -91,7 +115,7 @@ export default function CollectibleList<T extends ExpandedCollectible>({
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-x-4 space-y-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 space-y-2 gap-x-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredCollectibles.map((collectible, index) => (
                 <div key={collectible.id} ref={index === filteredCollectibles.length - 1 ? ref : undefined}>
                   <CollectibleListItem item={collectible} type={routeKey} session={session} />
@@ -99,7 +123,7 @@ export default function CollectibleList<T extends ExpandedCollectible>({
               ))}
             </div>
           )}
-          {isFetchingNextPage && <LoadingSpinner />}
+          {isLoadingNextPage && <LoadingSpinner />}
         </>
       )}
     </div>
