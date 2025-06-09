@@ -1,17 +1,18 @@
 import { type MinionSource, type MountSource, type OrchestrionSource, type EmoteSource, type HairstyleSource, type CardSource, SpellSource } from '@prisma/client'
 import Image from 'next/image'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './Tooltip'
-import { useSignal, useSignalEffect } from '@preact-signals/safe-react'
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 function Source({ source, compact = false }: { source: MinionSource | MountSource | OrchestrionSource | SpellSource | EmoteSource | HairstyleSource | CardSource; compact?: boolean }) {
-  const isOpen = useSignal(false);
-  const triggerRef = useSignal<HTMLButtonElement | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [animationParent] = useAutoAnimate()
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
-  useSignalEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (triggerRef.value && !triggerRef.value.contains(event.target as Node)) {
-        isOpen.value = false
+      if (triggerRef && !triggerRef.current?.contains(event.target as Node)) {
+        setIsOpen(false)
       }
     }
 
@@ -22,20 +23,20 @@ function Source({ source, compact = false }: { source: MinionSource | MountSourc
   })
 
   const handleTriggerClick = () => {
-    isOpen.value = !isOpen.value
+    setIsOpen(!isOpen)
   }
 
   return (
-    <div className='flex flex-row gap-2'>
+    <div className='flex flex-row gap-2' ref={animationParent}>
       <TooltipProvider>
-        <Tooltip open={isOpen.value} onOpenChange={() => isOpen.value = !isOpen.value}>
+        <Tooltip open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
           <TooltipTrigger 
-            ref={(el) => { triggerRef.value = el; }}
+            ref={(el) => { triggerRef.current = el; }}
             onClick={handleTriggerClick}
             className='cursor-default'
           >
             <Image
-            unoptimized
+              unoptimized
               src={`/sources/${source.type}.png`}
               alt={source.type}
               width={compact ? 30 : 50}
@@ -43,15 +44,9 @@ function Source({ source, compact = false }: { source: MinionSource | MountSourc
               className='active:scale-110 active:contrast-125 active:duration-100 hover:scale-110 transition duration-200 ease-in-out hover:contrast-125 h-12 object-contain'
             />
           </TooltipTrigger>
-          <AnimatePresence mode="wait">
-            {isOpen.value && (
-              <motion.div
+            {isOpen && (
+              <div
                 className='absolute z-50'
-                key="tooltip-content"
-                initial={{ opacity: 0, y: 0, scale: 0.3 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 0, scale: 0, transition: { duration: 0.2 } }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
                 <TooltipContent
                   side="top"
@@ -60,9 +55,8 @@ function Source({ source, compact = false }: { source: MinionSource | MountSourc
                 >
                   <p>{source.text}</p>
                 </TooltipContent>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </Tooltip>
       </TooltipProvider>
     </div>
