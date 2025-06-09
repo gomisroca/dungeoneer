@@ -132,8 +132,8 @@ export type LodestoneCharacter = {
   id: string;
   name: string;
   avatar: string;
-  server: string;
-  data_center: string;
+  server: string | undefined;
+  data_center: string | undefined;
   mounts?: {
     count: number;
     total: number;
@@ -158,3 +158,6 @@ export type LodestoneCollectable = {
     },
   ];
 };
+
+export type ItemRouteKey = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
+export type ItemModelName = 'card' | 'emote' | 'minion' | 'mount' | 'hairstyle' | 'orchestrion' | 'spell';
