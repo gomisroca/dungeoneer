@@ -161,3 +161,5 @@ export type LodestoneCollectable = {
 
 export type ItemRouteKey = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
 export type ItemModelName = 'card' | 'emote' | 'minion' | 'mount' | 'hairstyle' | 'orchestrion' | 'spell';
+export type InstanceRouteKey = 'dungeons' | 'trials' | 'raids' | 'variants';
+export type InstanceModelName = 'dungeon' | 'trial' | 'raid' | 'variantDungeon';
