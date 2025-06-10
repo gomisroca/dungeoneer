@@ -21,3 +21,6 @@ README.md
 prisma/
 public/
 .env.example
+.dockerignore
+Dockerfile
+docker-compose.yml
