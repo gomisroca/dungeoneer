@@ -3,16 +3,13 @@ import { Suspense } from 'react';
 import Loading from './loading';
 import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
-import { COLLECTIBLE_TYPES, EXPANSIONS } from '@/utils/consts';
-import { fetchItems } from '@/server/queries/items';
+import { COLLECTIBLE_TYPES } from '@/utils/consts';
 import { ItemRouteKey } from 'types';
-import { itemKeytoModel } from '@/utils/mappers';
 
-const CollectibleList = dynamic(() => import('./CollectibleList'));
+const CollectibleList = dynamic(() => import('./CollectibleList'), { loading: () => <Loading /> });
 
 export default async function CollectibleListWrapper({
   params,
-  searchParams,
 }: {
   params: Promise<{ type: ItemRouteKey }>;
   searchParams?: Record<string, string | string[] | undefined>;
@@ -20,19 +17,11 @@ export default async function CollectibleListWrapper({
   const type = (await params).type;
   if (!type || !COLLECTIBLE_TYPES.includes(type)) return notFound();
 
-  const expansion = searchParams?.ex ?? undefined;
-
-  const initialCollectibles = await fetchItems(itemKeytoModel[type], {
-    limit: 30,
-    expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
-  });
-  if (!initialCollectibles) notFound();
-
   const session = await auth();
 
   return (
     <Suspense fallback={<Loading />}>
-      <CollectibleList session={session} initialCollectibles={initialCollectibles} routeKey={type} />
+      <CollectibleList session={session} routeKey={type} />
     </Suspense>
   );
 }

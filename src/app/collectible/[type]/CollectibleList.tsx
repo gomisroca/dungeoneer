@@ -1,131 +1,143 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useIntersection } from '@mantine/hooks';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Session } from 'next-auth';
-import { useItemFilter } from '@/hooks/useItemFilter';
 import ViewToggler from '@/app/_components/ViewToggler';
 import ItemCard from '@/app/_components/ItemCard';
 import { type ExpandedCollectible } from 'types';
 import CollectibleListItem from './CollectibleListItem';
-import LoadingSpinner from '@/app/_components/ui/LoadingSpinner';
 import FilterMenu from '@/app/_components/FilterMenu';
+import { useItemFilter } from '@/hooks/useItemFilter';
 import { useSearchParams } from 'next/navigation';
-import { EXPANSIONS } from '@/utils/consts';
-import { fetchItems } from '@/server/queries/items';
-import { itemKeytoModel } from '@/utils/mappers';
+import VirtualItem from '@/app/_components/ui/VirtualItem';
+import { ItemCardSkeleton, CollectibleListItemSkeleton } from '@/app/_components/ui/Skeletons';
 
-type CollectibleListOutput<T> = {
-  items: T[];
-  nextCursor: string | undefined;
-};
-
-interface CollectibleListProps<T extends ExpandedCollectible> {
-  initialCollectibles: CollectibleListOutput<T>;
+interface CollectibleListProps {
   session: Session | null;
   routeKey: 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
   itemsPerPage?: number;
 }
 
-export default function CollectibleList<T extends ExpandedCollectible>({
-  initialCollectibles,
-  session,
-  routeKey,
-  itemsPerPage = 30,
-}: CollectibleListProps<T>) {
+export default function CollectibleList({ session, routeKey }: CollectibleListProps) {
   const searchParams = useSearchParams();
   const expansion = searchParams.get('ex') ?? undefined;
 
-  const [pages, setPages] = useState([initialCollectibles]);
-  const [isLoadingNextPage, setIsLoadingNextPage] = useState(false);
-  const [nextCursor, setNextCursor] = useState(initialCollectibles.nextCursor);
-  const [hasMore, setHasMore] = useState(!!initialCollectibles.nextCursor);
-
-  const allCollectibles = useMemo(() => pages.flatMap((page) => page.items), [pages]);
-
-  const loadNextPage = async () => {
-    if (!hasMore || isLoadingNextPage) return;
-    setIsLoadingNextPage(true);
-
-    const model = itemKeytoModel[routeKey];
-
-    const nextPage = await fetchItems(model, {
-      limit: itemsPerPage,
-      cursor: nextCursor,
-      expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
-    });
-
-    if (nextPage) {
-      setPages((prev) => [...prev, nextPage]);
-      setNextCursor(nextPage.nextCursor);
-      setHasMore(!!nextPage.nextCursor);
-    }
-
-    setIsLoadingNextPage(false);
-  };
+  const [items, setItems] = useState<ExpandedCollectible[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
   const [filter, setFilter] = useState<boolean>(false);
   const [view, setView] = useState<boolean>(false);
-  // @ts-expect-error ExpandedCollectible join
-  const filteredCollectibles = useItemFilter({ items: allCollectibles, filter, session });
 
-  const { ref, entry } = useIntersection({
-    root: null,
-    threshold: 1,
-  });
+  const loadItems = useCallback(async () => {
+    if (loading || !hasMore) return;
 
-  useEffect(() => {
-    const fetchInitial = async () => {
-      const model = itemKeytoModel[routeKey];
-      const fresh = await fetchItems(model, {
-        limit: itemsPerPage,
-        expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
+    console.log('loadItems called, current items:', items.length);
+    setLoading(true);
+
+    try {
+      const res = await fetch(
+        `/api/collectible?type=${routeKey}&expansion=${expansion ?? ''}&skip=${items.length}&take=50`
+      );
+      const { items: newItems, hasMore: newHasMore } = await res.json();
+      console.log('Fetched items:', newItems.length, 'hasMore:', newHasMore);
+
+      setItems((prev) => {
+        // Prevent duplicates by checking if we already have these items
+        const existingIds = new Set(prev.map((item) => item.id));
+        const uniqueNewItems = newItems.filter((item: ExpandedCollectible) => !existingIds.has(item.id));
+        console.log('Adding unique items:', uniqueNewItems.length);
+        return [...prev, ...uniqueNewItems];
       });
+      setHasMore(newHasMore);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore, items.length, routeKey, expansion]);
 
-      if (fresh) {
-        setPages([fresh]);
-        setNextCursor(fresh.nextCursor);
-        setHasMore(!!fresh.nextCursor);
+  // Reset on expansion change
+  useEffect(() => {
+    console.log('Expansion changed, resetting...');
+    setItems([]);
+    setHasMore(true);
+    setInitialLoaded(false);
+  }, [expansion]);
+
+  // Initial load only
+  useEffect(() => {
+    if (!initialLoaded && items.length === 0) {
+      console.log('Initial load triggered');
+      setInitialLoaded(true);
+      loadItems();
+    }
+  }, [initialLoaded, items.length, loadItems]);
+
+  // Intersection observer setup - separate from loadItems to avoid re-creation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !loading && hasMore && initialLoaded) {
+          console.log('Intersection observer triggered load');
+          loadItems();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    const current = observerRef.current;
+    if (current) {
+      observer.observe(current);
+    }
+
+    return () => {
+      if (current) {
+        observer.unobserve(current);
       }
     };
+  }, [loading, hasMore, initialLoaded]); // Remove loadItems from dependencies
 
-    void fetchInitial();
-  }, [expansion, routeKey]);
-
-  useEffect(() => {
-    if (entry?.isIntersecting && hasMore && !isLoadingNextPage) {
-      void loadNextPage();
-    }
-  }, [entry, hasMore, isLoadingNextPage]);
+  // @ts-expect-error ExpandedCollectible join
+  const filteredCollectibles = useItemFilter({ items, filter, session });
 
   return (
     <div className="relative flex flex-col">
-      {pages.length === 0 ? (
-        <LoadingSpinner />
+      <ViewToggler onViewChange={setView} />
+      <FilterMenu onFilterChange={setFilter} />
+      {view ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filteredCollectibles.map((collectible) => (
+            <VirtualItem
+              key={collectible.id}
+              placeholder={
+                <ItemCardSkeleton owned={collectible.owners.some((owner) => owner.id === session?.user.id)} />
+              }
+              height={200}>
+              <ItemCard item={collectible} type={routeKey} session={session} />
+            </VirtualItem>
+          ))}
+        </div>
       ) : (
-        <>
-          <ViewToggler onViewChange={setView} />
-          <FilterMenu onFilterChange={setFilter} />
-          {view ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {filteredCollectibles.map((collectible, index) => (
-                <div key={collectible.id} ref={index === filteredCollectibles.length - 1 ? ref : undefined}>
-                  <ItemCard item={collectible} type={routeKey} session={session} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 space-y-2 gap-x-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredCollectibles.map((collectible, index) => (
-                <div key={collectible.id} ref={index === filteredCollectibles.length - 1 ? ref : undefined}>
-                  <CollectibleListItem item={collectible} type={routeKey} session={session} />
-                </div>
-              ))}
-            </div>
-          )}
-          {isLoadingNextPage && <LoadingSpinner />}
-        </>
+        <div className="grid grid-cols-1 space-y-2 gap-x-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredCollectibles.map((collectible) => (
+            <VirtualItem
+              key={collectible.id}
+              placeholder={
+                <CollectibleListItemSkeleton
+                  owned={collectible.owners.some((owner) => owner.id === session?.user.id)}
+                />
+              }
+              height={200}>
+              <CollectibleListItem item={collectible} type={routeKey} session={session} />
+            </VirtualItem>
+          ))}
+        </div>
       )}
+      <div ref={observerRef} className="mt-8 flex h-16 items-center justify-center">
+        {loading && <span>Loading more...</span>}
+        {!hasMore && <span>No more items.</span>}
+      </div>
     </div>
   );
 }

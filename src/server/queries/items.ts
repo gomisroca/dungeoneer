@@ -6,13 +6,13 @@ import { ItemModelName } from 'types';
 export async function fetchItems<T extends ItemModelName>(
   model: T,
   {
-    limit,
-    cursor,
     expansion,
+    skip = 0,
+    take = 20,
   }: {
-    limit?: number;
-    cursor?: string;
     expansion?: string;
+    skip?: number;
+    take?: number;
   }
 ) {
   const modelDelegate = db[model] as any as {
@@ -20,12 +20,10 @@ export async function fetchItems<T extends ItemModelName>(
   };
 
   const items = await cached(
-    `${model}:${expansion}:${limit}:${cursor}`,
+    `${model}:${expansion}:${skip}:${take}`,
     async () => {
       try {
         const items = await modelDelegate.findMany({
-          take: limit ? limit + 1 : undefined,
-          cursor: cursor ? { id: cursor } : undefined,
           orderBy: [{ patch: 'asc' }, { id: 'asc' }],
           where: {
             patch: { contains: expansion },
@@ -34,18 +32,11 @@ export async function fetchItems<T extends ItemModelName>(
             owners: true,
             sources: true,
           },
+          skip,
+          take,
         });
-        let nextCursor: typeof cursor | undefined = undefined;
 
-        if (limit && items.length > limit) {
-          const nextItem = items.pop();
-          nextCursor = nextItem!.id;
-        }
-
-        return {
-          items: items.slice(0, limit),
-          nextCursor,
-        };
+        return items;
       } catch (error) {
         console.error(`Failed to get ${model}s:`, error);
         return null;
@@ -54,5 +45,5 @@ export async function fetchItems<T extends ItemModelName>(
     60 * 5 // Cache for 5 minutes
   );
 
-  return items;
+  return { items, hasMore: items.length === take };
 }

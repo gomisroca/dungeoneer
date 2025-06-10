@@ -44,11 +44,11 @@ export default function CollectibleListItem({ item, type, session }: ItemCardPro
   return (
     <div
       className={twMerge(
-        'relative flex h-full items-center justify-between border-l border-zinc-200 p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl dark:border-zinc-800',
+        'relative flex h-full items-center justify-between border-l border-zinc-200 p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] lg:min-w-[400px] dark:border-zinc-800',
         owned && 'opacity-50 hover:opacity-100'
       )}>
       {owned && (
-        <div className="absolute right-[-15px] top-[-15px] flex contrast-200">
+        <div className="absolute top-[-15px] right-[-15px] flex contrast-200">
           <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
             ✔
           </span>
@@ -57,6 +57,7 @@ export default function CollectibleListItem({ item, type, session }: ItemCardPro
       <div className="flex w-[125px] flex-col items-center justify-center gap-y-2">
         {item.image && (
           <Image
+            loading="lazy"
             unoptimized
             src={item.image}
             alt={item.name}
