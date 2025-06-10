@@ -1,3 +1,5 @@
+'use server';
+
 import { z } from 'zod';
 import * as cheerio from 'cheerio';
 import { db } from '@/server/db';
