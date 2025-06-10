@@ -8,7 +8,7 @@ export async function fetchItems<T extends ItemModelName>(
   {
     expansion,
     skip = 0,
-    take = 20,
+    take = 30,
   }: {
     expansion?: string;
     skip?: number;
