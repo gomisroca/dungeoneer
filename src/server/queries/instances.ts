@@ -7,13 +7,13 @@ type ModelName = 'dungeon' | 'raid' | 'trial' | 'variantDungeon';
 export async function fetchInstances<T extends ModelName>(
   model: T,
   {
-    limit,
-    cursor,
     expansion,
+    skip = 0,
+    take = 30,
   }: {
-    limit?: number;
-    cursor?: string;
     expansion?: string;
+    skip?: number;
+    take?: number;
   }
 ) {
   const modelDelegate = db[model] as any as {
@@ -21,12 +21,10 @@ export async function fetchInstances<T extends ModelName>(
   };
 
   const instances = await cached(
-    `${model}:${expansion}:${limit}:${cursor}`,
+    `${model}:${expansion}:${skip}:${take}`,
     async () => {
       try {
         const instances = await modelDelegate.findMany({
-          take: limit ? limit + 1 : undefined,
-          cursor: cursor ? { id: cursor } : undefined,
           orderBy: [{ patch: 'asc' }, { id: 'asc' }],
           where: {
             AND: [{ patch: { contains: expansion } }],
@@ -77,18 +75,11 @@ export async function fetchInstances<T extends ModelName>(
               },
             },
           },
+          skip,
+          take,
         });
-        let nextCursor: typeof cursor | undefined = undefined;
 
-        if (limit && instances.length > limit) {
-          const nextInstance = instances.pop();
-          nextCursor = nextInstance!.id;
-        }
-
-        return {
-          instances: instances.slice(0, limit),
-          nextCursor,
-        };
+        return instances;
       } catch (error) {
         console.error(`Failed to get ${model}s:`, error);
         return null;
@@ -97,7 +88,7 @@ export async function fetchInstances<T extends ModelName>(
     60 * 5 // Cache for 5 minutes
   );
 
-  return instances;
+  return { instances, hasMore: instances.length === take };
 }
 
 export async function fetchUniqueInstance<T extends ModelName>(

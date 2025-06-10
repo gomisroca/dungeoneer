@@ -1,4 +1,5 @@
 import { twMerge } from "tailwind-merge";
+import { Separator } from "./Separator";
 
 export const ItemCardSkeleton = ({ owned = false}) => {
     return (
@@ -53,6 +54,43 @@ export const CollectibleListItemSkeleton = ({ owned = false }) => {
       </div>
 
       <div className="h-12 w-16 rounded bg-zinc-300 dark:bg-zinc-700" />
+    </div>
+  );
+};
+
+
+export const InstanceCardSkeleton = () => {
+    return (
+      <div className='relative flex  min-w-[255px] h-[375px] flex-col items-center justify-start gap-y-4 animate-pulse rounded-xl border-4 border-zinc-200 bg-zinc-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:scale-125 hover:rotate-2 hover:shadow-2xl dark:border-zinc-800 dark:bg-zinc-700'>
+        <div className="flex w-full flex-col items-center justify-center gap-y-2">
+          <div className="h-[100px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-900" />
+          <div className="mb-1 h-10 w-[125px] mx-auto rounded bg-zinc-200 dark:bg-zinc-900" />
+          <div className="mb-1 h-4 w-[125px] mx-auto rounded bg-zinc-200 dark:bg-zinc-900" />
+        </div>
+      
+        <div className="flex flex-wrap items-center justify-center gap-1 md:gap-2 w-full">
+          <div className="h-12 w-full rounded bg-zinc-200 dark:bg-zinc-900" />
+          <div className="h-12 w-full rounded bg-zinc-200 dark:bg-zinc-900" />
+        </div>
+      </div>
+    )
+}
+
+export const InstanceListItemSkeleton = () => {
+  return (
+    <div className='relative flex h-full w-full items-center justify-between md:min-w-[300px] lg:min-w-[400px] border-l border-zinc-200 gap-10 p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl dark:border-zinc-800 animate-pulse'>
+  
+      <div className="flex w-[150px] flex-col items-center justify-center gap-y-2">
+          <div className="mb-1 h-10 w-full mx-auto rounded bg-zinc-300 dark:bg-zinc-700" />
+          <div className="h-4 w-1/2 mx-auto rounded bg-zinc-300 dark:bg-zinc-700" />
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-1 md:gap-2 md:p-2">
+        <div className="h-8 w-30 rounded bg-zinc-300 dark:bg-zinc-700" />
+        <div className="h-8 w-20 rounded bg-zinc-300 dark:bg-zinc-700" />
+        <div className="h-8 w-28 rounded bg-zinc-300 dark:bg-zinc-700" />
+        <div className="h-8 w-20 rounded bg-zinc-300 dark:bg-zinc-700" />
+        <div className="h-8 w-18 rounded bg-zinc-300 dark:bg-zinc-700" />
+      </div>
     </div>
   );
 };

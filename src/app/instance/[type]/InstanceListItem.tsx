@@ -20,11 +20,11 @@ export default function InstanceListItem({
   return (
     <div
       className={twMerge(
-        'relative flex h-full w-full items-center justify-start font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl',
+        'relative flex h-full w-full items-center justify-start font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] lg:min-w-[400px]',
         (isCompleted === 'empty' || isCompleted === 'owned') && 'opacity-50 hover:opacity-100'
       )}>
       {(isCompleted === 'owned' || isCompleted === 'empty') && (
-        <div className="absolute right-[-15px] top-[-15px] flex contrast-200">
+        <div className="absolute top-[-15px] right-[-15px] flex contrast-200">
           {isCompleted === 'owned' ? (
             <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
               ✔
