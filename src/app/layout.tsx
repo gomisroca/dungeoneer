@@ -28,7 +28,7 @@ function Footer() {
 }
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={raleway.className}>
+    <html lang="en" className={raleway.className} suppressHydrationWarning>
       <body
         style={{ backgroundImage: "url('/bg.jpg')" }}
         className="min-h-screen bg-cover bg-fixed bg-center bg-no-repeat text-zinc-800 dark:text-zinc-200">
