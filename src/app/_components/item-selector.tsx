@@ -30,7 +30,10 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
     <Button
       arialabel="item-view"
       onClick={handleAddOrRemove}
-      className={twMerge('w-5/6 justify-start px-2 py-1 md:w-3/4', compact && 'w-[200px] md:w-fit')}>
+      className={twMerge(
+        'w-5/6 cursor-pointer items-center justify-between px-2 py-1 md:w-3/4',
+        compact && 'w-[200px] md:w-fit'
+      )}>
       <div className="relative flex-shrink-0">
         <div className={twMerge('relative', compact ? 'h-6 w-6' : 'h-12 w-12')}>
           {item.image && (
