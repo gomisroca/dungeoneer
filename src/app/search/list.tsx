@@ -1,10 +1,10 @@
 import { type Session } from 'next-auth';
-import { type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial, type ExpandedVariantDungeon } from 'types';
+import { type ExpandedInstance } from 'types';
 
 import { InstanceCard } from '@/app/_components/cards';
 
 interface SearchListProps {
-  items: ExpandedDungeon[] | ExpandedRaid[] | ExpandedTrial[] | ExpandedVariantDungeon[];
+  items: ExpandedInstance[];
   session: Session | null;
 }
 export default function SearchList({ items, session }: SearchListProps) {
