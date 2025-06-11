@@ -1,5 +1,6 @@
 import 'server-only';
-import { db } from '@/server/db';
+
+import { db } from '@server/db';
 
 export async function fetchSearchResults(term: string) {
   try {

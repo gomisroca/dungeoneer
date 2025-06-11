@@ -1,16 +1,18 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { type Session } from 'next-auth';
-import InstanceCard from '@/app/_components/InstanceCard';
-import { useInstanceFilter } from '@/hooks/useInstanceFilter';
-import FilterMenu from '@/app/_components/FilterMenu';
-import ViewToggler from '@/app/_components/ViewToggler';
-import InstanceListItem from './InstanceListItem';
 import { useSearchParams } from 'next/navigation';
-import { ExpandedInstance } from 'types';
-import VirtualItem from '@/app/_components/ui/VirtualItem';
-import { InstanceCardSkeleton, InstanceListItemSkeleton } from '@/app/_components/ui/Skeletons';
+import { type Session } from 'next-auth';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { type ExpandedInstance } from 'types';
+
+import { InstanceCard } from '@/app/_components/cards';
+import FilterMenu from '@/app/_components/filter-menu';
+import { InstanceCardSkeleton, InstanceListItemSkeleton } from '@/app/_components/ui/skeletons';
+import VirtualItem from '@/app/_components/ui/virtual-item';
+import ViewToggler from '@/app/_components/view-toggler';
+import { useInstanceFilter } from '@/hooks/useInstanceFilter';
+
+import InstanceListItem from './item';
 
 interface InstanceListProps {
   session: Session | null;

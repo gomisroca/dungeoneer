@@ -8,8 +8,9 @@
  */
 
 import { signOut } from 'next-auth/react';
-import Button from '../ui/Button';
 import { MdOutlineExitToApp } from 'react-icons/md';
+
+import Button from '@/app/_components/ui/button';
 
 function SignOutButton() {
   return (

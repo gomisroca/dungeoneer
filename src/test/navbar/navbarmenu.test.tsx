@@ -1,6 +1,4 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import NavbarMenu from '@/app/_components/navbar/NavbarMenu';
 import {
   type ExpandedCard,
   type ExpandedEmote,
@@ -10,6 +8,9 @@ import {
   type ExpandedOrchestrion,
   type ExpandedSpell,
 } from 'types';
+import { describe, expect, it, vi } from 'vitest';
+
+import NavbarMenu from '@/app/_components/navbar/navbar-menu';
 
 vi.mock('@/hooks/useItemSync', () => ({
   __esModule: true,

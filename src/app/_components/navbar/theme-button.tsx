@@ -8,10 +8,10 @@
  */
 
 import { useTheme } from 'next-themes';
-import { FaSun, FaMoon } from 'react-icons/fa6';
-
-import Button from '../ui/Button';
 import { useEffect, useState } from 'react';
+import { FaMoon, FaSun } from 'react-icons/fa6';
+
+import Button from '@/app/_components/ui/button';
 
 function ThemeButton() {
   const [mounted, setMounted] = useState(false);
@@ -28,8 +28,8 @@ function ThemeButton() {
       className="group h-8 w-8 p-0 md:h-full md:w-full md:p-4"
       name={theme === 'dark' ? 'Light' : 'Dark'}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-      <FaMoon name="light" size={20} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <FaSun name="dark" size={20} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <FaMoon name="light" size={20} className="scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+      <FaSun name="dark" size={20} className="absolute scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
       <span className="sr-only">{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
     </Button>
   );

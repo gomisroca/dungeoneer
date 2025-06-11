@@ -1,6 +1,7 @@
 import 'server-only';
-import { cached } from '@/utils/redis';
-import { db } from '@/server/db';
+
+import { db } from '@server/db';
+import { cached } from '@utils/redis';
 
 type ModelName = 'dungeon' | 'raid' | 'trial' | 'variantDungeon';
 

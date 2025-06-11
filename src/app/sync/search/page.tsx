@@ -1,14 +1,13 @@
-import { useRouter, useSearchParams } from 'next/navigation';
-import LoadingSpinner from '@/app/_components/ui/LoadingSpinner';
-import SearchBar from './search-bar';
-import LodestoneSearchList from './search-list';
+import LoadingSpinner from '@/app/_components/ui/loading-spinner';
+import PageChange from '@/app/sync/search/page-change';
+import SearchBar from '@/app/sync/search/search-bar';
+import LodestoneSearchList from '@/app/sync/search/search-list';
 import { fetchLodestoneCharacters } from '@/server/queries/lodestone';
-import PageChange from './page-change';
 
 export default async function LodestoneSearch({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const name = (await searchParams).name as string;
   const server = (await searchParams).server as string;

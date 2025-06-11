@@ -1,12 +1,13 @@
-import { auth } from '@/server/auth';
-import { Suspense } from 'react';
-import Loading from './loading';
 import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
-import { COLLECTIBLE_TYPES } from '@/utils/consts';
-import { ItemRouteKey } from 'types';
+import { Suspense } from 'react';
+import { type ItemRouteKey } from 'types';
 
-const CollectibleList = dynamic(() => import('./CollectibleList'), { loading: () => <Loading /> });
+import Loading from '@/app/collectible/[type]/loading';
+import { auth } from '@/server/auth';
+import { COLLECTIBLE_TYPES } from '@/utils/consts';
+
+const CollectibleList = dynamic(() => import('@/app/collectible/[type]/list'), { loading: () => <Loading /> });
 
 export default async function CollectibleListWrapper({
   params,

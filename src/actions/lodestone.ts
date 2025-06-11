@@ -1,15 +1,11 @@
 'use server';
 
-import { z } from 'zod';
 import * as cheerio from 'cheerio';
-import { db } from '@/server/db';
+
 import { auth } from '@/server/auth';
+import { db } from '@/server/db';
 
-const SyncSchema = z.object({
-  lodestoneId: z.string(),
-});
-
-export async function syncLodestone(input: z.infer<typeof SyncSchema>) {
+export async function syncLodestone(input: { lodestoneId: string }) {
   const session = await auth();
   if (!session?.user) throw new Error('You must be signed in to sync your character');
 

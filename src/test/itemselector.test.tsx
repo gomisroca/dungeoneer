@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { expect, describe, it, vi } from 'vitest';
-import { ItemSelector } from '@/app/_components/ItemSelector';
 import { type ItemType } from 'types';
+import { describe, expect, it, vi } from 'vitest';
+
+import { ItemSelector } from '@/app/_components/item-selector';
 
 vi.mock('@/hooks/useItemOwnership', () => ({
   __esModule: true,

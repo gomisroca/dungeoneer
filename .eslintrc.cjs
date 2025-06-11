@@ -7,7 +7,9 @@ const config = {
   "plugins": [
     "@typescript-eslint",
     "prettier",
-    "vitest-globals"
+    "vitest-globals",
+    "simple-import-sort",
+    "import"
   ],
   "extends": [
     "next/core-web-vitals",
@@ -17,6 +19,11 @@ const config = {
     "plugin:vitest-globals/recommended"
   ],
   "rules": {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
     "prettier/prettier": "error",
     "no-console": "warn",
     "@typescript-eslint/array-type": "off",

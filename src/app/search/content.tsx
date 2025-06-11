@@ -1,11 +1,12 @@
 'use client';
 
-import SearchList from './SearchList';
-import SearchBar from './SearchBar';
-import { type Session } from 'next-auth';
 import { useSearchParams } from 'next/navigation';
+import { type Session } from 'next-auth';
+
+import LoadingSpinner from '@/app/_components/ui/loading-spinner';
+import SearchList from '@/app/search/list';
+import SearchBar from '@/app/search/search-bar';
 import { api } from '@/trpc/react';
-import LoadingSpinner from '../_components/ui/LoadingSpinner';
 
 export default function SearchContent({ session }: { session: Session | null }) {
   const params = useSearchParams();

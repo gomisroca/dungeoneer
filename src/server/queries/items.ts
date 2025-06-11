@@ -1,7 +1,8 @@
 import 'server-only';
-import { cached } from '@/utils/redis';
-import { db } from '@/server/db';
-import { ItemModelName } from 'types';
+
+import { db } from '@server/db';
+import { cached } from '@utils/redis';
+import { type ItemModelName } from 'types';
 
 export async function fetchItems<T extends ItemModelName>(
   model: T,

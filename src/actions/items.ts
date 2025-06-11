@@ -1,15 +1,15 @@
 'use server';
 
+import { type ItemModelName } from 'types';
+import { z } from 'zod';
+
 import { auth } from '@/server/auth';
 import { db } from '@/server/db';
 import { itemModelToKey } from '@/utils/mappers';
-import { ItemModelName } from 'types';
-import { z } from 'zod';
 
 const ItemSchema = z.object({
   id: z.string(),
 });
-
 export async function addOrRemoveItem<T extends ItemModelName>(model: T, createData: z.infer<typeof ItemSchema>) {
   const session = await auth();
   if (!session?.user) throw new Error('You must be signed in to add an item to a character');
@@ -19,17 +19,36 @@ export async function addOrRemoveItem<T extends ItemModelName>(model: T, createD
   });
   if (!validatedFields.success) throw new Error(validatedFields.error.toString());
   const { id } = validatedFields.data;
+
   const relationField = itemModelToKey[model];
 
   return await db.$transaction(async (trx) => {
-    const item = await (trx[model] as any).findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        owners: true,
-      },
-    });
+    let item: { id: string; name: string } | null = null;
+    switch (model) {
+      case 'card':
+        item = await trx.card.findUnique({ where: { id }, include: { owners: true } });
+        break;
+      case 'emote':
+        item = await trx.emote.findUnique({ where: { id }, include: { owners: true } });
+        break;
+      case 'minion':
+        item = await trx.minion.findUnique({ where: { id }, include: { owners: true } });
+        break;
+      case 'mount':
+        item = await trx.mount.findUnique({ where: { id }, include: { owners: true } });
+        break;
+      case 'hairstyle':
+        item = await trx.hairstyle.findUnique({ where: { id }, include: { owners: true } });
+        break;
+      case 'orchestrion':
+        item = await trx.orchestrion.findUnique({ where: { id }, include: { owners: true } });
+        break;
+      case 'spell':
+        item = await trx.spell.findUnique({ where: { id }, include: { owners: true } });
+        break;
+      default:
+        throw new Error(`Unsupported model: ${model}`);
+    }
     if (!item) throw new Error(`${model} not found`);
 
     const user = await trx.user.findUnique({
@@ -41,7 +60,8 @@ export async function addOrRemoveItem<T extends ItemModelName>(model: T, createD
       },
     });
     if (!user || !user[relationField]) throw new Error('User not found or missing collection');
-    const alreadyOwned = user[relationField].some((i: any) => i.id === item.id);
+
+    const alreadyOwned = user[relationField].some((i) => i.id === item.id);
 
     await trx.user.update({
       where: { id: session.user.id },
@@ -51,6 +71,7 @@ export async function addOrRemoveItem<T extends ItemModelName>(model: T, createD
         },
       },
     });
+
     return {
       message: `${alreadyOwned ? 'Removed' : 'Added'} ${item.name} ${alreadyOwned ? 'from' : 'to'} your collection.`,
     };

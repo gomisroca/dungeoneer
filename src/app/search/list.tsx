@@ -1,6 +1,7 @@
-import InstanceCard from '@/app/_components/InstanceCard';
 import { type Session } from 'next-auth';
 import { type ExpandedDungeon, type ExpandedRaid, type ExpandedTrial, type ExpandedVariantDungeon } from 'types';
+
+import { InstanceCard } from '@/app/_components/cards';
 
 interface SearchListProps {
   items: ExpandedDungeon[] | ExpandedRaid[] | ExpandedTrial[] | ExpandedVariantDungeon[];

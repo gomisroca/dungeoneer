@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import Button from '@/app/_components/ui/Button';
+
+import Button from '@/app/_components/ui/button';
 
 export default function PageChange({
   pagination,

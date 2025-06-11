@@ -1,10 +1,18 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
+import {
+  type Card,
+  type Emote,
+  type Hairstyle,
+  type Minion,
+  type Mount,
+  type Orchestrion,
+  type Spell,
+} from 'generated/prisma';
 import { type DefaultSession, type NextAuthConfig } from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
 
-import { db } from '@/server/db';
 import { env } from '@/env';
-import { type Character, type Group } from 'generated/prisma';
+import { db } from '@/server/db';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -16,16 +24,15 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      characters: Character[];
-      ownedGroups: Group[];
-      groups: Group[];
+      minions: Minion[];
+      mounts: Mount[];
+      orchestrions: Orchestrion[];
+      spells: Spell[];
+      cards: Card[];
+      emotes: Emote[];
+      hairstyles: Hairstyle[];
     } & DefaultSession['user'];
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -36,8 +43,8 @@ declare module 'next-auth' {
 export const authConfig = {
   providers: [
     DiscordProvider({
-      clientId: env.DISCORD_ID,
-      clientSecret: env.DISCORD_SECRET,
+      clientId: env.DISCORD_CLIENT_ID,
+      clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
   ],
   adapter: PrismaAdapter(db),
@@ -45,16 +52,20 @@ export const authConfig = {
     async session({ session, user }) {
       if (!user?.id) return session;
 
-      // Fetch user with related data
       const dbUser = await db.user.findUnique({
-        where: { id: user.id },
+        where: {
+          id: user.id,
+        },
         include: {
-          characters: true,
-          ownedGroups: true,
-          groups: true,
+          minions: true,
+          mounts: true,
+          orchestrions: true,
+          spells: true,
+          cards: true,
+          emotes: true,
+          hairstyles: true,
         },
       });
-
       if (!dbUser) return session;
 
       return {
@@ -62,9 +73,13 @@ export const authConfig = {
         user: {
           ...session.user,
           id: dbUser.id,
-          characters: dbUser.characters,
-          ownedGroups: dbUser.ownedGroups,
-          groups: dbUser.groups,
+          minions: dbUser.minions,
+          mounts: dbUser.mounts,
+          orchestrions: dbUser.orchestrions,
+          spells: dbUser.spells,
+          cards: dbUser.cards,
+          emotes: dbUser.emotes,
+          hairstyles: dbUser.hairstyles,
         },
       };
     },

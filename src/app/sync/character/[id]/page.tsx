@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import SyncButton from './sync-button';
+
+import SyncButton from '@/app/sync/character/[id]/sync-button';
 import { auth } from '@/server/auth';
 import { fetchUniqueLodestoneCharacter } from '@/server/queries/lodestone';
 

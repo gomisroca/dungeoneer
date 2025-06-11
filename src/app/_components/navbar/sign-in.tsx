@@ -1,8 +1,9 @@
 'use client';
 
-import { FaKey } from 'react-icons/fa6';
-import Button from '../ui/Button';
 import { signIn } from 'next-auth/react';
+import { FaKey } from 'react-icons/fa6';
+
+import Button from '@/app/_components/ui/button';
 
 function SignInButton() {
   return (

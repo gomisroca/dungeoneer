@@ -1,11 +1,12 @@
-import StyledLink from '@/app/_components/ui/StyledLink';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-describe('StyledLink', () => {
-  it('renders the StyledLink component correctly', () => {
+import Link from '@/app/_components/ui/link';
+
+describe('Link', () => {
+  it('renders the Link component correctly', () => {
     render(
-      StyledLink({
+      Link({
         href: '/',
         children: <div>Home</div>,
       })
@@ -14,9 +15,9 @@ describe('StyledLink', () => {
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
   });
 
-  it('renders the StyledLink component with custom class', () => {
+  it('renders the Link component with custom class', () => {
     render(
-      StyledLink({
+      Link({
         href: '/',
         children: <div>Home</div>,
         className: 'custom-class',
@@ -28,7 +29,7 @@ describe('StyledLink', () => {
 
   it('links to the correct href', () => {
     render(
-      StyledLink({
+      Link({
         href: '/about',
         children: <div>About</div>,
       })

@@ -1,6 +1,5 @@
 import { type Session } from 'next-auth';
 import {
-  type Item,
   type ExpandedCard,
   type ExpandedEmote,
   type ExpandedHairstyle,
@@ -8,6 +7,7 @@ import {
   type ExpandedMount,
   type ExpandedOrchestrion,
   type ExpandedSpell,
+  type Item,
 } from 'types';
 
 export function useItemFilter({

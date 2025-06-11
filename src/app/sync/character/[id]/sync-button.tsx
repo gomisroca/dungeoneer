@@ -1,10 +1,11 @@
 'use client';
 
+import { type Session } from 'next-auth';
+
 import { syncLodestone } from '@/actions/lodestone';
-import Button from '@/app/_components/ui/Button';
+import Button from '@/app/_components/ui/button';
 import { useMessage } from '@/hooks/useMessage';
 import { toErrorMessage } from '@/utils/errors';
-import { type Session } from 'next-auth';
 
 function SyncButton({ session, lodestoneId }: { session: Session | null; lodestoneId: string }) {
   const setMessage = useMessage();

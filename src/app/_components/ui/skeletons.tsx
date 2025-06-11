@@ -1,5 +1,4 @@
 import { twMerge } from "tailwind-merge";
-import { Separator } from "./Separator";
 
 export const ItemCardSkeleton = ({ owned = false}) => {
     return (

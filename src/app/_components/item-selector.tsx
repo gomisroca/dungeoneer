@@ -1,11 +1,12 @@
 'use client';
 
-import { type Session } from 'next-auth';
 import Image from 'next/image';
+import { type Session } from 'next-auth';
 import { twMerge } from 'tailwind-merge';
-import { useItemOwnership } from '@/hooks/useItemOwnership';
-import Button from './ui/Button';
 import { type ExpandedInstance, type ItemType } from 'types';
+
+import Button from '@/app/_components/ui/button';
+import { useItemOwnership } from '@/hooks/useItemOwnership';
 import { COLLECTIBLE_TYPES } from '@/utils/consts';
 
 interface BaseItem {
@@ -56,7 +57,7 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
       <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
         <p
           className={twMerge(
-            'max-w-full flex-shrink overflow-x-hidden text-ellipsis text-sm md:text-base',
+            'max-w-full flex-shrink overflow-x-hidden text-sm text-ellipsis md:text-base',
             owned && 'text-neutral-500'
           )}>
           {item.name}

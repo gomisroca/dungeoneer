@@ -1,9 +1,10 @@
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
-import Button from './ui/Button';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { MdFilterList } from 'react-icons/md';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
+
+import Button from '@/app/_components/ui/button';
 
 const EXPANSIONS = [
   {
@@ -100,7 +101,7 @@ function FilterMenu({ onFilterChange }: { onFilterChange: (filter: boolean) => v
 
   return (
     <div
-      className="fixed right-12 top-1 z-20 m-4 flex flex-col items-end justify-end gap-2 md:right-20"
+      className="fixed top-1 right-12 z-20 m-4 flex flex-col items-end justify-end gap-2 md:right-20"
       onClick={() => setIsExpanded(!isExpanded)}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}>

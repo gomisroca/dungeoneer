@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { TbCardsFilled } from 'react-icons/tb';
-import { FaCaretDown, FaDog, FaHorse, FaMusic, FaWandMagicSparkles, FaFaceLaugh, FaScissors } from 'react-icons/fa6';
-import StyledLink from '../ui/StyledLink';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
-import SignOutButton from './SignOutButton';
-import SignInButton from './SignInButton';
-import ThemeButton from './themeButton';
-import { Separator } from '../ui/Separator';
+import React, { useEffect, useRef, useState } from 'react';
+import { FaCaretDown, FaDog, FaFaceLaugh, FaHorse, FaMusic, FaScissors, FaWandMagicSparkles } from 'react-icons/fa6';
 import { LuSearch } from 'react-icons/lu';
 import { MdOutlineSync } from 'react-icons/md';
+import { TbCardsFilled } from 'react-icons/tb';
+
+import SignInButton from '@/app/_components/navbar/sign-in';
+import SignOutButton from '@/app/_components/navbar/sign-out';
+import ThemeButton from '@/app/_components/navbar/theme-button';
+import Link from '@/app/_components/ui/link';
+import { Separator } from '@/app/_components/ui/separator';
 
 type NavbarMenuProps = {
   session: Session | null;
@@ -22,37 +23,37 @@ function ExpandedMenu({ session }: { session: Session | null }) {
     <div
       data-testid="expandable-menu"
       className="mt-2 flex max-h-[800px] flex-col items-center justify-center gap-2 py-2">
-      <StyledLink href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaDog size={20} />
-      </StyledLink>
-      <StyledLink href="/collectible/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      </Link>
+      <Link href="/collectible/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaHorse size={20} />
-      </StyledLink>
-      <StyledLink href="/collectible/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      </Link>
+      <Link href="/collectible/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <TbCardsFilled size={20} />
-      </StyledLink>
-      <StyledLink href="/collectible/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      </Link>
+      <Link href="/collectible/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaMusic size={20} />
-      </StyledLink>
-      <StyledLink href="/collectible/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      </Link>
+      <Link href="/collectible/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaWandMagicSparkles size={20} />
-      </StyledLink>
-      <StyledLink href="/collectible/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      </Link>
+      <Link href="/collectible/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaFaceLaugh size={20} />
-      </StyledLink>
-      <StyledLink href="/collectible/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      </Link>
+      <Link href="/collectible/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <FaScissors size={20} />
-      </StyledLink>
+      </Link>
       <Separator className="bg-zinc-800 dark:bg-zinc-200" />
-      <StyledLink href="/search" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/search" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
         <LuSearch size={20} />
-      </StyledLink>
+      </Link>
       {session ? (
         <>
-          <StyledLink href="/sync" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+          <Link href="/sync" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
             <MdOutlineSync size={20} />
             <span className="sr-only">Sync Collection</span>
-          </StyledLink>
+          </Link>
           <SignOutButton />
         </>
       ) : (
@@ -85,7 +86,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
   return (
     <div ref={menuRef} className="pointer-events-auto relative flex flex-col">
       <div className="flex flex-col items-center justify-center gap-2">
-        <StyledLink href="/instance/dungeons" className="group p-1">
+        <Link href="/instance/dungeons" className="group p-1">
           <Image
             priority={true}
             src="/sources/Dungeon.png"
@@ -94,8 +95,8 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             height={50}
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
-        </StyledLink>
-        <StyledLink href="/instance/raids" className="group p-1">
+        </Link>
+        <Link href="/instance/raids" className="group p-1">
           <Image
             priority={true}
             src="/sources/Raid.png"
@@ -104,8 +105,8 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             height={50}
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
-        </StyledLink>
-        <StyledLink href="/instance/trials" className="group p-1">
+        </Link>
+        <Link href="/instance/trials" className="group p-1">
           <Image
             priority={true}
             src="/sources/Trial.png"
@@ -114,8 +115,8 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             height={50}
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
-        </StyledLink>
-        <StyledLink href="/instance/variants" className="group p-1">
+        </Link>
+        <Link href="/instance/variants" className="group p-1">
           <Image
             priority={true}
             src="/sources/V&C Dungeon.png"
@@ -124,10 +125,10 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             height={50}
             className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
           />
-        </StyledLink>
+        </Link>
         <div onMouseLeave={() => setIsExpanded(false)}>
           <button
-            className="flex h-8 w-8 flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-0 font-semibold transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700 md:h-full md:w-full md:p-4"
+            className="flex h-8 w-8 flex-row items-center justify-center gap-2 rounded-xl p-0 font-semibold text-nowrap whitespace-nowrap transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 md:h-full md:w-full md:p-4 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700"
             onMouseEnter={() => setIsExpanded(true)}
             onClick={toggleMenu}
             aria-label="Expand menu">

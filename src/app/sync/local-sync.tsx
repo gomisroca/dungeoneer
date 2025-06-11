@@ -1,10 +1,11 @@
 'use client';
 
-import useItemSync from '@/hooks/useItemSync';
-import Button from '../_components/ui/Button';
 import { type Session } from 'next-auth';
-import { MdOutlineSync } from 'react-icons/md';
 import { useEffect, useState } from 'react';
+import { MdOutlineSync } from 'react-icons/md';
+
+import Button from '@/app/_components/ui/button';
+import useItemSync from '@/hooks/useItemSync';
 
 interface LocalSyncButtonProps {
   isSyncing: boolean;

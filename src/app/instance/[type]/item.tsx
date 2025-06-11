@@ -3,8 +3,9 @@
 import { type Session } from 'next-auth';
 import { twMerge } from 'tailwind-merge';
 import { type ExpandedInstance } from 'types';
-import useCheckOwnership from '@/hooks/useCheckOwnership';
-import ItemSelectors from '@/app/_components/ItemSelector';
+
+import ItemSelectors from '@/app/_components/item-selector';
+import { getOwnershipStatus, useIsOwned } from '@/hooks/useCheckOwnership';
 
 export default function InstanceListItem({
   instance,
@@ -13,7 +14,8 @@ export default function InstanceListItem({
   instance: ExpandedInstance;
   session: Session | null;
 }) {
-  const isCompleted = useCheckOwnership(instance, session);
+  const isOwned = useIsOwned(instance, session);
+  const ownershipStatus = getOwnershipStatus(instance, isOwned);
 
   const [title, ...subtitles] = instance.name.split(/[-:(]/);
 
@@ -21,11 +23,11 @@ export default function InstanceListItem({
     <div
       className={twMerge(
         'relative flex h-full w-full items-center justify-start font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] lg:min-w-[400px]',
-        (isCompleted === 'empty' || isCompleted === 'owned') && 'opacity-50 hover:opacity-100'
+        (ownershipStatus === 'empty' || ownershipStatus === 'owned') && 'opacity-50 hover:opacity-100'
       )}>
-      {(isCompleted === 'owned' || isCompleted === 'empty') && (
+      {(ownershipStatus === 'owned' || ownershipStatus === 'empty') && (
         <div className="absolute top-[-15px] right-[-15px] flex contrast-200">
-          {isCompleted === 'owned' ? (
+          {ownershipStatus === 'owned' ? (
             <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
               ✔
             </span>

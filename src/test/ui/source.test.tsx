@@ -1,6 +1,7 @@
-import Source from '@/app/_components/ui/Source';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+
+import Source from '@/app/_components/ui/source';
 
 const mockSource = {
   id: 'source-id',

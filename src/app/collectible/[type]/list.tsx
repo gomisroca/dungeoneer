@@ -1,16 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { type Session } from 'next-auth';
-import ViewToggler from '@/app/_components/ViewToggler';
-import ItemCard from '@/app/_components/ItemCard';
-import { type ExpandedCollectible } from 'types';
-import CollectibleListItem from './CollectibleListItem';
-import FilterMenu from '@/app/_components/FilterMenu';
-import { useItemFilter } from '@/hooks/useItemFilter';
 import { useSearchParams } from 'next/navigation';
-import VirtualItem from '@/app/_components/ui/VirtualItem';
-import { ItemCardSkeleton, CollectibleListItemSkeleton } from '@/app/_components/ui/Skeletons';
+import { type Session } from 'next-auth';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { type ExpandedCollectible } from 'types';
+
+import { ItemCard } from '@/app/_components/cards';
+import FilterMenu from '@/app/_components/filter-menu';
+import { CollectibleListItemSkeleton, ItemCardSkeleton } from '@/app/_components/ui/skeletons';
+import VirtualItem from '@/app/_components/ui/virtual-item';
+import ViewToggler from '@/app/_components/view-toggler';
+import CollectibleListItem from '@/app/collectible/[type]/item';
+import { useItemFilter } from '@/hooks/useItemFilter';
 
 interface CollectibleListProps {
   session: Session | null;

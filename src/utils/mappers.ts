@@ -1,4 +1,4 @@
-import { InstanceModelName, InstanceRouteKey, ItemModelName, ItemRouteKey } from 'types';
+import { type InstanceModelName, type InstanceRouteKey, type ItemModelName, type ItemRouteKey } from 'types';
 
 export const itemKeytoModel: Record<ItemRouteKey, ItemModelName> = {
   cards: 'card',

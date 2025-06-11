@@ -1,16 +1,17 @@
-import { auth } from '@/server/auth';
-import StyledLink from '../_components/ui/StyledLink';
 import { MdOutlineSearch } from 'react-icons/md';
-import LocalSync from './local-sync';
+
+import Link from '@/app/_components/ui/link';
+import LocalSync from '@/app/sync/local-sync';
+import { auth } from '@/server/auth';
 
 function LodestoneSync() {
   return (
     <section>
       You can also look up a Lodestone character and sync their mount and minion collections.
-      <StyledLink href="/sync/search" className="mx-auto w-64">
+      <Link href="/sync/search" className="mx-auto w-64">
         <MdOutlineSearch size={20} />
         <p>Search the Lodestone</p>
-      </StyledLink>
+      </Link>
     </section>
   );
 }

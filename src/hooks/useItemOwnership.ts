@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useItemLogic } from './useItemLogic';
 import { type Session } from 'next-auth';
+import { useCallback, useEffect, useState } from 'react';
 import { type Item } from 'types';
 
+import { useItemLogic } from '@/hooks/useItemLogic';
+
 export function useItemOwnership<T extends Item>(item: T, session: Session | null) {
-  const { addToUser, removeFromUser } = useItemLogic(item, session);
+  const addOrRemoveFromUser = useItemLogic(item, session);
 
   const [owned, setOwned] = useState(false);
 
@@ -19,18 +20,9 @@ export function useItemOwnership<T extends Item>(item: T, session: Session | nul
   }, [item, session]);
 
   const handleAddOrRemove = useCallback(async () => {
-    if (owned) {
-      const success = await removeFromUser();
-      if (success) {
-        setOwned(false);
-      }
-    } else {
-      const success = await addToUser();
-      if (success) {
-        setOwned(true);
-      }
-    }
-  }, [owned, addToUser, removeFromUser]);
+    await addOrRemoveFromUser();
+    owned ? setOwned(false) : setOwned(true);
+  }, [owned, addOrRemoveFromUser]);
 
   return {
     owned,

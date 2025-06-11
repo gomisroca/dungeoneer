@@ -1,6 +1,7 @@
-import StyledLink from '@/app/_components/ui/StyledLink';
 import Image from 'next/image';
 import { type LodestoneCharacter } from 'types';
+
+import Link from '@/app/_components/ui/link';
 
 interface LodestoneSearchListProps {
   characters: LodestoneCharacter[];
@@ -11,7 +12,7 @@ export default async function LodestoneSearchList({ characters }: LodestoneSearc
   return (
     <div className="flex w-full flex-1 flex-wrap justify-center gap-4">
       {characters.map((character) => (
-        <StyledLink
+        <Link
           key={character.id}
           href={`/sync/character/${character.id}`}
           className="flex h-fit w-64 flex-col items-center justify-center gap-y-2">
@@ -20,7 +21,7 @@ export default async function LodestoneSearchList({ characters }: LodestoneSearc
           <p className="text-sm">
             {character.server} - {character.data_center}
           </p>
-        </StyledLink>
+        </Link>
       ))}
     </div>
   );

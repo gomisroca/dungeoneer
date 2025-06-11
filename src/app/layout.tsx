@@ -1,11 +1,11 @@
 import '@/styles/globals.css';
 
-import { Raleway } from 'next/font/google';
-import { type Metadata } from 'next';
-import { ThemeProvider } from 'next-themes';
 import { Provider as JotaiProvider } from 'jotai';
+import { type Metadata } from 'next';
+import { Raleway } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
 
-import Navbar from './_components/navbar';
+import Navbar from '@/app/_components/navbar';
 
 export const metadata: Metadata = {
   title: 'Dungeoneer',

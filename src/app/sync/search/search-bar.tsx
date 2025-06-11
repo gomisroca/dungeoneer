@@ -1,10 +1,11 @@
 'use client';
 
-import Button from '@/app/_components/ui/Button';
-import { DATA_CENTERS } from '@/utils/consts';
 import { useRouter } from 'next/navigation';
 import { type ChangeEvent, useState } from 'react';
 import { MdSearch } from 'react-icons/md';
+
+import Button from '@/app/_components/ui/button';
+import { DATA_CENTERS } from '@/utils/consts';
 
 function ServerSelect({
   selectedDataCenter,

@@ -1,4 +1,5 @@
 import { useSetAtom } from 'jotai';
+
 import { messageAtom } from '@/atoms/message';
 
 export const useMessage = () => {

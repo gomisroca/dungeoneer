@@ -1,8 +1,9 @@
 'use client';
 
-import useDebounce from '@/hooks/useDebounce';
 import { useRouter } from 'next/navigation';
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+
+import useDebounce from '@/hooks/useDebounce';
 
 function SearchBar() {
   const router = useRouter();
@@ -63,7 +64,7 @@ function SearchBar() {
   return (
     <div className="w-full">
       <input
-        className="w-full rounded-t-md bg-zinc-200 p-4 drop-shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-300 dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
+        className="w-full rounded-t-md bg-zinc-200 p-4 drop-shadow-md focus-visible:ring-1 focus-visible:ring-cyan-300 focus-visible:outline-none dark:bg-zinc-800 dark:focus-visible:ring-cyan-700"
         type="text"
         value={searchTerm}
         onChange={handleChange}
@@ -71,7 +72,7 @@ function SearchBar() {
       />
       <div className="h-1 w-full rounded-b-md bg-zinc-200 dark:bg-zinc-700">
         <div
-          className="duration-50 h-1 rounded-b-md bg-cyan-300 transition-all ease-out dark:bg-cyan-700"
+          className="h-1 rounded-b-md bg-cyan-300 transition-all duration-50 ease-out dark:bg-cyan-700"
           style={{ width: `${progress}%` }}></div>
       </div>
     </div>
