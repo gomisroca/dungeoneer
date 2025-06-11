@@ -1,9 +1,10 @@
 import 'server-only';
 
-import { db } from '@server/db';
-import { cached } from '@utils/redis';
 import * as cheerio from 'cheerio';
 import { type LodestoneCharacter } from 'types';
+
+import { db } from '@/server/db';
+import { cached } from '@/utils/redis';
 
 export async function fetchLodestoneCharacters({
   name,
