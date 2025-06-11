@@ -18,7 +18,7 @@ function SignOutButton() {
       arialabel="Sign Out"
       name="Sign Out"
       onClick={() => signOut()}
-      className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      className="h-8 w-8 cursor-pointer p-0 md:h-full md:w-full md:p-4">
       <MdOutlineExitToApp size={20} />
       <span className="sr-only">Sign Out</span>
     </Button>
