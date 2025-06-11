@@ -29,7 +29,7 @@ function Button({ name, arialabel, type = 'button', disabled = false, onClick, c
     name={name || 'Button'}
     type={type} 
     onClick={onClick} 
-    className={twMerge('justify-center whitespace-nowrap dark:bg-zinc-800/50 bg-zinc-100/25 hover:text-zinc-900 active:duration-100 active:bg-cyan-300 active:scale-x-110 dark:active:bg-cyan-700 dark:hover:text-zinc-100 text-nowrap ease-in-out rounded-xl dark:hover:bg-cyan-700 p-4 font-semibold duration-200 transition hover:bg-cyan-300 flex flex-row gap-2 items-center', className, disabled && 'cursor-not-allowed hover:bg-transparent dark:hover:bg-transparent dark:active:bg-transparent active:bg-transparent active:scale-x-100')} 
+    className={twMerge('justify-center whitespace-nowrap shadow-md hover:drop-shadow-lg dark:bg-zinc-800/50 bg-zinc-100/25 hover:text-zinc-900 active:duration-100 active:bg-cyan-300 active:scale-x-110 dark:active:bg-cyan-700 dark:hover:text-zinc-100 text-nowrap ease-in-out rounded-xl dark:hover:bg-cyan-700 p-4 font-semibold duration-200 transition hover:bg-cyan-300 flex flex-row gap-2 items-center', className, disabled && 'cursor-not-allowed hover:bg-transparent dark:hover:bg-transparent dark:active:bg-transparent active:bg-transparent active:scale-x-100')} 
     disabled={disabled}>
       {children}
     </button>	
