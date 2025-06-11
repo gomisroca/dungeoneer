@@ -21,7 +21,11 @@ export function useItemOwnership<T extends Item>(item: T, session: Session | nul
 
   const handleAddOrRemove = useCallback(async () => {
     await addOrRemoveFromUser();
-    owned ? setOwned(false) : setOwned(true);
+    if (owned) {
+      setOwned(false);
+    } else {
+      setOwned(true);
+    }
   }, [owned, addOrRemoveFromUser]);
 
   return {
