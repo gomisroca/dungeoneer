@@ -1,11 +1,12 @@
 import 'server-only';
 
-import { db } from '@server/db';
-import { cached } from '@utils/redis';
 import { type ItemModelName } from 'types';
 
-export async function fetchItems<T extends ItemModelName>(
-  model: T,
+import { db } from '@/server/db';
+import { cached } from '@/utils/redis';
+
+export async function fetchItems(
+  model: ItemModelName,
   {
     expansion,
     skip = 0,
@@ -16,28 +17,106 @@ export async function fetchItems<T extends ItemModelName>(
     take?: number;
   }
 ) {
-  const modelDelegate = db[model] as any as {
-    findMany: Function;
-  };
-
+  const cacheKey = `${model}:${expansion}:${skip}:${take}`;
   const items = await cached(
-    `${model}:${expansion}:${skip}:${take}`,
+    cacheKey,
     async () => {
       try {
-        const items = await modelDelegate.findMany({
-          orderBy: [{ patch: 'asc' }, { id: 'asc' }],
-          where: {
-            patch: { contains: expansion },
-          },
-          include: {
-            owners: true,
-            sources: true,
-          },
-          skip,
-          take,
-        });
-
-        return items;
+        switch (model) {
+          case 'minion':
+            return await db.minion.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where: {
+                patch: { contains: expansion },
+              },
+              include: {
+                owners: true,
+                sources: true,
+              },
+              skip,
+              take,
+            });
+          case 'mount':
+            return await db.mount.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where: {
+                patch: { contains: expansion },
+              },
+              include: {
+                owners: true,
+                sources: true,
+              },
+              skip,
+              take,
+            });
+          case 'orchestrion':
+            return await db.orchestrion.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where: {
+                patch: { contains: expansion },
+              },
+              include: {
+                owners: true,
+                sources: true,
+              },
+              skip,
+              take,
+            });
+          case 'spell':
+            return await db.spell.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where: {
+                patch: { contains: expansion },
+              },
+              include: {
+                owners: true,
+                sources: true,
+              },
+              skip,
+              take,
+            });
+          case 'card':
+            return await db.card.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where: {
+                patch: { contains: expansion },
+              },
+              include: {
+                owners: true,
+                sources: true,
+              },
+              skip,
+              take,
+            });
+          case 'emote':
+            return await db.emote.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where: {
+                patch: { contains: expansion },
+              },
+              include: {
+                owners: true,
+                sources: true,
+              },
+              skip,
+              take,
+            });
+          case 'hairstyle':
+            return await db.hairstyle.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where: {
+                patch: { contains: expansion },
+              },
+              include: {
+                owners: true,
+                sources: true,
+              },
+              skip,
+              take,
+            });
+          default:
+            throw new Error(`Unsupported model: ${model as string}`);
+        }
       } catch (error) {
         console.error(`Failed to get ${model}s:`, error);
         return null;
@@ -46,5 +125,5 @@ export async function fetchItems<T extends ItemModelName>(
     60 * 5 // Cache for 5 minutes
   );
 
-  return { items, hasMore: items.length === take };
+  return { items, hasMore: Array.isArray(items) && items.length === take };
 }

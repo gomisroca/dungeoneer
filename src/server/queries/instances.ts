@@ -1,12 +1,22 @@
 import 'server-only';
 
-import { db } from '@server/db';
-import { cached } from '@utils/redis';
+import { type InstanceModelName } from 'types';
 
-type ModelName = 'dungeon' | 'raid' | 'trial' | 'variantDungeon';
+import { db } from '@/server/db';
+import { cached } from '@/utils/redis';
 
-export async function fetchInstances<T extends ModelName>(
-  model: T,
+const include = {
+  minions: { include: { owners: true } },
+  mounts: { include: { owners: true } },
+  orchestrions: { include: { owners: true } },
+  spells: { include: { owners: true } },
+  cards: { include: { owners: true } },
+  emotes: { include: { owners: true } },
+  hairstyles: { include: { owners: true } },
+};
+
+export async function fetchInstances(
+  model: InstanceModelName,
   {
     expansion,
     skip = 0,
@@ -17,70 +27,60 @@ export async function fetchInstances<T extends ModelName>(
     take?: number;
   }
 ) {
-  const modelDelegate = db[model] as any as {
-    findMany: Function;
+  const where = {
+    AND: [{ patch: { contains: expansion } }],
+    OR: [
+      { minions: { some: {} } },
+      { mounts: { some: {} } },
+      { orchestrions: { some: {} } },
+      { spells: { some: {} } },
+      { cards: { some: {} } },
+      { emotes: { some: {} } },
+      { hairstyles: { some: {} } },
+    ],
   };
 
+  const cacheKey = `${model}:${expansion}:${skip}:${take}`;
   const instances = await cached(
-    `${model}:${expansion}:${skip}:${take}`,
+    cacheKey,
     async () => {
       try {
-        const instances = await modelDelegate.findMany({
-          orderBy: [{ patch: 'asc' }, { id: 'asc' }],
-          where: {
-            AND: [{ patch: { contains: expansion } }],
-            OR: [
-              { minions: { some: {} } },
-              { mounts: { some: {} } },
-              { orchestrions: { some: {} } },
-              { spells: { some: {} } },
-              { cards: { some: {} } },
-              { emotes: { some: {} } },
-              { hairstyles: { some: {} } },
-            ],
-          },
-          include: {
-            minions: {
-              include: {
-                owners: true,
-              },
-            },
-            mounts: {
-              include: {
-                owners: true,
-              },
-            },
-            orchestrions: {
-              include: {
-                owners: true,
-              },
-            },
-            spells: {
-              include: {
-                owners: true,
-              },
-            },
-            cards: {
-              include: {
-                owners: true,
-              },
-            },
-            emotes: {
-              include: {
-                owners: true,
-              },
-            },
-            hairstyles: {
-              include: {
-                owners: true,
-              },
-            },
-          },
-          skip,
-          take,
-        });
-
-        return instances;
+        switch (model) {
+          case 'dungeon':
+            return await db.dungeon.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where,
+              include,
+              skip,
+              take,
+            });
+          case 'raid':
+            return await db.raid.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where,
+              include,
+              skip,
+              take,
+            });
+          case 'trial':
+            return await db.trial.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where,
+              include,
+              skip,
+              take,
+            });
+          case 'variantDungeon':
+            return await db.variantDungeon.findMany({
+              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+              where,
+              include,
+              skip,
+              take,
+            });
+          default:
+            throw new Error(`Unsupported model: ${model as string}`);
+        }
       } catch (error) {
         console.error(`Failed to get ${model}s:`, error);
         return null;
@@ -89,74 +89,54 @@ export async function fetchInstances<T extends ModelName>(
     60 * 5 // Cache for 5 minutes
   );
 
-  return { instances, hasMore: instances.length === take };
+  return { instances, hasMore: Array.isArray(instances) && instances.length === take };
 }
 
-export async function fetchUniqueInstance<T extends ModelName>(
-  model: T,
+export async function fetchUniqueInstance(
+  model: InstanceModelName,
   {
     id,
   }: {
-    id: string;
+    id: number;
   }
 ) {
-  const modelDelegate = db[model] as any as {
-    findUniqueOrThrow: Function;
-  };
-
+  const cacheKey = `${model}:${id}`;
   const instance = await cached(
-    `${model}:${id}`,
+    cacheKey,
     async () => {
       try {
-        const instance = await modelDelegate
-          .findUniqueOrThrow({
-            where: {
-              id,
-            },
-            include: {
-              minions: {
-                include: {
-                  owners: true,
-                },
+        switch (model) {
+          case 'dungeon':
+            return await db.dungeon.findUniqueOrThrow({
+              where: {
+                id,
               },
-              mounts: {
-                include: {
-                  owners: true,
-                },
+              include,
+            });
+          case 'raid':
+            return await db.raid.findUniqueOrThrow({
+              where: {
+                id,
               },
-              orchestrions: {
-                include: {
-                  owners: true,
-                },
+              include,
+            });
+          case 'trial':
+            return await db.trial.findUniqueOrThrow({
+              where: {
+                id,
               },
-              spells: {
-                include: {
-                  owners: true,
-                },
+              include,
+            });
+          case 'variantDungeon':
+            return await db.variantDungeon.findUniqueOrThrow({
+              where: {
+                id,
               },
-              cards: {
-                include: {
-                  owners: true,
-                },
-              },
-              emotes: {
-                include: {
-                  owners: true,
-                },
-              },
-              hairstyles: {
-                include: {
-                  owners: true,
-                },
-              },
-            },
-          })
-          .catch((error: unknown) => {
-            console.error(`Failed to get ${model}:`, error);
-            return null;
-          });
-
-        return instance;
+              include,
+            });
+          default:
+            throw new Error(`Unsupported model: ${model as string}`);
+        }
       } catch (error) {
         console.error(`Failed to get ${model}:`, error);
         return null;
