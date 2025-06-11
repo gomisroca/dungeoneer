@@ -7,6 +7,7 @@ import { type ExpandedInstance } from 'types';
 
 import { InstanceCard } from '@/app/_components/cards';
 import FilterMenu from '@/app/_components/filter-menu';
+import LoadingSpinner from '@/app/_components/ui/loading-spinner';
 import { InstanceCardSkeleton, InstanceListItemSkeleton } from '@/app/_components/ui/skeletons';
 import VirtualItem from '@/app/_components/ui/virtual-item';
 import ViewToggler from '@/app/_components/view-toggler';
@@ -41,7 +42,10 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
       const res = await fetch(
         `/api/instance?type=${routeKey}&expansion=${expansion ?? ''}&skip=${instances.length}&take=30`
       );
-      const { instances: newInstances, hasMore: newHasMore } = await res.json();
+      const { instances: newInstances, hasMore: newHasMore } = (await res.json()) as {
+        instances: ExpandedInstance[];
+        hasMore: boolean;
+      };
       console.log('Fetched instances:', newInstances.length, 'hasMore:', newHasMore);
 
       setInstances((prev) => {
@@ -70,7 +74,7 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
     if (!initialLoaded && instances.length === 0) {
       console.log('Initial load triggered');
       setInitialLoaded(true);
-      loadInstances();
+      void loadInstances();
     }
   }, [initialLoaded, instances.length, loadInstances]);
 
@@ -80,7 +84,7 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
       (entries) => {
         if (entries[0]?.isIntersecting && !loading && hasMore && initialLoaded) {
           console.log('Intersection observer triggered load');
-          loadInstances();
+          void loadInstances();
         }
       },
       { threshold: 1 }
@@ -96,7 +100,7 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
         observer.unobserve(current);
       }
     };
-  }, [loading, hasMore, initialLoaded]); // Remove loadItems from dependencies
+  }, [loading, hasMore, initialLoaded]);
 
   const filteredInstances = useInstanceFilter({ instances, filter, session });
 
@@ -122,7 +126,7 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
         </div>
       )}
       <div ref={observerRef} className="mt-8 flex h-16 items-center justify-center">
-        {loading && <span>Loading more...</span>}
+        {loading && <LoadingSpinner />}
         {!hasMore && <span>No more instances.</span>}
       </div>
     </div>

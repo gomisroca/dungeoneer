@@ -7,6 +7,7 @@ import { type ExpandedCollectible } from 'types';
 
 import { ItemCard } from '@/app/_components/cards';
 import FilterMenu from '@/app/_components/filter-menu';
+import LoadingSpinner from '@/app/_components/ui/loading-spinner';
 import { CollectibleListItemSkeleton, ItemCardSkeleton } from '@/app/_components/ui/skeletons';
 import VirtualItem from '@/app/_components/ui/virtual-item';
 import ViewToggler from '@/app/_components/view-toggler';
@@ -42,7 +43,10 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
       const res = await fetch(
         `/api/collectible?type=${routeKey}&expansion=${expansion ?? ''}&skip=${items.length}&take=50`
       );
-      const { items: newItems, hasMore: newHasMore } = await res.json();
+      const { items: newItems, hasMore: newHasMore } = (await res.json()) as {
+        items: ExpandedCollectible[];
+        hasMore: boolean;
+      };
       console.log('Fetched items:', newItems.length, 'hasMore:', newHasMore);
 
       setItems((prev) => {
@@ -71,7 +75,7 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
     if (!initialLoaded && items.length === 0) {
       console.log('Initial load triggered');
       setInitialLoaded(true);
-      loadItems();
+      void loadItems();
     }
   }, [initialLoaded, items.length, loadItems]);
 
@@ -81,7 +85,7 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
       (entries) => {
         if (entries[0]?.isIntersecting && !loading && hasMore && initialLoaded) {
           console.log('Intersection observer triggered load');
-          loadItems();
+          void loadItems();
         }
       },
       { threshold: 1 }
@@ -136,7 +140,7 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
         </div>
       )}
       <div ref={observerRef} className="mt-8 flex h-16 items-center justify-center">
-        {loading && <span>Loading more...</span>}
+        {loading && <LoadingSpinner />}
         {!hasMore && <span>No more items.</span>}
       </div>
     </div>
