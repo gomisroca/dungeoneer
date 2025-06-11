@@ -19,7 +19,7 @@ import {
   type Trial,
   type User,
   type VariantDungeon,
-} from '@prisma/client';
+} from 'generated/prisma';
 
 export interface ExpandedMinion extends Minion {
   owners: User[];

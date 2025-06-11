@@ -8,7 +8,7 @@ import {
   type MountSource,
   type OrchestrionSource,
   type SpellSource,
-} from '@prisma/client';
+} from 'generated/prisma';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import { twMerge } from 'tailwind-merge';

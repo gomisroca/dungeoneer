@@ -1,4 +1,4 @@
-import { type MinionSource, type MountSource, type OrchestrionSource, type EmoteSource, type HairstyleSource, type CardSource, SpellSource } from '@prisma/client'
+import { type MinionSource, type MountSource, type OrchestrionSource, type EmoteSource, type HairstyleSource, type CardSource, SpellSource } from 'generated/prisma'
 import Image from 'next/image'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip'
 import { useEffect, useRef, useState } from 'react';
