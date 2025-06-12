@@ -1,7 +1,7 @@
 import { type Session } from 'next-auth';
 import { type ExpandedInstance } from 'types';
 
-import { InstanceCard } from '@/app/_components/cards';
+import { InstanceCard } from '@/app/_components/ui/cards';
 
 interface SearchListProps {
   items: ExpandedInstance[];

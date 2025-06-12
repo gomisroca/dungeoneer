@@ -5,8 +5,8 @@ import { type Session } from 'next-auth';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type ExpandedCollectible } from 'types';
 
-import { ItemCard } from '@/app/_components/cards';
 import FilterMenu from '@/app/_components/filter-menu';
+import { ItemCard } from '@/app/_components/ui/cards';
 import LoadingSpinner from '@/app/_components/ui/loading-spinner';
 import { CollectibleListItemSkeleton, ItemCardSkeleton } from '@/app/_components/ui/skeletons';
 import VirtualItem from '@/app/_components/ui/virtual-item';

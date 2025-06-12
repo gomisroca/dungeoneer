@@ -5,8 +5,8 @@ import { type Session } from 'next-auth';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type ExpandedInstance } from 'types';
 
-import { InstanceCard } from '@/app/_components/cards';
 import FilterMenu from '@/app/_components/filter-menu';
+import { InstanceCard } from '@/app/_components/ui/cards';
 import LoadingSpinner from '@/app/_components/ui/loading-spinner';
 import { InstanceCardSkeleton, InstanceListItemSkeleton } from '@/app/_components/ui/skeletons';
 import VirtualItem from '@/app/_components/ui/virtual-item';
