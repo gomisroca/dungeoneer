@@ -184,7 +184,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 <h2 id="contact">📧 Contact</h2>
 
-Adrià Gomis - [@gomisroca](https://github.com/gomisroca) - gomisroca@gmail.com
+Adrià Gomis - [@gomisroca](https://github.com/gomisroca) - [gomisroca@gmail.com](mailto:gomisroca@gmail.com)
 
 
 <p align="right">[<a href="#readme-top">back to top</a>]</p>
