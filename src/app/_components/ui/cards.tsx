@@ -66,6 +66,7 @@ export function InstanceCard({ instance, session }: { instance: ExpandedInstance
       )}
       {instance.image && (
         <Image
+          loading="lazy"
           src={instance.image}
           alt={instance.name}
           width={300}
@@ -138,7 +139,7 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
           ))}
         </div>
       )}
-      <Button arialabel={owned ? 'Remove' : 'Add'} className="w-full text-sm md:text-base " onClick={handleAddOrRemove}>
+      <Button arialabel={owned ? 'Remove' : 'Add'} className="w-full text-sm md:text-base" onClick={handleAddOrRemove}>
         {owned ? 'Remove' : 'Add'}
       </Button>
     </div>
