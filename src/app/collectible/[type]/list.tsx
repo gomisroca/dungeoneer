@@ -107,7 +107,7 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
   const filteredCollectibles = useItemFilter({ items, filter, session });
 
   return (
-    <div className="relative flex flex-col">
+    <div className="relative flex w-3/4 flex-col md:w-full">
       <ViewToggler onViewChange={setView} />
       <FilterMenu onFilterChange={setFilter} />
       {view ? (

@@ -22,7 +22,7 @@ export default function InstanceListItem({
   return (
     <div
       className={twMerge(
-        'relative flex h-full w-full items-center justify-start font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] lg:min-w-[400px]',
+        'relative mx-auto flex h-full w-3/4 flex-col items-center justify-start font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:mx-auto md:w-full md:min-w-[300px] md:flex-row lg:min-w-[400px]',
         (ownershipStatus === 'empty' || ownershipStatus === 'owned') && 'opacity-50 hover:opacity-100'
       )}>
       {(ownershipStatus === 'owned' || ownershipStatus === 'empty') && (
@@ -53,7 +53,7 @@ export default function InstanceListItem({
           </div>
         )}
       </div>
-      <div className="flex flex-wrap gap-2 border-l border-zinc-200 px-2 dark:border-zinc-800">
+      <div className="flex w-full flex-col gap-2 px-2 md:flex-wrap md:border-l md:border-zinc-200 dark:border-zinc-800">
         <ItemSelectors instance={instance} session={session} compact={true} />
       </div>
     </div>
