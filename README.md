@@ -166,9 +166,9 @@ Commit messages must follow the [Conventional Commits](https://www.conventionalc
 
 - [ ] Improve image optimization
 - [ ] Add better filtering options
-- [X] Add support for character importing
-  - [X] Import what data is available
-  - [X] Allow character claiming by logged in users
+- [x] Add support for character importing
+  - [x] Import what data is available
+  - [x] Allow character claiming by logged in users
 
 See the [open issues](https://github.com/gomisroca/dungeoneer/issues) for a full list of proposed features (and known issues).
 
