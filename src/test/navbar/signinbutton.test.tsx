@@ -1,7 +1,8 @@
-import SignInButton from '@/app/_components/navbar/SignInButton';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { expect, describe, it, vi } from 'vitest';
 import { signIn } from 'next-auth/react';
+import { describe, expect, it, vi } from 'vitest';
+
+import SignInButton from '@/app/_components/navbar/sign-in';
 
 vi.mock('next-auth/react', () => ({
   signIn: vi.fn(),

@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, it, vi, expect, type Mock } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useTheme } from 'next-themes';
-import ThemeButton from '@/app/_components/navbar/themeButton';
+import { describe, expect, it, type Mock, vi } from 'vitest';
+
+import ThemeButton from '@/app/_components/navbar/theme-button';
 
 // Mock the useTheme hook
 vi.mock('next-themes', () => ({

@@ -1,6 +1,6 @@
 import { type Session } from 'next-auth';
-import { useState, useEffect } from 'react';
-import { type Item, type ExpandedInstance } from 'types';
+import { useEffect, useState } from 'react';
+import { type ExpandedInstance, type Item } from 'types';
 
 function checkDatabaseOwnership(instance: ExpandedInstance, userId: string | undefined) {
   if (!userId) return false;
@@ -48,7 +48,7 @@ function checkLocalStorageOwnership(instance: ExpandedInstance) {
   );
 }
 
-export default function useCheckOwnership(instance: ExpandedInstance, session: Session | null) {
+export function useIsOwned(instance: ExpandedInstance, session: Session | null): boolean {
   const [isOwned, setIsOwned] = useState(false);
 
   useEffect(() => {
@@ -61,15 +61,22 @@ export default function useCheckOwnership(instance: ExpandedInstance, session: S
     };
     window.addEventListener('storage', listenStorageChange);
     return () => window.removeEventListener('storage', listenStorageChange);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [instance, session]);
 
   useEffect(() => {
     if (session?.user?.id) {
       setIsOwned(checkDatabaseOwnership(instance, session.user.id));
+    } else {
+      setIsOwned(checkLocalStorageOwnership(instance));
     }
   }, [instance, session]);
 
+  return isOwned;
+}
+
+export type OwnershipStatus = 'empty' | 'owned' | 'not-owned';
+
+export function getOwnershipStatus(instance: ExpandedInstance, isOwned: boolean): OwnershipStatus {
   if (
     (!instance.minions || instance.minions.length === 0) &&
     (!instance.mounts || instance.mounts.length === 0) &&
@@ -80,7 +87,6 @@ export default function useCheckOwnership(instance: ExpandedInstance, session: S
     (!instance.hairstyles || instance.hairstyles.length === 0)
   ) {
     return 'empty';
-  } else {
-    return isOwned ? 'owned' : 'not-owned';
   }
+  return isOwned ? 'owned' : 'not-owned';
 }

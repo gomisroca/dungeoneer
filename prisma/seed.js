@@ -13,6 +13,7 @@ import updateDungeons from "./relation_functions/updateDungeons";
 import updateRaids from "./relation_functions/updateRaids";
 import updateTrials from "./relation_functions/updateTrials";
 import updateVariants from "./relation_functions/updateVCDungeons";
+import { db } from "../src/server/db";
 
 async function main() {
   const seedFunctions = [
@@ -53,7 +54,7 @@ async function main() {
     console.error("An error occurred during the seeding process:", e);
     process.exit(1);
   } finally {
-    await prisma.$disconnect();
+    await db.$disconnect();
   }
 }
 

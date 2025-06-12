@@ -1,76 +1,48 @@
-import { api } from '@/trpc/react';
-import { addMessage } from '@/app/_components/ui/MessagePopup';
-import { type Item } from 'types';
-import { useCallback, useEffect, useState } from 'react';
 import { type Session } from 'next-auth';
+import { useCallback, useEffect, useState } from 'react';
+import { type Item } from 'types';
+
+import { addOrRemoveItem } from '@/actions/items';
+import { toErrorMessage } from '@/utils/errors';
+import { itemKeytoModel } from '@/utils/mappers';
 
 export function useItemLogic<T extends Item>(item: T, session: Session | null) {
-  const utils = api.useUtils();
   const [isLocalStorage, setIsLocalStorage] = useState(!session);
 
   useEffect(() => {
     setIsLocalStorage(!session);
   }, [session]);
 
-  // tRPC Mutations
-  const addToUserMutation = api[item.type].addToUser.useMutation({
-    onSuccess: async () => {
-      addMessage(`Added ${item.name} to your collection.`);
-    },
-    onError: (error) => {
-      alert(error.message);
-    },
-  });
-
-  const removeFromUserMutation = api[item.type].removeFromUser.useMutation({
-    onSuccess: async () => {
-      addMessage(`Removed ${item.name} from your collection.`);
-    },
-    onError: (error) => {
-      alert(error.message);
-    },
-  });
-
-  const addToUser = useCallback(async () => {
-    if (isLocalStorage) {
+  const addOrRemoveFromUser = useCallback(async () => {
+    const localAddOrRemove = async (item: Item) => {
       const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
-      if (!localItems.some((localItem: Item) => localItem.id === item.id)) {
-        localItems.push(item);
-        localStorage.setItem('userItems', JSON.stringify(localItems));
-        addMessage(`Added ${item.name} to your local collection.`);
-      }
-      return true;
-    } else {
       try {
-        await addToUserMutation.mutateAsync({ id: item.id });
-        await utils.invalidate();
-        return true;
-      } catch (_error) {
-        return false;
+        if (!localItems.some((localItem: Item) => localItem.id === item.id)) {
+          localItems.push(item);
+          localStorage.setItem('userItems', JSON.stringify(localItems));
+        } else {
+          const updatedItems = localItems.filter((localItem: Item) => localItem.id !== item.id);
+          localStorage.setItem('userItems', JSON.stringify(updatedItems));
+        }
+      } catch (error) {
+        throw new Error(toErrorMessage(error, `Failed to sync ${item.name}.`));
       }
-    }
-  }, [isLocalStorage, item, addToUserMutation, utils]);
+    };
 
-  const removeFromUser = useCallback(async () => {
+    const dbAddOrRemove = async (item: Item) => {
+      try {
+        await addOrRemoveItem(itemKeytoModel[item.type], { id: item.id });
+      } catch (error) {
+        throw new Error(toErrorMessage(error, `Failed to sync ${item.name}.`));
+      }
+    };
+
     if (isLocalStorage) {
-      const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
-      const updatedItems = localItems.filter((localItem: Item) => localItem.id !== item.id);
-      localStorage.setItem('userItems', JSON.stringify(updatedItems));
-      addMessage(`Removed ${item.name} from your local collection.`);
-      return true;
+      await localAddOrRemove(item);
     } else {
-      try {
-        await removeFromUserMutation.mutateAsync({ id: item.id });
-        await utils.invalidate();
-        return true;
-      } catch (_error) {
-        return false;
-      }
+      await dbAddOrRemove(item);
     }
-  }, [isLocalStorage, item, removeFromUserMutation, utils]);
+  }, [isLocalStorage, item]);
 
-  return {
-    addToUser,
-    removeFromUser,
-  };
+  return addOrRemoveFromUser;
 }

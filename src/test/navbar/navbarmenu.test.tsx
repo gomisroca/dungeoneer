@@ -1,15 +1,16 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import NavbarMenu from '@/app/_components/navbar/NavbarMenu';
 import {
-  type ExpandedCard,
-  type ExpandedEmote,
-  type ExpandedHairstyle,
-  type ExpandedMinion,
-  type ExpandedMount,
-  type ExpandedOrchestrion,
-  type ExpandedSpell,
-} from 'types';
+  type Card,
+  type Emote,
+  type Hairstyle,
+  type Minion,
+  type Mount,
+  type Orchestrion,
+  type Spell,
+} from 'generated/prisma';
+import { describe, expect, it, vi } from 'vitest';
+
+import NavbarMenu from '@/app/_components/navbar/navbar-menu';
 
 vi.mock('@/hooks/useItemSync', () => ({
   __esModule: true,
@@ -65,13 +66,13 @@ describe('NavbarMenu', () => {
       user: {
         id: '1',
         name: 'Test User',
-        minions: [] as ExpandedMinion[],
-        mounts: [] as ExpandedMount[],
-        orchestrions: [] as ExpandedOrchestrion[],
-        emotes: [] as ExpandedEmote[],
-        cards: [] as ExpandedCard[],
-        spells: [] as ExpandedSpell[],
-        hairstyles: [] as ExpandedHairstyle[],
+        minions: [] as Minion[],
+        mounts: [] as Mount[],
+        orchestrions: [] as Orchestrion[],
+        emotes: [] as Emote[],
+        cards: [] as Card[],
+        spells: [] as Spell[],
+        hairstyles: [] as Hairstyle[],
       },
       expires: '100000',
     };

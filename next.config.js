@@ -8,16 +8,6 @@ await import('./src/env.js');
 
 /** @type {import("next").NextConfig} */
 const config = {
-  experimental: {
-    swcPlugins: [
-      [
-        '@preact-signals/safe-react/swc',
-        {
-          mode: 'auto',
-        },
-      ],
-    ],
-  },
   images: {
     remotePatterns: [
       {
@@ -36,9 +26,6 @@ const config = {
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 };
 

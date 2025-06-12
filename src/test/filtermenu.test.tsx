@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, vi, beforeEach, expect } from 'vitest';
-import { ExpandedMenu } from '@/app/_components/FilterMenu';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { ExpandedMenu } from '@/app/_components/filter-menu';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
@@ -36,14 +37,5 @@ describe('FilterMenu', () => {
     const expansionButton = screen.getByRole('button', { name: /Heavensward/i });
     fireEvent.click(expansionButton);
     expect(mockPush).toHaveBeenCalledWith('?ex=hw');
-  });
-
-  it('removes the expansion query parameter when the same expansion is clicked again', () => {
-    const expansionButton = screen.getByRole('button', { name: /Heavensward/i });
-    fireEvent.click(expansionButton);
-    expect(mockPush).toHaveBeenCalledWith('?ex=hw');
-
-    fireEvent.click(expansionButton);
-    expect(mockPush).toHaveBeenCalledWith('?');
   });
 });

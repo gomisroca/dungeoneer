@@ -1,34 +1,28 @@
-import { api } from '@/trpc/react';
-import { useState, useCallback } from 'react';
-import { addMessage } from '@/app/_components/ui/MessagePopup';
-import { type Item } from 'types';
 import { type Session } from 'next-auth';
-import { TRPCClientError } from '@trpc/client';
+import { useCallback, useState } from 'react';
+import { type Item } from 'types';
+
+import { addOrRemoveItem } from '@/actions/items';
+import { useMessage } from '@/hooks/useMessage';
+import { toErrorMessage } from '@/utils/errors';
+import { itemKeytoModel } from '@/utils/mappers';
 
 export default function useItemSync({ session }: { session: Session | null }) {
-  const utils = api.useUtils();
+  const setMessage = useMessage();
   const [isSyncing, setIsSyncing] = useState(false);
-
-  const minionMutation = api.minions.addToUser.useMutation();
-  const mountMutation = api.mounts.addToUser.useMutation();
-  const cardMutation = api.cards.addToUser.useMutation();
-  const orchestrionMutation = api.orchestrions.addToUser.useMutation();
-  const spellMutation = api.spells.addToUser.useMutation();
-  const hairstyleMutation = api.hairstyles.addToUser.useMutation();
-  const emoteMutation = api.emotes.addToUser.useMutation();
 
   const getLocalItems = () => {
     try {
       const storedItems = localStorage.getItem('userItems');
       return storedItems ? (JSON.parse(storedItems) as Item[]) : [];
-    } catch (_error) {
+    } catch (error) {
       return [];
     }
   };
 
   const syncCollection = useCallback(async () => {
     if (!session) {
-      addMessage('Please sign in to sync your items.');
+      setMessage({ content: 'Please sign in to sync your items.', error: true });
       return;
     }
 
@@ -36,88 +30,49 @@ export default function useItemSync({ session }: { session: Session | null }) {
     try {
       const storedItems = localStorage.getItem('userItems');
       localItems = storedItems ? (JSON.parse(storedItems) as Item[]) : [];
-    } catch (_error) {
-      addMessage('Error reading local items. Please try again.');
+    } catch (error) {
+      setMessage({
+        content: toErrorMessage(error, 'Error reading local items. Please try again.'),
+        error: true,
+      });
       return;
     }
 
     if (localItems.length === 0) {
-      addMessage('No local items to sync.');
+      setMessage({ content: 'No local items to sync.', error: true });
       return;
     }
 
     setIsSyncing(true);
-    addMessage('Syncing your local items with your account...');
+    setMessage({ content: 'Syncing your local items with your account...' });
 
     const syncedItems: string[] = [];
 
     for (const item of localItems) {
       try {
-        let mutation;
-        switch (item.type) {
-          case 'minions':
-            mutation = minionMutation;
-            break;
-          case 'mounts':
-            mutation = mountMutation;
-            break;
-          case 'cards':
-            mutation = cardMutation;
-            break;
-          case 'orchestrions':
-            mutation = orchestrionMutation;
-            break;
-          case 'spells':
-            mutation = spellMutation;
-            break;
-          case 'hairstyles':
-            mutation = hairstyleMutation;
-            break;
-          case 'emotes':
-            mutation = emoteMutation;
-            break;
-          default:
-            throw new Error(`Unknown item type: ${item.type as string}`);
-        }
-
-        await mutation.mutateAsync({ id: item.id });
+        await addOrRemoveItem(itemKeytoModel[item.type], { id: item.id });
         syncedItems.push(item.id);
       } catch (error) {
-        if (error instanceof TRPCClientError) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          if (error.data?.code === 'CONFLICT') {
-            syncedItems.push(item.id);
-          } else {
-            addMessage(`Failed to sync ${item.name}. Please try adding it manually.`);
-          }
-        } else {
-          addMessage(`Failed to sync ${item.name}. Please try adding it manually.`);
-        }
+        setMessage({
+          content: toErrorMessage(error, `Failed to sync ${item.name}. Please try adding it manually.`),
+          error: true,
+        });
       }
     }
-
-    await utils.invalidate();
 
     try {
       const remainingItems = localItems.filter((item) => !syncedItems.includes(item.id));
       localStorage.setItem('userItems', JSON.stringify(remainingItems));
-    } catch (_error) {
-      addMessage('Error updating local items. Some items may need to be synced again.');
+    } catch (error) {
+      setMessage({
+        content: toErrorMessage(error, 'Error updating local items. Some items may need to be synced again.'),
+        error: true,
+      });
     }
 
-    addMessage('Sync process completed.');
+    setMessage({ content: 'Sync process completed.' });
     setIsSyncing(false);
-  }, [
-    session,
-    minionMutation,
-    mountMutation,
-    cardMutation,
-    orchestrionMutation,
-    spellMutation,
-    hairstyleMutation,
-    emoteMutation,
-    utils,
-  ]);
+  }, [session, addOrRemoveItem]);
 
   return { syncCollection, isSyncing, getLocalItems };
 }

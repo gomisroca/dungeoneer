@@ -1,25 +1,25 @@
 import {
-  type Minion,
-  type User,
+  type Card,
+  type CardSource,
+  type CardStats,
   type Dungeon,
+  type Emote,
+  type EmoteSource,
+  type Hairstyle,
+  type HairstyleSource,
+  type Minion,
   type MinionSource,
-  type Raid,
-  type Trial,
   type Mount,
   type MountSource,
   type Orchestrion,
   type OrchestrionSource,
+  type Raid,
   type Spell,
   type SpellSource,
-  type Card,
-  type CardStats,
-  type CardSource,
+  type Trial,
+  type User,
   type VariantDungeon,
-  type Hairstyle,
-  type HairstyleSource,
-  type EmoteSource,
-  type Emote,
-} from '@prisma/client';
+} from 'generated/prisma';
 
 export interface ExpandedMinion extends Minion {
   owners: User[];
@@ -132,8 +132,8 @@ export type LodestoneCharacter = {
   id: string;
   name: string;
   avatar: string;
-  server: string;
-  data_center: string;
+  server: string | undefined;
+  data_center: string | undefined;
   mounts?: {
     count: number;
     total: number;
@@ -158,3 +158,8 @@ export type LodestoneCollectable = {
     },
   ];
 };
+
+export type ItemRouteKey = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
+export type ItemModelName = 'card' | 'emote' | 'minion' | 'mount' | 'hairstyle' | 'orchestrion' | 'spell';
+export type InstanceRouteKey = 'dungeons' | 'trials' | 'raids' | 'variants';
+export type InstanceModelName = 'dungeon' | 'trial' | 'raid' | 'variantDungeon';

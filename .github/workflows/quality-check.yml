@@ -14,9 +14,11 @@ jobs:
       NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
       DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
       DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-      SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
       NEXT_PUBLIC_IMAGE_PROXY_HOSTNAME: ${{ secrets.NEXT_PUBLIC_IMAGE_PROXY_HOSTNAME }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

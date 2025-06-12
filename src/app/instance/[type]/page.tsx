@@ -1,34 +1,23 @@
-import { getServerAuthSession } from '@/server/auth';
-import { api } from '@/trpc/server';
-import { Suspense } from 'react';
-import Loading from './loading';
 import dynamic from 'next/dynamic';
-import { EXPANSIONS, INSTANCE_TYPES } from '@/utils/consts';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import { type InstanceRouteKey } from 'types';
 
-const InstanceList = dynamic(() => import('./InstanceList'));
+import Loading from '@/app/instance/[type]/loading';
+import { auth } from '@/server/auth';
+import { INSTANCE_TYPES } from '@/utils/consts';
 
-export default async function InstanceListWrapper({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ type: string }>;
-  searchParams?: Record<string, string | string[] | undefined>;
-}) {
+const InstanceList = dynamic(() => import('@/app/instance/[type]/list'));
+
+export default async function InstanceListWrapper({ params }: { params: Promise<{ type: InstanceRouteKey }> }) {
   const type = (await params).type;
   if (!type || !INSTANCE_TYPES.includes(type)) return notFound();
-  const routeKey = type as 'dungeons' | 'raids' | 'trials' | 'variants';
 
-  const expansion = searchParams?.ex ?? undefined;
+  const session = await auth();
 
-  const initialInstances = await api[routeKey].getAll({
-    limit: 20,
-    expansion: EXPANSIONS[expansion as keyof typeof EXPANSIONS],
-  });
-  const session = await getServerAuthSession();
   return (
     <Suspense fallback={<Loading />}>
-      <InstanceList session={session} initialInstances={initialInstances} routeKey={routeKey} />
+      <InstanceList session={session} routeKey={type} />
     </Suspense>
   );
 }
