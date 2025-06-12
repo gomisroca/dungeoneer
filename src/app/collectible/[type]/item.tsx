@@ -19,6 +19,7 @@ import Button from '@/app/_components/ui/button';
 import Source from '@/app/_components/ui/source';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
 import { useMessage } from '@/hooks/useMessage';
+import { toErrorMessage } from '@/utils/errors';
 
 interface BaseItem {
   id: string;
@@ -53,13 +54,21 @@ export default function CollectibleListItem({ item, type, session }: ItemCardPro
         : `Added ${item.name} to your collection.`,
     });
     setOptimisticOwned((prev) => !prev);
-    await handleAddOrRemove();
+    try {
+      await handleAddOrRemove();
+    } catch (error) {
+      setOptimisticOwned((prev) => !prev);
+      setMessage({
+        content: toErrorMessage(error, `Failed to sync ${item.name}.`),
+        error: true,
+      });
+    }
   };
 
   return (
     <div
       className={twMerge(
-        'relative flex h-full items-center justify-between border-l border-zinc-200 p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] lg:min-w-[400px] dark:border-zinc-800',
+        'relative flex h-full w-full items-center justify-between p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] md:border-l md:border-zinc-200 dark:border-zinc-800',
         optimisticOwned && 'opacity-50 hover:opacity-100'
       )}>
       {optimisticOwned && (

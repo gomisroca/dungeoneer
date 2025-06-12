@@ -3,12 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { type Item } from 'types';
 
 import { addOrRemoveItem } from '@/actions/items';
-import { useMessage } from '@/hooks/useMessage';
 import { toErrorMessage } from '@/utils/errors';
 import { itemKeytoModel } from '@/utils/mappers';
 
 export function useItemLogic<T extends Item>(item: T, session: Session | null) {
-  const setMessage = useMessage();
   const [isLocalStorage, setIsLocalStorage] = useState(!session);
 
   useEffect(() => {
@@ -27,10 +25,7 @@ export function useItemLogic<T extends Item>(item: T, session: Session | null) {
           localStorage.setItem('userItems', JSON.stringify(updatedItems));
         }
       } catch (error) {
-        setMessage({
-          content: toErrorMessage(error, `Failed to sync ${item.name}.`),
-          error: true,
-        });
+        throw new Error(toErrorMessage(error, `Failed to sync ${item.name}.`));
       }
     };
 
@@ -38,10 +33,7 @@ export function useItemLogic<T extends Item>(item: T, session: Session | null) {
       try {
         await addOrRemoveItem(itemKeytoModel[item.type], { id: item.id });
       } catch (error) {
-        setMessage({
-          content: toErrorMessage(error, `Failed to sync ${item.name}.`),
-          error: true,
-        });
+        throw new Error(toErrorMessage(error, `Failed to sync ${item.name}.`));
       }
     };
 
@@ -50,7 +42,7 @@ export function useItemLogic<T extends Item>(item: T, session: Session | null) {
     } else {
       await dbAddOrRemove(item);
     }
-  }, [isLocalStorage, item, setMessage]);
+  }, [isLocalStorage, item]);
 
   return addOrRemoveFromUser;
 }

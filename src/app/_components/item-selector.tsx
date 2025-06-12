@@ -10,6 +10,7 @@ import Button from '@/app/_components/ui/button';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
 import { useMessage } from '@/hooks/useMessage';
 import { COLLECTIBLE_TYPES } from '@/utils/consts';
+import { toErrorMessage } from '@/utils/errors';
 
 interface BaseItem {
   id: string;
@@ -39,13 +40,21 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
 
     setOptimisticOwned((prev) => !prev);
 
-    await handleAddOrRemove();
+    try {
+      await handleAddOrRemove();
+    } catch (error) {
+      setOptimisticOwned((prev) => !prev);
+      setMessage({
+        content: toErrorMessage(error, `Failed to sync ${item.name}.`),
+        error: true,
+      });
+    }
   };
   return (
     <Button
       arialabel="item-view"
       onClick={handleTransition}
-      className={twMerge('w-5/6 items-center justify-between px-2 py-1 md:w-3/4', compact && 'w-[200px] md:w-fit')}>
+      className="w-full items-center justify-between px-2 py-1 md:w-3/4">
       <div className="relative flex-shrink-0">
         <div className={twMerge('relative', compact ? 'h-6 w-6' : 'h-12 w-12')}>
           {item.image && (
