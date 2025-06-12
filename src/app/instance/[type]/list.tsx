@@ -105,11 +105,11 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
   const filteredInstances = useInstanceFilter({ instances, filter, session });
 
   return (
-    <div className="relative flex flex-col">
+    <div className="relative flex w-full flex-col">
       <ViewToggler onViewChange={setView} />
       <FilterMenu onFilterChange={setFilter} />
       {view ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mx-auto grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredInstances.map((instance) => (
             <VirtualItem key={instance.id} placeholder={<InstanceCardSkeleton />} height={200}>
               <InstanceCard instance={instance} session={session} />
@@ -117,7 +117,7 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
           ))}
         </div>
       ) : (
-        <div className="flex w-full flex-col space-y-2">
+        <div className="mx-auto flex max-w-xl flex-col space-y-2">
           {filteredInstances.map((instance) => (
             <VirtualItem key={instance.id} placeholder={<InstanceListItemSkeleton />} height={200}>
               <InstanceListItem instance={instance} session={session} />

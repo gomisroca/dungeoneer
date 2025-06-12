@@ -45,7 +45,7 @@ export default function Button({ name, arialabel, type = 'button', disabled = fa
     name={name || 'Button'}
     type={type} 
     onClick={handleOnClick} 
-    className={twMerge('justify-center whitespace-nowrap shadow-md hover:drop-shadow-lg dark:bg-zinc-800/50 bg-zinc-100/25 hover:text-zinc-900 active:duration-100 active:bg-cyan-300 active:scale-x-110 dark:active:bg-cyan-700 dark:hover:text-zinc-100 text-nowrap ease-in-out rounded-xl dark:hover:bg-cyan-700 p-4 font-semibold duration-200 transition hover:bg-cyan-300 flex flex-row gap-2 items-center cursor-pointer', 
+    className={twMerge('justify-center whitespace-nowrap shadow-md hover:drop-shadow-lg dark:bg-zinc-800/50 bg-zinc-200/50 hover:text-zinc-900 active:duration-100 active:bg-cyan-300 active:scale-x-110 dark:active:bg-cyan-700 dark:hover:text-zinc-100 text-nowrap ease-in-out rounded-xl dark:hover:bg-cyan-700 p-4 font-semibold duration-200 transition hover:bg-cyan-300 flex flex-row gap-2 items-center cursor-pointer', 
       className,  
       (disabled || isPending) && 'opacity-50 cursor-not-allowed pointer-events-none hover:bg-none active:bg-none dark:hover:bg-none dark:active:bg-none')} 
     disabled={disabled || isPending}>

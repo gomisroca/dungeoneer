@@ -54,7 +54,7 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
     <Button
       arialabel="item-view"
       onClick={handleTransition}
-      className="w-full items-center justify-between px-2 py-1 md:w-3/4">
+      className="w-full items-center justify-between px-2 py-1 md:w-fit">
       <div className="relative flex-shrink-0">
         <div className={twMerge('relative', compact ? 'h-6 w-6' : 'h-12 w-12')}>
           {item.image && (

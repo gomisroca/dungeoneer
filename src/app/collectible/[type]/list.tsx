@@ -107,7 +107,7 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
   const filteredCollectibles = useItemFilter({ items, filter, session });
 
   return (
-    <div className="relative flex w-3/4 flex-col md:w-full">
+    <div className="relative flex w-full flex-col">
       <ViewToggler onViewChange={setView} />
       <FilterMenu onFilterChange={setFilter} />
       {view ? (
@@ -124,7 +124,7 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 space-y-2 gap-x-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 space-y-2 gap-x-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {filteredCollectibles.map((collectible) => (
             <VirtualItem
               key={collectible.id}
