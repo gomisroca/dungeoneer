@@ -8,7 +8,7 @@ jobs:
     if: ${{ !contains(toJson(github.event.commits.*.message),'#skip') }}
     permissions:
       contents: write
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
