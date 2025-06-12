@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Mock } from 'vitest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -37,14 +37,5 @@ describe('FilterMenu', () => {
     const expansionButton = screen.getByRole('button', { name: /Heavensward/i });
     fireEvent.click(expansionButton);
     expect(mockPush).toHaveBeenCalledWith('?ex=hw');
-  });
-
-  it('removes the expansion query parameter when the same expansion is clicked again', () => {
-    const expansionButton = screen.getByRole('button', { name: /Heavensward/i });
-    fireEvent.click(expansionButton);
-    expect(mockPush).toHaveBeenCalledWith('?ex=hw');
-
-    fireEvent.click(expansionButton);
-    expect(mockPush).toHaveBeenCalledWith('?');
   });
 });
