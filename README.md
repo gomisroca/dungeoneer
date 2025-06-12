@@ -40,23 +40,6 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li>
-      <a href="#api-specification">API Specification (tRPC)</a>
-      <ul>
-        <li><a href="#procedure-types">Procedure Types</a></li>
-        <li><a href="#cards">Cards</a></li>
-        <li><a href="#emotes">Emotes</a></li>
-        <li><a href="#hairstyles">Hairstyles</a></li>
-        <li><a href="#minions">Minions</a></li>
-        <li><a href="#mounts">Mounts</a></li>
-        <li><a href="#orchestrions">Orchestrions</a></li>
-        <li><a href="#spells">Spells</a></li>
-        <li><a href="#dungeons">Dungeons</a></li>
-        <li><a href="#variant-dungeons">Variant Dungeons</a></li>
-        <li><a href="#trials">Trials</a></li>
-        <li><a href="#raids">Raids</a></li>
-      </ul>
-    </li>
-    <li>
       <a href="#adjustments">Adjusting the Codebase</a>
       <ul>
         <li><a href="#login-providers">Login Providers</a></li>
@@ -75,7 +58,7 @@
 <!-- ABOUT THE PROJECT -->
 <h2 id="about-the-project">📡 About The Project</h2>
 
-![Dungeoneer Screen Shot](screenshot.webp)
+![Dungeoneer Screen Shot](public/screenshot.png)
 
 The project is a web application that allows the tracking of various in-game items in the game Final Fantasy XIV. With this application, you can track of which objects you are missing from dungeons, raids and other types of content, as well as search for specific items.
 
@@ -84,8 +67,7 @@ The project is a web application that allows the tracking of various in-game ite
 ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Supabase Badge](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=for-the-badge)
 ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)  
-![tRPC](https://img.shields.io/badge/tRPC-%232596BE.svg?style=for-the-badge&logo=tRPC&logoColor=white)
-![Zod Badge](https://img.shields.io/badge/Zod-3E67B1?logo=zod&logoColor=fff&style=for-the-badge)  
+![Zod Badge](https://img.shields.io/badge/Zod-3E67B1?logo=zod&logoColor=fff&style=for-the-badge)
 ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)  
 
@@ -152,160 +134,15 @@ Commit messages must follow the [Conventional Commits](https://www.conventionalc
 <p align="right">[<a href="#readme-top">back to top</a>]</p>
 
 
-
-<!-- API SPECIFICATION -->
-<h2 id="api-specification">🚀 API Specification (tRPC)</h2>
-  This project uses **tRPC** for type-safe API procedures. All API calls are end-to-end type-checked, providing compile-time safety and excellent developer experience.
-
-<h3 id="procedure-types">Procedure Types</h3>
-
-  * **QUERY**: Read operations (fetching data)  
-  * **CREATE**: Create new resources  
-  * **UPDATE**: Modify existing resources  
-  * **DELETE**: Remove resources  
-
-<h3 id="cards">🃏 Cards</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated cards | Limit?, Cursor? | Card[] |
-| UPDATE | `addToUser` | Add card to user | Card ID | Boolean |
-| UPDATE | `removeFromUser` | Remove card from user | Card ID | Boolean |
-
-</details>
-
-<h3 id="emotes">😉 Emotes</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated emotes | Limit?, Cursor? | Emote[] |
-| UPDATE | `addToUser` | Add emote to user | Emote ID | Boolean |
-| UPDATE | `removeFromUser` | Remove emote from user | Emote ID | Boolean |
-
-</details>
-
-<h3 id="hairstyles">💈 Hairstyles</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated hairstyles | Limit?, Cursor? | Hairstyle[] |
-| UPDATE | `addToUser` | Add hairstyle to user | Hairstyle ID | Boolean |
-| UPDATE | `removeFromUser` | Remove hairstyle from user | Hairstyle ID | Boolean |
-
-</details>
-
-<h3 id="minions">🐶 Minions</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated minions | Limit?, Cursor? | Minion[] |
-| UPDATE | `addToUser` | Add minion to user | Minion ID | Boolean |
-| UPDATE | `removeFromUser` | Remove minion from user | Minion ID | Boolean |
-
-</details>
-
-<h3 id="mounts">🐴 Mounts</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated mounts | Limit?, Cursor? | Mount[] |
-| UPDATE | `addToUser` | Add mount to user | Mount ID | Boolean |
-| UPDATE | `removeFromUser` | Remove mount from user | Mount ID | Boolean |
-
-</details>
-
-<h3 id="orchestrions">🎶 Orchestrions</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated orchestrions | Limit?, Cursor? | Orchestrion[] |
-| UPDATE | `addToUser` | Add orchestrion to user | Orchestrion ID | Boolean |
-| UPDATE | `removeFromUser` | Remove orchestrion from user | Orchestrion ID | Boolean |
-
-</details>
-
-<h3 id="spells">🧙‍♂️ Spells</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated spells | Limit?, Cursor? | Spell[] |
-| UPDATE | `addToUser` | Add spell to user | Spell ID | Boolean |
-| UPDATE | `removeFromUser` | Remove spell from user | Spell ID | Boolean |
-
-</details>
-
-<h3 id="dungeons">🚪 Dungeons</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated dungeons | Limit?, Cursor? | Dungeon[] |
-| UPDATE | `getUnique` | Get specific dungeon | Dungeon ID | Dungeon |
-
-</details>
-
-<h3 id="variant-dungeons">👔 Variant Dungeons</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated variant dungeons | Limit?, Cursor? | VariantDungeon[] |
-| UPDATE | `getUnique` | Get specific variant dungeon | Variant Dungeon ID | VariantDungeon |
-
-</details>
-
-<h3 id="trials">🐉 Trials</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated trials | Limit?, Cursor? | Trial[] |
-| UPDATE | `getUnique` | Get specific trial | Trial ID | Trial |
-
-</details>
-
-<h3 id="raids">🎡 Raids</h3>
-<details>
-  <summary>Methods and Procedures</summary>
-
-| Procedure | Method | Description | Input | Output |
-| --- | --- | --- | --- | --- |
-| QUERY | `getAll` | Get paginated raids | Limit?, Cursor? | Raid[] |
-| UPDATE | `getUnique` | Get specific raid | Raid ID | Raid |
-
-</details>
-
-
-<p align="right">[<a href="#readme-top">back to top</a>]</p>
-
-
-
 <!-- ADJUSTMENTS -->
 <h2 id="adjustments">🔨 Adjusting the Codebase</h2>
 
   <h3 id="login-providers">🔑 Login Providers</h3>
 
-  By default, we use [Discord OAuth](https://discord.com/developers/docs/topics/oauth2) via [NextAuth](https://next-auth.js.org/).  
-  If you wish to keep using NextAuth, you can easily add more login providers to your project. You can read more about how to do this [here](https://next-auth.js.org/providers/).  
+  By default, we use [Discord OAuth](https://discord.com/developers/docs/topics/oauth2) via [Auth.js](https://authjs.dev).  
+  If you wish to keep using Auth.js, you can easily add more login providers to your project. You can read more about how to do this [here](https://authjs.dev/getting-started/installation#configure).  
 
-  However, if you wish to move away from Next Auth, you will have to remove its package and remove *app/api/auth/[...nextauth]* and *server/auth.ts* (or modify them).
+  However, if you wish to move away from Auth.js, you will have to remove its package and remove *app/api/auth/[...nextauth]* and *server/auth/* (or modify them).
   Then, you can implement your own authentication logic. Depending on the needs of your authentication process, you might need to adjust the database schemas.
   Afterwards, you will want to modify the sign in and out buttons, as well as any instances of 'session' in the codebase.
   
@@ -316,7 +153,7 @@ Commit messages must follow the [Conventional Commits](https://www.conventionalc
   If you wish to use a non-relational database (e.g. MongoDB), Prisma will help make the transition easier, but you will have to tinker the schema. You can read more about it in this [MongoDB article](https://www.mongodb.com/resources/compare/mongodb-postgresql/dsl-migrating-postgres-to-mongodb) and in the [Prisma documentation](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/mongodb-typescript-mongodb).
   <h3 id="image-handling">🖼️ Image Handling</h3>
 
-  By default we use [Supabase Buckets](https://supabase.com/docs/guides/storage) for image handling. If you want to switch to a different method, you can remove the *src/utils/supabase.js* file and adjust the settings in *src/utils/uploadImage.ts*. Furthermore, in *src/utils/uploadChecks.ts* you can modify which types of files and sizes are allowed.
+  By default we use [Supabase Buckets](https://supabase.com/docs/guides/storage) for image handling. If you want to switch to a different method, you can remove the *prisma/seed_functions/supabase.js* file.
 
   The implementation of each image hosting method is beyond the scope of this documentation, but easy steps to follow should be provided by the option you choose.
 
@@ -329,9 +166,9 @@ Commit messages must follow the [Conventional Commits](https://www.conventionalc
 
 - [ ] Improve image optimization
 - [ ] Add better filtering options
-- [ ] Add support for character importing
-  - [ ] Import what data is available
-  - [ ] Allow character claiming by logged in users
+- [X] Add support for character importing
+  - [X] Import what data is available
+  - [X] Allow character claiming by logged in users
 
 See the [open issues](https://github.com/gomisroca/dungeoneer/issues) for a full list of proposed features (and known issues).
 
