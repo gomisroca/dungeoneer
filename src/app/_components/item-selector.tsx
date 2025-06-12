@@ -2,11 +2,13 @@
 
 import Image from 'next/image';
 import { type Session } from 'next-auth';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { type ExpandedInstance, type ItemType } from 'types';
 
 import Button from '@/app/_components/ui/button';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
+import { useMessage } from '@/hooks/useMessage';
 import { COLLECTIBLE_TYPES } from '@/utils/consts';
 
 interface BaseItem {
@@ -25,11 +27,24 @@ interface ItemViewProps {
 
 function ItemView({ item, type, session, compact = false }: ItemViewProps) {
   const { owned, handleAddOrRemove } = useItemOwnership({ ...item, type }, session);
+  const [optimisticOwned, setOptimisticOwned] = useState(owned);
+  const setMessage = useMessage();
 
+  const handleTransition = async () => {
+    setMessage({
+      content: optimisticOwned
+        ? `Removed ${item.name} from your collection.`
+        : `Added ${item.name} to your collection.`,
+    });
+
+    setOptimisticOwned((prev) => !prev);
+
+    await handleAddOrRemove();
+  };
   return (
     <Button
       arialabel="item-view"
-      onClick={handleAddOrRemove}
+      onClick={handleTransition}
       className={twMerge('w-5/6 items-center justify-between px-2 py-1 md:w-3/4', compact && 'w-[200px] md:w-fit')}>
       <div className="relative flex-shrink-0">
         <div className={twMerge('relative', compact ? 'h-6 w-6' : 'h-12 w-12')}>
@@ -40,13 +55,13 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
               fill
               className={twMerge(
                 'flex-shrink-0 rounded-xl object-contain',
-                owned && 'opacity-75',
+                optimisticOwned && 'opacity-75',
                 compact && 'rounded-lg'
               )}
             />
           )}
         </div>
-        {owned && (
+        {optimisticOwned && (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-4xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
               ✔
@@ -58,7 +73,7 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
         <p
           className={twMerge(
             'max-w-full flex-shrink overflow-x-hidden text-sm text-ellipsis md:text-base',
-            owned && 'text-neutral-500'
+            optimisticOwned && 'text-neutral-500'
           )}>
           {item.name}
         </p>

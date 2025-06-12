@@ -22,11 +22,9 @@ export function useItemLogic<T extends Item>(item: T, session: Session | null) {
         if (!localItems.some((localItem: Item) => localItem.id === item.id)) {
           localItems.push(item);
           localStorage.setItem('userItems', JSON.stringify(localItems));
-          setMessage({ content: `Added ${item.name} to your local collection.` });
         } else {
           const updatedItems = localItems.filter((localItem: Item) => localItem.id !== item.id);
           localStorage.setItem('userItems', JSON.stringify(updatedItems));
-          setMessage({ content: `Removed ${item.name} from your local collection.` });
         }
       } catch (error) {
         setMessage({
@@ -38,8 +36,7 @@ export function useItemLogic<T extends Item>(item: T, session: Session | null) {
 
     const dbAddOrRemove = async (item: Item) => {
       try {
-        const action = await addOrRemoveItem(itemKeytoModel[item.type], { id: item.id });
-        setMessage({ content: action.message });
+        await addOrRemoveItem(itemKeytoModel[item.type], { id: item.id });
       } catch (error) {
         setMessage({
           content: toErrorMessage(error, `Failed to sync ${item.name}.`),

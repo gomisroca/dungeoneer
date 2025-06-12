@@ -11,12 +11,14 @@ import {
 } from 'generated/prisma';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { type ItemType } from 'types';
 
 import Button from '@/app/_components/ui/button';
 import Source from '@/app/_components/ui/source';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
+import { useMessage } from '@/hooks/useMessage';
 
 interface BaseItem {
   id: string;
@@ -41,14 +43,26 @@ interface ItemCardProps {
 
 export default function CollectibleListItem({ item, type, session }: ItemCardProps) {
   const { owned, handleAddOrRemove } = useItemOwnership({ ...item, type }, session);
+  const [optimisticOwned, setOptimisticOwned] = useState(owned);
+  const setMessage = useMessage();
+
+  const handleTransition = async () => {
+    setMessage({
+      content: optimisticOwned
+        ? `Removed ${item.name} from your collection.`
+        : `Added ${item.name} to your collection.`,
+    });
+    setOptimisticOwned((prev) => !prev);
+    await handleAddOrRemove();
+  };
 
   return (
     <div
       className={twMerge(
         'relative flex h-full items-center justify-between border-l border-zinc-200 p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] lg:min-w-[400px] dark:border-zinc-800',
-        owned && 'opacity-50 hover:opacity-100'
+        optimisticOwned && 'opacity-50 hover:opacity-100'
       )}>
-      {owned && (
+      {optimisticOwned && (
         <div className="absolute top-[-15px] right-[-15px] flex contrast-200">
           <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
             ✔
@@ -82,8 +96,11 @@ export default function CollectibleListItem({ item, type, session }: ItemCardPro
           ))}
         </div>
       )}
-      <Button arialabel={owned ? 'Remove' : 'Add'} className="text-sm md:text-base" onClick={handleAddOrRemove}>
-        {owned ? 'Remove' : 'Add'}
+      <Button
+        arialabel={optimisticOwned ? 'Remove' : 'Add'}
+        className="text-sm md:text-base"
+        onClick={handleTransition}>
+        {optimisticOwned ? 'Remove' : 'Add'}
       </Button>
     </div>
   );
