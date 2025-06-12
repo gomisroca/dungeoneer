@@ -127,7 +127,6 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
       )}
       <div ref={observerRef} className="mt-8 flex h-16 items-center justify-center">
         {loading && <LoadingSpinner />}
-        {!hasMore && <span>No more instances.</span>}
       </div>
     </div>
   );

@@ -141,7 +141,6 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
       )}
       <div ref={observerRef} className="mt-8 flex h-16 items-center justify-center">
         {loading && <LoadingSpinner />}
-        {!hasMore && <span>No more items.</span>}
       </div>
     </div>
   );
