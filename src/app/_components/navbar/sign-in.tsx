@@ -11,7 +11,7 @@ function SignInButton() {
       arialabel="Sign In"
       name="Sign In"
       onClick={() => signIn('discord')}
-      className="h-8 w-8 cursor-pointer p-0 md:h-full md:w-full md:p-4">
+      className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
       <FaKey size={20} />
       <span className="sr-only">Sign In</span>
     </Button>

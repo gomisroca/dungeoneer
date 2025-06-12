@@ -25,7 +25,7 @@ function ThemeButton() {
   return (
     <Button
       arialabel={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-      className="group h-8 w-8 cursor-pointer p-0 md:h-full md:w-full md:p-4"
+      className="group h-8 w-8 p-0 md:h-full md:w-full md:p-4"
       name={theme === 'dark' ? 'Light' : 'Dark'}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
       <FaMoon name="light" size={20} className="scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />

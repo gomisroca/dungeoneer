@@ -64,7 +64,7 @@ export function ExpandedMenu({
         arialabel={filter ? 'Show Owned' : 'Hide Owned'}
         name={filter ? 'Show Owned' : 'Hide Owned'}
         onClick={() => handleFilterChange(!filter)}
-        className="w-full cursor-pointer">
+        className="w-full">
         {filter ? (
           <>
             <IoMdEye size={20} /> <span>Show Owned</span>
@@ -81,7 +81,7 @@ export function ExpandedMenu({
           arialabel={expansion.name}
           key={expansion.value}
           onClick={() => handleNavigate(expansion.value)}
-          className={twMerge('w-full cursor-pointer', selected === expansion.value && 'bg-cyan-200 dark:bg-cyan-800')}>
+          className={twMerge('w-full', selected === expansion.value && 'bg-cyan-200 dark:bg-cyan-800')}>
           {expansion.name}
         </Button>
       ))}
@@ -105,7 +105,7 @@ function FilterMenu({ onFilterChange }: { onFilterChange: (filter: boolean) => v
       onClick={() => setIsExpanded(!isExpanded)}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}>
-      <Button className="h-[32px] w-[32px] cursor-pointer p-2 md:h-full md:w-fit md:p-3">
+      <Button className="h-[32px] w-[32px] p-2 md:h-full md:w-fit md:p-3">
         <MdFilterList size={20} />
         <span className="sr-only">Filter Menu</span>
       </Button>
