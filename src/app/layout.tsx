@@ -31,7 +31,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={raleway.className} suppressHydrationWarning>
       <body
         style={{ backgroundImage: "url('/bg.jpg')" }}
-        className="min-h-screen bg-cover bg-fixed bg-center bg-no-repeat text-zinc-800 dark:text-zinc-200">
+        className="min-h-screen bg-cover bg-fixed bg-center bg-no-repeat text-zinc-950 dark:text-zinc-50">
         <ThemeProvider attribute="class" defaultTheme="dark">
           <JotaiProvider>
             <Navbar />
