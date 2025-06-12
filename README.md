@@ -65,10 +65,14 @@ The project is a web application that allows the tracking of various in-game ite
 
 ### Built With
 ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
-![Supabase Badge](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=for-the-badge)
-![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)  
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)  
+![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)
+![Supabase Badge](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=for-the-badge)  
 ![Zod Badge](https://img.shields.io/badge/Zod-3E67B1?logo=zod&logoColor=fff&style=for-the-badge)
 ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![Vitest](https://img.shields.io/badge/-Vitest-252529?style=for-the-badge&logo=vitest&logoColor=FCC72B)
+![Jotai](https://img.shields.io/badge/Jotai-1A202C?style=for-the-badge&logo=jotai&logoColor=white)  
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)  
 
 <p align="right">[<a href="#readme-top">back to top</a>]</p>
@@ -87,7 +91,7 @@ Make sure you have node.js and npm installed on your machine.
   ```sh
   npm install npm@latest -g
   ```
-Beyond this, if you plan on adjusting the codebase, you might need some knowledge of TypeScript, React, Next.js, Next Auth, tRPC, Zod or Prisma depending on the changes you want to make.
+Beyond this, if you plan on adjusting the codebase, you might need some knowledge of TypeScript, React, Next.js, Auth.js, Zod or Prisma depending on the changes you want to make.
 
 <h3 id="installation">Installation</h3>
 
