@@ -1,0 +1,15 @@
+.env
+Dockerfile
+.dockerignore
+coverage
+playwright-report
+test-results
+node_modules
+README.md
+.next
+.git
+prisma/seed.js
+prisma/relation_functions/*
+prisma/seed_functions/*
+docker-compose.yml
+*.log
