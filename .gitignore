@@ -47,3 +47,5 @@ yarn-error.log*
 
 # idea files
 .idea
+*storybook.log
+storybook-static
