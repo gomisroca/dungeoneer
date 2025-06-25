@@ -104,6 +104,10 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
 
   const filteredInstances = useInstanceFilter({ instances, filter, session });
 
+  useEffect(() => {
+    console.log('View toggled:', view);
+  }, [view]);
+
   return (
     <div className="relative flex w-full flex-col">
       <ViewToggler onViewChange={setView} />

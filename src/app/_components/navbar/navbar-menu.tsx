@@ -20,37 +20,35 @@ type NavbarMenuProps = {
 
 function ExpandedMenu({ session }: { session: Session | null }) {
   return (
-    <div
-      data-testid="expandable-menu"
-      className="mt-2 flex max-h-[800px] flex-col items-center justify-center gap-2 py-2">
-      <Link href="/collectible/minions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+    <div data-testid="expandable-menu" className="mt-2 flex flex-col flex-wrap items-center justify-end gap-2 py-2">
+      <Link href="/collectible/minions" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <FaDog size={20} />
       </Link>
-      <Link href="/collectible/mounts" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/collectible/mounts" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <FaHorse size={20} />
       </Link>
-      <Link href="/collectible/cards" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/collectible/cards" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <TbCardsFilled size={20} />
       </Link>
-      <Link href="/collectible/orchestrions" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/collectible/orchestrions" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <FaMusic size={20} />
       </Link>
-      <Link href="/collectible/spells" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/collectible/spells" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <FaWandMagicSparkles size={20} />
       </Link>
-      <Link href="/collectible/emotes" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/collectible/emotes" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <FaFaceLaugh size={20} />
       </Link>
-      <Link href="/collectible/hairstyles" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/collectible/hairstyles" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <FaScissors size={20} />
       </Link>
       <Separator className="bg-zinc-800 dark:bg-zinc-200" />
-      <Link href="/search" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+      <Link href="/search" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
         <LuSearch size={20} />
       </Link>
       {session ? (
         <>
-          <Link href="/sync" className="h-8 w-8 p-0 md:h-full md:w-full md:p-4">
+          <Link href="/sync" className="h-6 w-6 p-0 lg:h-8 lg:w-8">
             <MdOutlineSync size={20} />
             <span className="sr-only">Sync Collection</span>
           </Link>
@@ -93,7 +91,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="Dungeon"
             width={50}
             height={50}
-            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
           />
         </Link>
         <Link href="/instance/raids" className="group p-1">
@@ -103,7 +101,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="Raid"
             width={50}
             height={50}
-            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
           />
         </Link>
         <Link href="/instance/trials" className="group p-1">
@@ -113,7 +111,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="Trial"
             width={50}
             height={50}
-            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
           />
         </Link>
         <Link href="/instance/variants" className="group p-1">
@@ -123,12 +121,12 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             alt="V&C Dungeon"
             width={50}
             height={50}
-            className="duration transition-200 h-8 w-8 object-fill ease-in-out group-hover:contrast-125 md:h-[45px] md:w-[45px]"
+            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
           />
         </Link>
         <div onMouseLeave={() => setIsExpanded(false)}>
           <button
-            className="flex h-8 w-8 flex-row items-center justify-center gap-2 rounded-xl p-0 font-semibold text-nowrap whitespace-nowrap transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 md:h-full md:w-full md:p-4 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700"
+            className="mx-auto flex h-6 w-6 flex-row items-center justify-center gap-2 rounded-md p-0 font-semibold text-nowrap whitespace-nowrap transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 lg:h-8 lg:w-8 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700"
             onMouseEnter={() => setIsExpanded(true)}
             onClick={toggleMenu}
             aria-label="Expand menu">

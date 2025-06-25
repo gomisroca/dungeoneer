@@ -59,7 +59,7 @@ export function ExpandedMenu({
   return (
     <div
       data-testid="expandable-menu"
-      className="mt-2 flex max-h-[600px] flex-col items-center justify-center gap-2 rounded-lg bg-zinc-200/75 p-2 dark:bg-zinc-800/75">
+      className="mt-2 flex max-h-[600px] flex-col items-center justify-center gap-2 rounded-md bg-zinc-200/75 p-2 dark:bg-zinc-800/75">
       <Button
         arialabel={filter ? 'Show Owned' : 'Hide Owned'}
         name={filter ? 'Show Owned' : 'Hide Owned'}

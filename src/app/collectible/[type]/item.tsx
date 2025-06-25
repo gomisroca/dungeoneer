@@ -88,7 +88,7 @@ export default function CollectibleListItem({ item, type, session }: ItemCardPro
             width={50}
             height={50}
             className={twMerge(
-              'rounded-xl',
+              'rounded-md',
               (type === 'spells' || type === 'emotes') && 'border-2 border-zinc-400 dark:border-zinc-600'
             )}
           />
