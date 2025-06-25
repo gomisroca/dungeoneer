@@ -38,14 +38,14 @@ const Message = () => {
   if (!message) return null;
 
   return (
-    <dialog
+    <div
       className="fixed top-4 right-4 z-50 space-y-2 flex flex-col items-end self-end justify-self-end rounded-md">
       <div className={twMerge(
         ':text-2xl flex w-full items-center justify-center shadow-lg rounded-md border-2 border-zinc-400 dark:border-zinc-600 dark:bg-zinc-800/90 bg-zinc-200/90 px-3 py-1.5 text-sm', 
         message?.error && 'border-red-500 dark:border-red-600')}>
         {message?.content ?? 'No message.'}
       </div>
-    </dialog>
+    </div>
   );
 };
 
