@@ -53,7 +53,7 @@ export default function InstanceListItem({
           </div>
         )}
       </div>
-      <div className="flex w-full flex-col gap-2 px-2 md:flex-wrap md:border-l md:border-zinc-200 dark:border-zinc-800">
+      <div className="flex w-full flex-col justify-center gap-2 p-2 md:flex-wrap md:border-l md:border-zinc-200 dark:border-zinc-800">
         <ItemSelectors instance={instance} session={session} compact={true} />
       </div>
     </div>

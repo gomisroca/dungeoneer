@@ -2,7 +2,6 @@ import { type Session } from 'next-auth';
 import { useCallback, useEffect, useState } from 'react';
 import { type Item } from 'types';
 
-import { addOrRemoveItem } from '@/actions/items';
 import { toErrorMessage } from '@/utils/errors';
 import { itemKeytoModel } from '@/utils/mappers';
 
@@ -31,6 +30,7 @@ export function useItemLogic<T extends Item>(item: T, session: Session | null) {
 
     const dbAddOrRemove = async (item: Item) => {
       try {
+        const { addOrRemoveItem } = await import('@/actions/items');
         await addOrRemoveItem(itemKeytoModel[item.type], { id: item.id });
       } catch (error) {
         throw new Error(toErrorMessage(error, `Failed to sync ${item.name}.`));
