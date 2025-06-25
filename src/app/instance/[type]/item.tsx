@@ -21,6 +21,7 @@ export default function InstanceListItem({
 
   return (
     <div
+      data-testid="instance-list-item"
       className={twMerge(
         'relative mx-auto flex h-full w-3/4 flex-col items-center justify-start font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:mx-auto md:w-full md:min-w-[300px] md:flex-row lg:min-w-[400px]',
         (ownershipStatus === 'empty' || ownershipStatus === 'owned') && 'opacity-50 hover:opacity-100'

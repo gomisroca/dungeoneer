@@ -52,6 +52,7 @@ export function InstanceCard({ instance, session }: { instance: ExpandedInstance
 
   return (
     <div
+      data-testid="instance-card"
       className={twMerge(
         'relative flex h-full min-w-[255px] flex-col items-center justify-start gap-y-4 rounded-md border-4 border-zinc-200 bg-zinc-300 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:scale-125 hover:shadow-2xl dark:border-zinc-800 dark:bg-zinc-700',
         (ownershipStatus === 'empty' || ownershipStatus === 'owned') && 'opacity-50 hover:opacity-100'
@@ -126,6 +127,7 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
 
   return (
     <div
+      data-testid="item-card"
       className={twMerge(
         'relative flex h-full min-w-[255px] flex-col items-center justify-between gap-y-4 rounded-md border-4 border-zinc-100 bg-zinc-50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:scale-125 hover:shadow-2xl dark:border-zinc-900 dark:bg-zinc-950 hover:border-cyan-300 dark:hover:border-cyan-700',
         optimisticOwned && 'opacity-50 hover:opacity-100'

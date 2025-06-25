@@ -4,7 +4,7 @@
  * @param {{ name: string; type?: "button" | "submit" | "reset"; onClick?: () => void; className?: string; children: React.ReactNode; disabled?: boolean; }} props - The props for the Button component.
  *
  * @example
- * <Button name="Submit" onClick={handleSubmit}>
+ * <Button arialabel="Submit" onClick={handleSubmit}>
  *   Submit
  * </Button>
  */
@@ -13,7 +13,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge';
 
 interface ButtonProps {
-  name?: string
   arialabel?: string;
   type?: "button" | "submit" | "reset"
   onClick?: () => void
@@ -22,7 +21,7 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-export default function Button({ name, arialabel, type = 'button', disabled = false, onClick, className, children }: ButtonProps) {
+export default function Button({ arialabel, type = 'button', disabled = false, onClick, className, children }: ButtonProps) {
   const [isPending, setIsPending] = useState(false);
   const isMounted = useRef(true);
 
@@ -49,8 +48,7 @@ export default function Button({ name, arialabel, type = 'button', disabled = fa
   return (
     <button 
     aria-label={arialabel || 'button'}
-    name={name || 'Button'}
-    type={type} 
+    type={type}
     onClick={handleOnClick} 
     className={twMerge('justify-center whitespace-nowrap shadow-md hover:drop-shadow-lg dark:bg-zinc-800/50 bg-zinc-200/50 hover:text-zinc-900 active:duration-100 active:bg-cyan-300 active:scale-x-110 dark:active:bg-cyan-700 dark:hover:text-zinc-100 text-nowrap ease-in-out rounded-md dark:hover:bg-cyan-700 p-4 font-semibold duration-200 transition hover:bg-cyan-300 flex flex-row gap-2 items-center cursor-pointer', 
       className,  

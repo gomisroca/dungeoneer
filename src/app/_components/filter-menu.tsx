@@ -62,7 +62,6 @@ export function ExpandedMenu({
       className="mt-2 flex max-h-[600px] flex-col items-center justify-center gap-2 rounded-md bg-zinc-200/75 p-2 dark:bg-zinc-800/75">
       <Button
         arialabel={filter ? 'Show Owned' : 'Hide Owned'}
-        name={filter ? 'Show Owned' : 'Hide Owned'}
         onClick={() => handleFilterChange(!filter)}
         className="w-full">
         {filter ? (
