@@ -18,7 +18,6 @@ function LocalSyncButton({ isSyncing, syncCollection, syncCount, session }: Loca
   return (
     <Button
       arialabel="Sync Collection"
-      name="Sync Collection"
       onClick={syncCollection}
       disabled={isSyncing || syncCount === 0 || !session}
       className={`${syncCount === 0 ? 'hidden' : 'mx-auto w-64'} `}>
