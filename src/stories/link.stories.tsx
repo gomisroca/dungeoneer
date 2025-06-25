@@ -43,12 +43,7 @@ export const Icon: Story = {
 export const Image: Story = {
   args: {
     href: 'image-link',
-    children: createElement(NextImage, {
-      src: '/xivlogo.png',
-      alt: 'Next.js Logo',
-      width: 32,
-      height: 32,
-    }),
+    children: <NextImage src="/xivlogo.png" alt="Next.js Logo" width={32} height={32} />,
     className: 'p-2',
   },
 };
