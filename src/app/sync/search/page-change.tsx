@@ -30,7 +30,7 @@ export default function PageChange({
           {Number(page) - 1}
         </Button>
       )}
-      <span className="rounded-xl p-4 text-lg font-bold">{pagination.current}</span>
+      <span className="rounded-md p-4 text-lg font-bold">{pagination.current}</span>
       {pagination.next !== 'javascript:void(0);' && (
         <Button
           onClick={() => handlePageChange(Number(page) + 1)}

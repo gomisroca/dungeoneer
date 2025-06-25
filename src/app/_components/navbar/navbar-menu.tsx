@@ -126,7 +126,7 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         </Link>
         <div onMouseLeave={() => setIsExpanded(false)}>
           <button
-            className="mx-auto flex h-6 w-6 flex-row items-center justify-center gap-2 rounded-xl p-0 font-semibold text-nowrap whitespace-nowrap transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 lg:h-8 lg:w-8 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700"
+            className="mx-auto flex h-6 w-6 flex-row items-center justify-center gap-2 rounded-md p-0 font-semibold text-nowrap whitespace-nowrap transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 lg:h-8 lg:w-8 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700"
             onMouseEnter={() => setIsExpanded(true)}
             onClick={toggleMenu}
             aria-label="Expand menu">

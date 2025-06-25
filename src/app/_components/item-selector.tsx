@@ -63,7 +63,7 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
               alt={item.name}
               fill
               className={twMerge(
-                'flex-shrink-0 rounded-xl object-contain',
+                'flex-shrink-0 rounded-md object-contain',
                 optimisticOwned && 'opacity-75',
                 compact && 'rounded-lg'
               )}
