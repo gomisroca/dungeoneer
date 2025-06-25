@@ -28,7 +28,7 @@ function Source({ source, compact = false }: { source: MinionSource | MountSourc
   }
 
   return (
-    <div className='flex flex-row gap-2' ref={animationParent}>
+    <div data-testid="source" className='flex flex-row gap-2' ref={animationParent}>
       <TooltipProvider>
         <Tooltip open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
           <TooltipTrigger 
