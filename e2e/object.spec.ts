@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('has object cards', async ({ page }) => {
   await page.goto('/collectible/minions');
