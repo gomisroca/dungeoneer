@@ -15,7 +15,7 @@ import { twMerge } from 'tailwind-merge';
 interface ButtonProps {
   arialabel?: string;
   type?: "button" | "submit" | "reset"
-  onClick?: () => void
+  onClick?: () => void | Promise<void>;
   className?: string;
   children: React.ReactNode;
   disabled?: boolean;
@@ -35,13 +35,11 @@ export default function Button({ arialabel, type = 'button', disabled = false, o
     if (isPending || !onClick || disabled) return;
     try{
       setIsPending(true);
-      await Promise.resolve(onClick());
+      await Promise.resolve(onClick?.());
     } catch(error) {
       console.error('Button onClick error:', error);
     } finally {
-      if (isMounted.current) {
-        setIsPending(false);
-      }
+      setIsPending(false);
     }
   }, [onClick, isPending, disabled]);
 
