@@ -43,7 +43,7 @@ test('different instance types have different object content', async ({ page }) 
 test('size of cards can be toggled', async ({ page }) => {
   await page.goto('/instance/dungeons');
 
-  const sizeButton = page.locator('button').filter({ hasText: 'Compact View Off' });
+  const sizeButton = page.getByRole('button', { name: 'Compact View Off' });
 
   await expect(page.getByRole('img', { name: 'the Tam–Tara Deepcroft' })).not.toBeVisible();
   await expect(sizeButton).toBeVisible();

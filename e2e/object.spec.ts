@@ -41,7 +41,7 @@ test('different object types have different object content', async ({ page }) =>
 test('size of cards can be toggled', async ({ page }) => {
   await page.goto('/collectible/minions');
 
-  const sizeButton = page.locator('button').filter({ hasText: 'Compact View Off' });
+  const sizeButton = page.getByRole('button', { name: 'Compact View Off' });
 
   await expect(page.getByRole('img', { name: 'Wind-up Dalamud' })).not.toBeVisible();
   await expect(sizeButton).toBeVisible();
