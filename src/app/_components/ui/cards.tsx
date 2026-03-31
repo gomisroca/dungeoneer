@@ -12,7 +12,7 @@ import {
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import { twMerge } from 'tailwind-merge';
-import { type ExpandedInstance, type ItemType } from 'types';
+import { type ExpandedInstance, type ItemRouteKey } from 'types';
 
 import ItemSelectors from '@/app/_components/item-selector';
 import Button from '@/app/_components/ui/button';
@@ -40,7 +40,7 @@ interface BaseItem {
 
 interface ItemCardProps {
   item: BaseItem;
-  type: ItemType;
+  type: ItemRouteKey;
   session: Session | null;
 }
 

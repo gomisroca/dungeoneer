@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { type ItemType } from 'types';
+import { type ItemRouteKey } from 'types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ItemSelector } from '@/app/_components/item-selector';
@@ -20,7 +20,7 @@ const props = {
       owners: [{ id: 'owner-id' }],
     },
   ],
-  type: 'minions' as ItemType,
+  type: 'minions' as ItemRouteKey,
   session: null,
 };
 

@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { type Session } from 'next-auth';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { type ItemType } from 'types';
+import { type ItemRouteKey } from 'types';
 
 import Button from '@/app/_components/ui/button';
 import Source from '@/app/_components/ui/source';
@@ -38,7 +38,7 @@ interface BaseItem {
 
 interface ItemCardProps {
   item: BaseItem;
-  type: ItemType;
+  type: ItemRouteKey;
   session: Session | null;
 }
 

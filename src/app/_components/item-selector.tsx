@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { type Session } from 'next-auth';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { type ExpandedInstance, type ItemType } from 'types';
+import { type ExpandedInstance, type ItemRouteKey } from 'types';
 
 import Button from '@/app/_components/ui/button';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
@@ -21,7 +21,7 @@ interface BaseItem {
 
 interface ItemViewProps {
   item: BaseItem;
-  type: ItemType;
+  type: ItemRouteKey;
   session: Session | null;
   compact?: boolean;
 }
@@ -93,7 +93,7 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
 
 interface ItemSelectorProps {
   items: BaseItem[];
-  type: ItemType;
+  type: ItemRouteKey;
   session: Session | null;
   compact?: boolean;
 }
@@ -120,8 +120,8 @@ export default function ItemSelectors({ instance, session, compact = false }: It
       {COLLECTIBLE_TYPES.map((type) => (
         <ItemSelector
           key={type}
-          items={instance[type as ItemType]}
-          type={type as ItemType}
+          items={instance[type as ItemRouteKey]}
+          type={type as ItemRouteKey}
           session={session}
           compact={compact}
         />
