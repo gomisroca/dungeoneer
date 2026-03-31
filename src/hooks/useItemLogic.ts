@@ -1,46 +1,21 @@
 import { type Session } from 'next-auth';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { type Item } from 'types';
 
-import { toErrorMessage } from '@/utils/errors';
+import { addOrRemoveItem } from '@/actions/items';
 import { itemKeytoModel } from '@/utils/mappers';
 
 export function useItemLogic<T extends Item>(item: T, session: Session | null) {
-  const [isLocalStorage, setIsLocalStorage] = useState(!session);
-
-  useEffect(() => {
-    setIsLocalStorage(!session);
-  }, [session]);
+  const isLocalStorage = !session;
 
   const addOrRemoveFromUser = useCallback(async () => {
-    const localAddOrRemove = async (item: Item) => {
-      const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
-      try {
-        if (!localItems.some((localItem: Item) => localItem.id === item.id)) {
-          localItems.push(item);
-          localStorage.setItem('userItems', JSON.stringify(localItems));
-        } else {
-          const updatedItems = localItems.filter((localItem: Item) => localItem.id !== item.id);
-          localStorage.setItem('userItems', JSON.stringify(updatedItems));
-        }
-      } catch (error) {
-        throw new Error(toErrorMessage(error, `Failed to sync ${item.name}.`));
-      }
-    };
-
-    const dbAddOrRemove = async (item: Item) => {
-      try {
-        const { addOrRemoveItem } = await import('@/actions/items');
-        await addOrRemoveItem(itemKeytoModel[item.type], { id: item.id });
-      } catch (error) {
-        throw new Error(toErrorMessage(error, `Failed to sync ${item.name}.`));
-      }
-    };
-
     if (isLocalStorage) {
-      await localAddOrRemove(item);
+      const localItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
+      const exists = localItems.some((i) => i.id === item.id);
+      const updated = exists ? localItems.filter((i) => i.id !== item.id) : [...localItems, item];
+      localStorage.setItem('userItems', JSON.stringify(updated));
     } else {
-      await dbAddOrRemove(item);
+      await addOrRemoveItem(itemKeytoModel[item.type], item.id);
     }
   }, [isLocalStorage, item]);
 
