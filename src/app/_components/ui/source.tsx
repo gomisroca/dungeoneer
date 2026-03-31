@@ -52,7 +52,7 @@ function Source({ source, compact = false }: { source: MinionSource | MountSourc
                 <TooltipContent
                   side="top"
                   align="center"
-                  className="max-w-[170px] sm:max-w-[320px] break-words text-sm p-2"
+                  className="max-w-42.5 sm:max-w-[320px] wrap-break-word text-sm p-2"
                 >
                   <p>{source.text}</p>
                 </TooltipContent>

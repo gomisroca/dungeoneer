@@ -130,7 +130,7 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
     <div
       data-testid="item-card"
       className={twMerge(
-        'relative flex h-full min-w-63.75 flex-col items-center justify-between rounded-xs gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:scale-125 hover:shadow-2xl ',
+        'relative flex h-full min-w-63.75 flex-col items-center justify-between rounded-xs gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-99 hover:scale-125 hover:shadow-2xl ',
         optimisticOwned && 'opacity-50 hover:opacity-100'
       )}>
       {optimisticOwned && (
