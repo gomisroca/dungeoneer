@@ -9,6 +9,7 @@ import {
   type OrchestrionSource,
   type SpellSource,
 } from 'generated/prisma';
+import { useSetAtom } from 'jotai';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import { useState } from 'react';
@@ -17,8 +18,8 @@ import { type ItemRouteKey } from 'types';
 
 import Button from '@/app/_components/ui/button';
 import Source from '@/app/_components/ui/source';
+import { messageAtom } from '@/atoms/message';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
-import { useMessage } from '@/hooks/useMessage';
 import { toErrorMessage } from '@/utils/errors';
 
 interface BaseItem {
@@ -45,7 +46,7 @@ interface ItemCardProps {
 export default function CollectibleListItem({ item, type, session }: ItemCardProps) {
   const { owned, handleAddOrRemove } = useItemOwnership({ ...item, type }, session);
   const [optimisticOwned, setOptimisticOwned] = useState(owned);
-  const setMessage = useMessage();
+  const setMessage = useSetAtom(messageAtom);
 
   const handleTransition = async () => {
     setMessage({
@@ -60,7 +61,7 @@ export default function CollectibleListItem({ item, type, session }: ItemCardPro
       setOptimisticOwned((prev) => !prev);
       setMessage({
         content: toErrorMessage(error, `Failed to sync ${item.name}.`),
-        error: true,
+        type: 'error',
       });
     }
   };
@@ -68,17 +69,17 @@ export default function CollectibleListItem({ item, type, session }: ItemCardPro
   return (
     <div
       className={twMerge(
-        'relative flex h-full w-full items-center justify-between p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-[300px] md:border-l md:border-zinc-200 dark:border-zinc-800',
+        'relative flex h-full w-full items-center justify-between p-4 font-semibold shadow-md transition duration-200 ease-in hover:shadow-2xl md:min-w-75 md:border-l md:border-zinc-200 dark:border-zinc-800',
         optimisticOwned && 'opacity-50 hover:opacity-100'
       )}>
       {optimisticOwned && (
-        <div className="absolute top-[-15px] right-[-15px] flex contrast-200">
-          <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
+        <div className="absolute -top-3.75 -right-3.75 flex contrast-200">
+          <span className="m-auto text-5xl text-cyan-300 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)] dark:text-cyan-700">
             ✔
           </span>
         </div>
       )}
-      <div className="flex w-[125px] flex-col items-center justify-center gap-y-2">
+      <div className="flex w-31.25 flex-col items-center justify-center gap-y-2">
         {item.image && (
           <Image
             loading="lazy"

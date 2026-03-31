@@ -20,8 +20,9 @@ import Source from '@/app/_components/ui/source';
 import { getOwnershipStatus, useIsOwned } from '@/hooks/useCheckOwnership';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
 import { useState } from 'react';
-import { useMessage } from '@/hooks/useMessage';
 import { toErrorMessage } from '@/utils/errors';
+import { useSetAtom } from 'jotai';
+import { messageAtom } from '@/atoms/message';
 
 interface BaseItem {
   id: string;
@@ -54,17 +55,17 @@ export function InstanceCard({ instance, session }: { instance: ExpandedInstance
     <div
       data-testid="instance-card"
       className={twMerge(
-        'relative flex h-full min-w-[255px] flex-col items-center justify-start gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-xs dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:scale-125 hover:shadow-2xl  ',
+        'relative flex h-full min-w-63.75 flex-col items-center justify-start gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-xs dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-99 hover:scale-125 hover:shadow-2xl  ',
         (ownershipStatus === 'empty' || ownershipStatus === 'owned') && 'opacity-50 hover:opacity-100'
       )}>
       {(ownershipStatus === 'owned' || ownershipStatus === 'empty') && (
-        <div className="absolute top-[-15px] right-[-15px] flex contrast-200">
+        <div className="absolute -top-3.75 -right-3.75 flex contrast-200">
           {ownershipStatus === 'owned' ? (
-            <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
+            <span className="m-auto text-5xl text-cyan-300 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)] dark:text-cyan-700">
               ✔
             </span>
           ) : (
-            <span className="m-auto text-5xl text-zinc-500 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)]">✗</span>
+            <span className="m-auto text-5xl text-zinc-500 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)]">✗</span>
           )}
         </div>
       )}
@@ -104,7 +105,7 @@ export function InstanceCard({ instance, session }: { instance: ExpandedInstance
 export function ItemCard({ item, type, session }: ItemCardProps) {
   const { owned, handleAddOrRemove } = useItemOwnership({ ...item, type }, session);
   const [optimisticOwned, setOptimisticOwned] = useState(owned);
- const setMessage = useMessage();
+  const setMessage = useSetAtom(messageAtom);
 
   const handleTransition = async () => {
     setMessage({
@@ -120,7 +121,7 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
       setOptimisticOwned((prev) => !prev);
       setMessage({
         content: toErrorMessage(error, `Failed to sync ${item.name}.`),
-        error: true,
+        type: 'error',
       });
     }
   };
@@ -129,12 +130,12 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
     <div
       data-testid="item-card"
       className={twMerge(
-        'relative flex h-full min-w-[255px] flex-col items-center justify-between rounded-xs gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:scale-125 hover:shadow-2xl ',
+        'relative flex h-full min-w-63.75 flex-col items-center justify-between rounded-xs gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-[99] hover:scale-125 hover:shadow-2xl ',
         optimisticOwned && 'opacity-50 hover:opacity-100'
       )}>
       {optimisticOwned && (
-        <div className="absolute top-[-15px] right-[-15px] flex contrast-200">
-          <span className="m-auto text-5xl text-cyan-300 [text-shadow:_2px_2px_2px_rgb(0_0_0_/_40%)] dark:text-cyan-700">
+        <div className="absolute -top-3.75 -right-3.75 flex contrast-200">
+          <span className="m-auto text-5xl text-cyan-300 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)] dark:text-cyan-700">
             ✔
           </span>
         </div>
