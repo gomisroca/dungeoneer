@@ -5,105 +5,44 @@ import * as cheerio from 'cheerio';
 import { auth } from '@/server/auth';
 import { db } from '@/server/db';
 
-export async function syncLodestone(input: { lodestoneId: string }) {
+const LODESTONE_USER_AGENT =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1';
+
+async function fetchLodestoneNames(lodestoneId: string, type: 'mount' | 'minion'): Promise<string[]> {
+  const url = `https://eu.finalfantasyxiv.com/lodestone/character/${lodestoneId}/${type}/`;
+  const html = await fetch(url, { headers: { 'User-Agent': LODESTONE_USER_AGENT } }).then((r) => r.text());
+  const $ = cheerio.load(html);
+
+  return $(`.${type}__list__item`)
+    .map((_, el) => $(el).find(`.${type}__name`).text().trim())
+    .get()
+    .filter(Boolean);
+}
+
+export async function syncLodestone({ lodestoneId }: { lodestoneId: string }) {
   const session = await auth();
   if (!session?.user) throw new Error('You must be signed in to sync your character');
 
-  const user = await db.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-    include: {
-      mounts: true,
-      minions: true,
-    },
-  });
+  const [user, mountNames, minionNames] = await Promise.all([
+    db.user.findUnique({ where: { id: session.user.id }, select: { id: true } }),
+    fetchLodestoneNames(lodestoneId, 'mount'),
+    fetchLodestoneNames(lodestoneId, 'minion'),
+  ]);
+
   if (!user) throw new Error('User not found');
 
-  const mountsResponse = await fetch(`https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/mount/`, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1',
+  const [dbMounts, dbMinions] = await Promise.all([
+    db.mount.findMany({ where: { name: { in: mountNames } }, select: { id: true } }),
+    db.minion.findMany({ where: { name: { in: minionNames } }, select: { id: true } }),
+  ]);
+
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      mounts: { set: dbMounts.map((m) => ({ id: m.id })) },
+      minions: { set: dbMinions.map((m) => ({ id: m.id })) },
     },
   });
-  const mountsHtml = await mountsResponse.text();
-  const $mounts = cheerio.load(mountsHtml);
 
-  const mounts = $mounts('.mount__list__item')
-    .map((_, mount) => {
-      const $mount = $mounts(mount);
-      return {
-        name: $mount.find('.mount__name').text().trim() || 'Unknown',
-      };
-    })
-    .get();
-
-  const minionsResponse = await fetch(
-    `https://eu.finalfantasyxiv.com/lodestone/character/${input.lodestoneId}/minion/`,
-    {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1',
-      },
-    }
-  );
-  const minionsHtml = await minionsResponse.text();
-  const $minions = cheerio.load(minionsHtml);
-
-  const minions = $minions('.minion__list__item')
-    .map((_, minion) => {
-      const $minion = $minions(minion);
-      return {
-        name: $minion.find('.minion__name').text().trim() || 'Unknown',
-      };
-    })
-    .get();
-
-  // Extract mount and minion names
-  const mountNames = mounts.map((mount) => mount.name);
-  const minionNames = minions.map((minion) => minion.name);
-
-  return await db.$transaction(async (trx) => {
-    const dbMounts = await trx.mount.findMany({
-      where: { name: { in: mountNames } },
-      select: { id: true },
-    });
-
-    const dbMinions = await trx.minion.findMany({
-      where: { name: { in: minionNames } },
-      select: { id: true },
-    });
-
-    await trx.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        mounts: {
-          set: [],
-        },
-        minions: {
-          set: [],
-        },
-      },
-    });
-
-    await trx.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        mounts: {
-          connect: dbMounts.map((mount) => ({ id: mount.id })),
-        },
-        minions: {
-          connect: dbMinions.map((minion) => ({ id: minion.id })),
-        },
-      },
-    });
-
-    return {
-      message: 'Character synced successfully.',
-    };
-  });
+  return { message: 'Character synced successfully.' };
 }
