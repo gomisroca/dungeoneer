@@ -1,41 +1,29 @@
 'use client';
 
 import {
-  type CardSource,
-  type EmoteSource,
-  type HairstyleSource,
-  type MinionSource,
-  type MountSource,
-  type OrchestrionSource,
-  type SpellSource,
+  type CardSource, type EmoteSource, type HairstyleSource,
+  type MinionSource, type MountSource, type OrchestrionSource, type SpellSource,
 } from 'generated/prisma';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
+import { useSetAtom } from 'jotai';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { type ExpandedInstance, type ItemRouteKey } from 'types';
 
 import ItemSelectors from '@/app/_components/item-selector';
 import Button from '@/app/_components/ui/button';
 import Source from '@/app/_components/ui/source';
+import { messageAtom } from '@/atoms/message';
 import { getOwnershipStatus, useIsOwned } from '@/hooks/useCheckOwnership';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
-import { useState } from 'react';
 import { toErrorMessage } from '@/utils/errors';
-import { useSetAtom } from 'jotai';
-import { messageAtom } from '@/atoms/message';
 
 interface BaseItem {
   id: string;
   name: string;
   image: string | null;
-  sources?:
-    | CardSource[]
-    | MinionSource[]
-    | MountSource[]
-    | OrchestrionSource[]
-    | SpellSource[]
-    | EmoteSource[]
-    | HairstyleSource[];
+  sources?: CardSource[] | MinionSource[] | MountSource[] | OrchestrionSource[] | SpellSource[] | EmoteSource[] | HairstyleSource[];
   owners: { id: string }[];
 }
 
@@ -48,22 +36,20 @@ interface ItemCardProps {
 export function InstanceCard({ instance, session }: { instance: ExpandedInstance; session: Session | null }) {
   const isOwned = useIsOwned(instance, session);
   const ownershipStatus = getOwnershipStatus(instance, isOwned);
-
   const [title, ...subtitles] = instance.name.split(/[-:(]/);
+  const isDimmed = ownershipStatus === 'empty' || ownershipStatus === 'owned';
 
   return (
     <div
       data-testid="instance-card"
       className={twMerge(
-        'relative flex h-full min-w-63.75 flex-col items-center justify-start gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 rounded-xs dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-99 hover:scale-125 hover:shadow-2xl  ',
-        (ownershipStatus === 'empty' || ownershipStatus === 'owned') && 'opacity-50 hover:opacity-100'
+        'relative flex h-full min-w-64 flex-col items-center justify-start gap-y-4 rounded-sm bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-50 hover:scale-125 hover:bg-zinc-200 hover:shadow-2xl dark:bg-zinc-800/50 dark:hover:bg-zinc-800',
+        isDimmed && 'opacity-50 hover:opacity-100'
       )}>
-      {(ownershipStatus === 'owned' || ownershipStatus === 'empty') && (
-        <div className="absolute -top-3.75 -right-3.75 flex contrast-200">
+      {isDimmed && (
+        <div className="absolute -right-4 -top-4 flex contrast-200">
           {ownershipStatus === 'owned' ? (
-            <span className="m-auto text-5xl text-cyan-300 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)] dark:text-cyan-700">
-              ✔
-            </span>
+            <span className="m-auto text-5xl text-cyan-300 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)] dark:text-cyan-700">✔</span>
           ) : (
             <span className="m-auto text-5xl text-zinc-500 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)]">✗</span>
           )}
@@ -82,15 +68,12 @@ export function InstanceCard({ instance, session }: { instance: ExpandedInstance
       )}
       <div className="flex flex-col items-center justify-center gap-1">
         {title && (
-          <h1 className="line-clamp-2 text-center text-base md:text-lg">{title[0]!.toUpperCase() + title.slice(1)}</h1>
+          <h1 className="line-clamp-2 text-center text-base capitalize md:text-lg">{title.trim()}</h1>
         )}
-
-        {subtitles && (
+        {subtitles.length > 0 && (
           <div className="flex flex-row items-center justify-center gap-1 text-sm">
             {subtitles.map((sub, i) => (
-              <p key={i} className="text-center">
-                {sub.split(')')[0]}
-              </p>
+              <p key={i} className="text-center">{sub.split(')')[0]}</p>
             ))}
           </div>
         )}
@@ -107,6 +90,10 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
   const [optimisticOwned, setOptimisticOwned] = useState(owned);
   const setMessage = useSetAtom(messageAtom);
 
+  useEffect(() => {
+    setOptimisticOwned(owned);
+  }, [owned]);
+
   const handleTransition = async () => {
     setMessage({
       content: optimisticOwned
@@ -119,10 +106,7 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
       await handleAddOrRemove();
     } catch (error) {
       setOptimisticOwned((prev) => !prev);
-      setMessage({
-        content: toErrorMessage(error, `Failed to sync ${item.name}.`),
-        type: 'error',
-      });
+      setMessage({ content: toErrorMessage(error, `Failed to sync ${item.name}.`), type: 'error' });
     }
   };
 
@@ -130,14 +114,12 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
     <div
       data-testid="item-card"
       className={twMerge(
-        'relative flex h-full min-w-63.75 flex-col items-center justify-between rounded-xs gap-y-4 hover:bg-zinc-200 hover:dark:bg-zinc-800 dark:bg-zinc-800/50 bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-99 hover:scale-125 hover:shadow-2xl ',
+        'relative flex h-full min-w-64 flex-col items-center justify-between gap-y-4 rounded-sm bg-zinc-200/50 p-4 font-semibold shadow-md transition duration-200 ease-in hover:z-50 hover:scale-125 hover:bg-zinc-200 hover:shadow-2xl dark:bg-zinc-800/50 dark:hover:bg-zinc-800',
         optimisticOwned && 'opacity-50 hover:opacity-100'
       )}>
       {optimisticOwned && (
-        <div className="absolute -top-3.75 -right-3.75 flex contrast-200">
-          <span className="m-auto text-5xl text-cyan-300 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)] dark:text-cyan-700">
-            ✔
-          </span>
+        <div className="absolute -right-4 -top-4 flex contrast-200">
+          <span className="m-auto text-5xl text-cyan-300 [text-shadow:2px_2px_2px_rgb(0_0_0/40%)] dark:text-cyan-700">✔</span>
         </div>
       )}
       <div className="flex flex-col items-center justify-center gap-y-2">
@@ -159,7 +141,7 @@ export function ItemCard({ item, type, session }: ItemCardProps) {
           <h1 className="line-clamp-2 text-center text-base leading-relaxed md:text-lg">{item.name}</h1>
         </div>
       </div>
-      {item.sources && (
+      {item.sources && item.sources.length > 0 && (
         <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
           {item.sources.map((source) => (
             <Source key={source.id} source={source} />
