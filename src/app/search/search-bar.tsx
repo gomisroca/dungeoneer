@@ -1,65 +1,27 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, useEffect, useState } from 'react';
 
 import useDebounce from '@/hooks/useDebounce';
 
 function SearchBar() {
   const router = useRouter();
-
-  // Variables to track the search term
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [progress, setProgress] = useState<number>(0);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
-  const startProgressBar = () => {
-    const intervalTime = 25;
-    const incrementAmount = (intervalTime / 500) * 100;
-
-    progressIntervalRef.current = setInterval(() => {
-      setProgress((prevProgress) => {
-        if (prevProgress >= 100) {
-          if (progressIntervalRef.current) {
-            clearInterval(progressIntervalRef.current);
-          }
-          return 100;
-        }
-        return Math.min(prevProgress + incrementAmount, 100);
-      });
-    }, intervalTime);
-  };
-
-  // Handles the search term change
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newSearchTerm = e.target.value.toLowerCase();
-    setSearchTerm(newSearchTerm);
-    setProgress(0);
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-    }
-    startProgressBar();
+    setSearchTerm(e.target.value.toLowerCase());
+    setIsTyping(true);
   };
 
-  // Handles the search when the debounced search term changes
   useEffect(() => {
+    setIsTyping(false);
     if (debouncedSearch.trim().length > 0) {
       router.replace(`?q=${debouncedSearch}`);
-      setProgress(0);
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
     }
   }, [debouncedSearch, router]);
-
-  useEffect(() => {
-    return () => {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div className="w-full">
@@ -72,8 +34,8 @@ function SearchBar() {
       />
       <div className="h-1 w-full rounded-b-md bg-zinc-200 dark:bg-zinc-700">
         <div
-          className="h-1 rounded-b-md bg-cyan-300 transition-all duration-50 ease-out dark:bg-cyan-700"
-          style={{ width: `${progress}%` }}></div>
+          className={`h-1 rounded-b-md bg-cyan-300 transition-all duration-500 ease-out dark:bg-cyan-700 ${isTyping ? 'w-3/4' : 'w-0'}`}
+        />
       </div>
     </div>
   );
