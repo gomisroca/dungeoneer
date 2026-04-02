@@ -3,7 +3,7 @@
 import { useSetAtom } from 'jotai';
 import Image from 'next/image';
 import { type Session } from 'next-auth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { type ExpandedInstance, type ItemRouteKey } from 'types';
 
@@ -32,28 +32,29 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
   const [optimisticOwned, setOptimisticOwned] = useState(owned);
   const setMessage = useSetAtom(messageAtom);
 
+  useEffect(() => {
+    setOptimisticOwned(owned);
+  }, [owned]);
+
   const handleTransition = async () => {
     setMessage({
       content: optimisticOwned
         ? `Removed ${item.name} from your collection.`
         : `Added ${item.name} to your collection.`,
     });
-
     setOptimisticOwned((prev) => !prev);
 
     try {
       await handleAddOrRemove();
     } catch (error) {
       setOptimisticOwned((prev) => !prev);
-      setMessage({
-        content: toErrorMessage(error, `Failed to sync ${item.name}.`),
-        type: 'error',
-      });
+      setMessage({ content: toErrorMessage(error, `Failed to sync ${item.name}.`), type: 'error' });
     }
   };
+
   return (
     <Button
-      arialabel="item-view"
+      arialabel={item.name}
       onClick={handleTransition}
       className="w-full items-center justify-between px-2 py-1 md:w-fit">
       <div className="relative shrink-0">
@@ -81,10 +82,7 @@ function ItemView({ item, type, session, compact = false }: ItemViewProps) {
       </div>
       <div className="flex max-w-full flex-col items-start justify-start overflow-x-hidden">
         <p
-          className={twMerge(
-            'max-w-full shrink overflow-x-hidden text-sm text-ellipsis md:text-base',
-            optimisticOwned && 'text-neutral-500'
-          )}>
+          className={twMerge('max-w-full shrink truncate text-sm md:text-base', optimisticOwned && 'text-neutral-500')}>
           {item.name}
         </p>
       </div>
@@ -119,13 +117,7 @@ export default function ItemSelectors({ instance, session, compact = false }: It
   return (
     <>
       {COLLECTIBLE_TYPES.map((type) => (
-        <ItemSelector
-          key={type}
-          items={instance[type as ItemRouteKey]}
-          type={type as ItemRouteKey}
-          session={session}
-          compact={compact}
-        />
+        <ItemSelector key={type} items={instance[type] as BaseItem[]} type={type} session={session} compact={compact} />
       ))}
     </>
   );
