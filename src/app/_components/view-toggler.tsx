@@ -18,7 +18,7 @@ function ViewToggler({ onViewChange }: { onViewChange: (view: boolean) => void }
       <Button
         onClick={handleViewChange}
         className="h-8 w-8 p-2 md:h-full md:w-fit md:p-3"
-        arialabel={compact ? 'Expanded View' : 'Compact View'}>
+        arialabel={compact ? 'Compact View On' : 'Compact View Off'}>
         {compact ? <LuShrink size={20} /> : <LuExpand size={20} />}
       </Button>
     </div>
