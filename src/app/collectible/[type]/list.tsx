@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { type Session } from 'next-auth';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { type ExpandedCollectible } from 'types';
+import { type ExpandedCollectible, type ItemRouteKey } from 'types';
 
 import FilterMenu from '@/app/_components/filter-menu';
 import { ItemCard } from '@/app/_components/ui/cards';
@@ -16,8 +16,7 @@ import { useItemFilter } from '@/hooks/useItemFilter';
 
 interface CollectibleListProps {
   session: Session | null;
-  routeKey: 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
-  itemsPerPage?: number;
+  routeKey: ItemRouteKey;
 }
 
 export default function CollectibleList({ session, routeKey }: CollectibleListProps) {
@@ -27,97 +26,68 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
   const [items, setItems] = useState<ExpandedCollectible[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [initialLoaded, setInitialLoaded] = useState(false);
+  const [filter, setFilter] = useState(false);
+  const [view, setView] = useState(false);
+  const skipRef = useRef(0);
   const observerRef = useRef<HTMLDivElement | null>(null);
-
-  const [filter, setFilter] = useState<boolean>(false);
-  const [view, setView] = useState<boolean>(false);
 
   const loadItems = useCallback(async () => {
     if (loading || !hasMore) return;
-
-    console.log('loadItems called, current items:', items.length);
     setLoading(true);
 
     try {
       const res = await fetch(
-        `/api/collectible?type=${routeKey}&expansion=${expansion ?? ''}&skip=${items.length}&take=50`
+        `/api/collectible?type=${routeKey}&expansion=${expansion ?? ''}&skip=${skipRef.current}&take=50`
       );
       const { items: newItems, hasMore: newHasMore } = (await res.json()) as {
         items: ExpandedCollectible[];
         hasMore: boolean;
       };
-      console.log('Fetched items:', newItems.length, 'hasMore:', newHasMore);
 
-      setItems((prev) => {
-        // Prevent duplicates by checking if we already have these items
-        const existingIds = new Set(prev.map((item) => item.id));
-        const uniqueNewItems = newItems.filter((item: ExpandedCollectible) => !existingIds.has(item.id));
-        console.log('Adding unique items:', uniqueNewItems.length);
-        return [...prev, ...uniqueNewItems];
-      });
+      setItems((prev) => [...prev, ...newItems]);
+      skipRef.current += newItems.length;
       setHasMore(newHasMore);
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, items.length, routeKey, expansion]);
+  }, [loading, hasMore, routeKey, expansion]);
 
-  // Reset on expansion change
+  // Reset and reload on expansion change
   useEffect(() => {
-    console.log('Expansion changed, resetting...');
     setItems([]);
     setHasMore(true);
-    setInitialLoaded(false);
+    skipRef.current = 0;
+    void loadItems();
   }, [expansion]);
 
-  // Initial load only
-  useEffect(() => {
-    if (!initialLoaded && items.length === 0) {
-      console.log('Initial load triggered');
-      setInitialLoaded(true);
-      void loadItems();
-    }
-  }, [initialLoaded, items.length, loadItems]);
-
-  // Intersection observer setup - separate from loadItems to avoid re-creation
+  // Intersection observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !loading && hasMore && initialLoaded) {
-          console.log('Intersection observer triggered load');
-          void loadItems();
-        }
+      ([entry]) => {
+        if (entry?.isIntersecting && !loading && hasMore) void loadItems();
       },
       { threshold: 1 }
     );
 
     const current = observerRef.current;
-    if (current) {
-      observer.observe(current);
-    }
-
+    if (current) observer.observe(current);
     return () => {
-      if (current) {
-        observer.unobserve(current);
-      }
+      if (current) observer.unobserve(current);
     };
-  }, [loading, hasMore, initialLoaded]); // Remove loadItems from dependencies
+  }, [loading, hasMore, loadItems]);
 
-  // @ts-expect-error ExpandedCollectible join
   const filteredCollectibles = useItemFilter({ items, filter, session });
 
   return (
     <div className="relative flex w-full flex-col">
       <ViewToggler onViewChange={setView} />
-      <FilterMenu onFilterChange={setFilter} />
+      <FilterMenu filter={filter} onFilterChange={setFilter} />
       {view ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredCollectibles.map((collectible) => (
             <VirtualItem
               key={collectible.id}
-              placeholder={
-                <ItemCardSkeleton owned={collectible.owners.some((owner) => owner.id === session?.user.id)} />
-              }
+              placeholder={<ItemCardSkeleton owned={collectible.owners.some((o) => o.id === session?.user?.id)} />}
               height={200}>
               <ItemCard item={collectible} type={routeKey} session={session} />
             </VirtualItem>
@@ -129,9 +99,7 @@ export default function CollectibleList({ session, routeKey }: CollectibleListPr
             <VirtualItem
               key={collectible.id}
               placeholder={
-                <CollectibleListItemSkeleton
-                  owned={collectible.owners.some((owner) => owner.id === session?.user.id)}
-                />
+                <CollectibleListItemSkeleton owned={collectible.owners.some((o) => o.id === session?.user?.id)} />
               }
               height={200}>
               <CollectibleListItem item={collectible} type={routeKey} session={session} />
