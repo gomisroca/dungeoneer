@@ -16,7 +16,7 @@ function LodestoneSync() {
   );
 }
 
-async function Sync() {
+export default async function Sync() {
   const session = await auth();
   return (
     <div className="flex flex-col items-center justify-center gap-2">
@@ -25,5 +25,3 @@ async function Sync() {
     </div>
   );
 }
-
-export default Sync;
