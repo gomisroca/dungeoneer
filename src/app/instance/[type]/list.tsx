@@ -18,7 +18,6 @@ import InstanceListItem from './item';
 interface InstanceListProps {
   session: Session | null;
   routeKey: 'dungeons' | 'raids' | 'trials' | 'variants';
-  itemsPerPage?: number;
 }
 
 export default function InstanceList({ session, routeKey }: InstanceListProps) {
@@ -28,11 +27,10 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
   const [instances, setInstances] = useState<ExpandedInstance[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [initialLoaded, setInitialLoaded] = useState(false);
+  const [filter, setFilter] = useState(false);
+  const [view, setView] = useState(false);
+  const skipRef = useRef(0);
   const observerRef = useRef<HTMLDivElement | null>(null);
-
-  const [filter, setFilter] = useState<boolean>(false);
-  const [view, setView] = useState<boolean>(false);
 
   const loadInstances = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -40,78 +38,51 @@ export default function InstanceList({ session, routeKey }: InstanceListProps) {
 
     try {
       const res = await fetch(
-        `/api/instance?type=${routeKey}&expansion=${expansion ?? ''}&skip=${instances.length}&take=30`
+        `/api/instance?type=${routeKey}&expansion=${expansion ?? ''}&skip=${skipRef.current}&take=30`
       );
       const { instances: newInstances, hasMore: newHasMore } = (await res.json()) as {
         instances: ExpandedInstance[];
         hasMore: boolean;
       };
-      console.log('Fetched instances:', newInstances.length, 'hasMore:', newHasMore);
 
-      setInstances((prev) => {
-        // Prevent duplicates by checking if we already have these items
-        const existingIds = new Set(prev.map((item) => item.id));
-        const uniqueNewItems = newInstances.filter((item: ExpandedInstance) => !existingIds.has(item.id));
-        console.log('Adding unique items:', uniqueNewItems.length);
-        return [...prev, ...uniqueNewItems];
-      });
+      setInstances((prev) => [...prev, ...newInstances]);
+      skipRef.current += newInstances.length;
       setHasMore(newHasMore);
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, instances.length, routeKey, expansion]);
+  }, [loading, hasMore, routeKey, expansion]);
 
-  // Reset on expansion change
+  // Reset and reload on expansion change
   useEffect(() => {
-    console.log('Expansion changed, resetting...');
     setInstances([]);
     setHasMore(true);
-    setInitialLoaded(false);
+    skipRef.current = 0;
+    void loadInstances();
   }, [expansion]);
 
-  // Initial load only
-  useEffect(() => {
-    if (!initialLoaded && instances.length === 0) {
-      console.log('Initial load triggered');
-      setInitialLoaded(true);
-      void loadInstances();
-    }
-  }, [initialLoaded, instances.length, loadInstances]);
-
-  // Intersection observer setup - separate from loadInstances to avoid re-creation
+  // Intersection observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !loading && hasMore && initialLoaded) {
-          console.log('Intersection observer triggered load');
-          void loadInstances();
-        }
+      ([entry]) => {
+        if (entry?.isIntersecting && !loading && hasMore) void loadInstances();
       },
       { threshold: 1 }
     );
 
     const current = observerRef.current;
-    if (current) {
-      observer.observe(current);
-    }
-
+    if (current) observer.observe(current);
     return () => {
-      if (current) {
-        observer.unobserve(current);
-      }
+      if (current) observer.unobserve(current);
     };
-  }, [loading, hasMore, initialLoaded]);
+  }, [loading, hasMore, loadInstances]);
 
   const filteredInstances = useInstanceFilter({ instances, filter, session });
-
-  useEffect(() => {
-    console.log('View toggled:', view);
-  }, [view]);
 
   return (
     <div className="relative flex w-full flex-col">
       <ViewToggler onViewChange={setView} />
-      <FilterMenu onFilterChange={setFilter} />
+      <FilterMenu filter={filter} onFilterChange={setFilter} />
       {view ? (
         <div className="mx-auto grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredInstances.map((instance) => (
