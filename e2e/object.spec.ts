@@ -17,7 +17,7 @@ test('sources content displays tooltip', async ({ page }) => {
   await page.goto('/collectible/minions');
 
   const source = page.getByRole('button', { name: 'Achievement' }).first();
-  await source.hover();
+  await source.click();
   await expect(
     page.getByText('Jonathas - Old Gridania - 2 Achievement CertificatesJonathas - Old Gridania - 2')
   ).toBeVisible();

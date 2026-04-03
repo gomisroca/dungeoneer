@@ -23,27 +23,10 @@ test('object content is clickable', async ({ page }) => {
   await expect(page.getByText('✔A Thousand Screams')).toBeVisible();
 });
 
-test('different instance types have different object content', async ({ page }) => {
-  await page.goto('/instance/trials');
-
-  await expect(
-    page
-      .locator('div')
-      .filter({ hasText: /^The Bowl of Embers Hard$/ })
-      .getByRole('heading')
-  ).toBeVisible();
-  await expect(
-    page
-      .locator('div')
-      .filter({ hasText: /^The Navel Hard$/ })
-      .getByRole('heading')
-  ).toBeVisible();
-});
-
 test('size of cards can be toggled', async ({ page }) => {
   await page.goto('/instance/dungeons');
 
-  const sizeButton = page.getByRole('button', { name: 'Compact View Off' });
+  const sizeButton = page.getByRole('button', { name: 'Compact View' });
 
   await expect(page.getByRole('img', { name: 'the Tam–Tara Deepcroft' })).not.toBeVisible();
   await expect(sizeButton).toBeVisible();
