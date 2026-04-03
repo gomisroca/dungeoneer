@@ -14,7 +14,6 @@ import { expect, vi } from 'vitest';
 
 import CollectibleListItem from '@/app/collectible/[type]/item';
 import { useItemOwnership } from '@/hooks/useItemOwnership';
-import { useMessage } from '@/hooks/useMessage';
 
 interface ButtonProps {
   arialabel?: string;
@@ -38,9 +37,12 @@ vi.mock('@/hooks/useItemOwnership', () => ({
   })),
 }));
 
-vi.mock('@/hooks/useMessage', () => ({
-  useMessage: vi.fn(() => vi.fn()),
-}));
+const mockSetMessage = vi.fn();
+vi.mock('jotai', async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = await importOriginal<typeof import('jotai')>();
+  return { ...actual, useSetAtom: vi.fn(() => mockSetMessage) };
+});
 
 vi.mock('@/app/_components/ui/button', () => ({
   __esModule: true,
@@ -73,24 +75,11 @@ describe('CollectibleListItem', () => {
   };
 
   const mockSession = {
-    user: {
-      id: '1',
-      name: 'User 1',
-      image: '',
-      email: '',
-      minions: [],
-      mounts: [],
-      orchestrions: [],
-      spells: [],
-      cards: [],
-      emotes: [],
-      hairstyles: [],
-    },
+    user: { id: '1', name: 'User 1', image: '', email: '' },
     expires: '',
   };
 
   const mockedUseItemOwnership = vi.mocked(useItemOwnership);
-  const mockedUseMessage = vi.mocked(useMessage);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -98,72 +87,39 @@ describe('CollectibleListItem', () => {
 
   it('renders item name, image, and sources', () => {
     render(<CollectibleListItem item={mockItem} type="minions" session={mockSession} />);
-
     expect(screen.getByText('Minion 1')).toBeInTheDocument();
     expect(screen.getAllByTestId('source')).toHaveLength(1);
     expect(screen.getByAltText('Minion 1')).toHaveAttribute('src', '/xivlogo.png');
   });
 
   it('calls handleAddOrRemove and updates UI optimistically', async () => {
-    const setMessage = vi.fn();
     const handleAddOrRemove = vi.fn().mockResolvedValue(undefined);
-
-    mockedUseItemOwnership.mockReturnValue({
-      owned: false,
-      handleAddOrRemove,
-    });
-
-    mockedUseMessage.mockReturnValue(setMessage);
+    mockedUseItemOwnership.mockReturnValue({ owned: false, handleAddOrRemove });
 
     render(<CollectibleListItem item={mockItem} type="minions" session={mockSession} />);
 
-    const button = screen.getByRole('button', { name: /add/i });
-    fireEvent.click(button);
+    fireEvent.click(screen.getByRole('button', { name: /add/i }));
 
-    mockedUseMessage.mockReturnValue(setMessage);
-
-    expect(setMessage).toHaveBeenCalledWith({
-      content: 'Added Minion 1 to your collection.',
-    });
+    expect(mockSetMessage).toHaveBeenCalledWith({ content: 'Added Minion 1 to your collection.' });
 
     await screen.findByRole('button', { name: /remove/i });
-    await waitFor(() => {
-      expect(handleAddOrRemove).toHaveBeenCalled();
-    });
+    await waitFor(() => expect(handleAddOrRemove).toHaveBeenCalled());
   });
 
   it('shows ✔ icon when owned optimistically', async () => {
     render(<CollectibleListItem item={mockItem} type="minions" session={mockSession} />);
-
-    const button = screen.getByRole('button', { name: /add/i });
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(screen.getByText('✔')).toBeInTheDocument();
-    });
+    fireEvent.click(screen.getByRole('button', { name: /add/i }));
+    await waitFor(() => expect(screen.getByText('✔')).toBeInTheDocument());
   });
 
   it('restores state and shows error message on failure', async () => {
-    const setMessage = vi.fn();
     const handleAddOrRemove = vi.fn().mockRejectedValue(new Error('Fail'));
-
-    mockedUseItemOwnership.mockReturnValue({
-      owned: false,
-      handleAddOrRemove,
-    });
-
-    mockedUseMessage.mockReturnValue(setMessage);
+    mockedUseItemOwnership.mockReturnValue({ owned: false, handleAddOrRemove });
 
     render(<CollectibleListItem item={mockItem} type="minions" session={mockSession} />);
-
-    const button = screen.getByRole('button', { name: /add/i });
-    fireEvent.click(button);
+    fireEvent.click(screen.getByRole('button', { name: /add/i }));
 
     await screen.findByRole('button', { name: /add/i });
-    expect(setMessage).toHaveBeenCalledWith(
-      expect.objectContaining({
-        error: true,
-      })
-    );
+    expect(mockSetMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'error' }));
   });
 });

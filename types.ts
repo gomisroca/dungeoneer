@@ -25,12 +25,10 @@ export interface ExpandedMinion extends Minion {
   owners: User[];
   sources?: MinionSource[];
 }
-
 export interface ExpandedMount extends Mount {
   owners: User[];
   sources?: MountSource[];
 }
-
 export interface ExpandedOrchestrion extends Orchestrion {
   owners: User[];
   sources?: OrchestrionSource[];
@@ -39,12 +37,10 @@ export interface ExpandedSpell extends Spell {
   owners: User[];
   sources?: SpellSource[];
 }
-
 export interface ExpandedEmote extends Emote {
   owners: User[];
   sources?: EmoteSource[];
 }
-
 export interface ExpandedHairstyle extends Hairstyle {
   owners: User[];
   sources?: HairstyleSource[];
@@ -54,7 +50,8 @@ export interface ExpandedCard extends Card {
   stats?: CardStats;
   sources?: CardSource[];
 }
-export interface ExpandedDungeon extends Dungeon {
+
+interface InstanceCollectibles {
   minions: ExpandedMinion[];
   mounts: ExpandedMount[];
   orchestrions: ExpandedOrchestrion[];
@@ -64,44 +61,10 @@ export interface ExpandedDungeon extends Dungeon {
   hairstyles: ExpandedHairstyle[];
 }
 
-export interface ExpandedVariantDungeon extends VariantDungeon {
-  minions: ExpandedMinion[];
-  mounts: ExpandedMount[];
-  orchestrions: ExpandedOrchestrion[];
-  spells: ExpandedSpell[];
-  cards: ExpandedCard[];
-  emotes: ExpandedEmote[];
-  hairstyles: ExpandedHairstyle[];
-}
-
-export interface ExpandedRaid extends Raid {
-  minions: ExpandedMinion[];
-  mounts: ExpandedMount[];
-  orchestrions: ExpandedOrchestrion[];
-  spells: ExpandedSpell[];
-  cards: ExpandedCard[];
-  emotes: ExpandedEmote[];
-  hairstyles: ExpandedHairstyle[];
-}
-
-export interface ExpandedTrial extends Trial {
-  minions: ExpandedMinion[];
-  mounts: ExpandedMount[];
-  orchestrions: ExpandedOrchestrion[];
-  spells: ExpandedSpell[];
-  cards: ExpandedCard[];
-  emotes: ExpandedEmote[];
-  hairstyles: ExpandedHairstyle[];
-}
-
-export type ItemType = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
-export interface Item {
-  id: string;
-  name: string;
-  image: string | null;
-  owners: { id: string }[];
-  type: ItemType;
-}
+export interface ExpandedDungeon extends Dungeon, InstanceCollectibles {}
+export interface ExpandedVariantDungeon extends VariantDungeon, InstanceCollectibles {}
+export interface ExpandedRaid extends Raid, InstanceCollectibles {}
+export interface ExpandedTrial extends Trial, InstanceCollectibles {}
 
 export type Instance = {
   id: number;
@@ -109,14 +72,7 @@ export type Instance = {
   description: string;
   image: string | null;
   patch: string | null;
-  cards: ExpandedCard[];
-  emotes: ExpandedEmote[];
-  hairstyles: ExpandedHairstyle[];
-  minions: ExpandedMinion[];
-  mounts: ExpandedMount[];
-  orchestrions: ExpandedOrchestrion[];
-  spells: ExpandedSpell[];
-};
+} & InstanceCollectibles;
 
 export type ExpandedInstance = ExpandedDungeon | ExpandedTrial | ExpandedRaid | ExpandedVariantDungeon;
 export type ExpandedCollectible =
@@ -128,22 +84,27 @@ export type ExpandedCollectible =
   | ExpandedEmote
   | ExpandedHairstyle;
 
+export type ItemRouteKey = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
+export type ItemModelName = 'card' | 'emote' | 'minion' | 'mount' | 'hairstyle' | 'orchestrion' | 'spell';
+export type InstanceRouteKey = 'dungeons' | 'trials' | 'raids' | 'variants';
+export type InstanceModelName = 'dungeon' | 'trial' | 'raid' | 'variantDungeon';
+
+export interface Item {
+  id: string;
+  name: string;
+  image: string | null;
+  owners: { id: string }[];
+  type: ItemRouteKey;
+}
+
 export type LodestoneCharacter = {
   id: string;
   name: string;
   avatar: string;
   server: string | undefined;
   data_center: string | undefined;
-  mounts?: {
-    count: number;
-    total: number;
-    public: boolean;
-  };
-  minions?: {
-    count: number;
-    total: number;
-    public: boolean;
-  };
+  mounts?: { count: number; total: number; public: boolean };
+  minions?: { count: number; total: number; public: boolean };
 };
 
 export type LodestoneCollectable = {
@@ -151,15 +112,5 @@ export type LodestoneCollectable = {
   name: string;
   patch: string;
   image: string;
-  sources: [
-    {
-      type: string;
-      text: string;
-    },
-  ];
+  sources: { type: string; text: string }[];
 };
-
-export type ItemRouteKey = 'cards' | 'minions' | 'mounts' | 'spells' | 'orchestrions' | 'emotes' | 'hairstyles';
-export type ItemModelName = 'card' | 'emote' | 'minion' | 'mount' | 'hairstyle' | 'orchestrion' | 'spell';
-export type InstanceRouteKey = 'dungeons' | 'trials' | 'raids' | 'variants';
-export type InstanceModelName = 'dungeon' | 'trial' | 'raid' | 'variantDungeon';

@@ -5,12 +5,7 @@ import SyncButton from '@/app/sync/character/[id]/sync-button';
 import { auth } from '@/server/auth';
 import { fetchUniqueLodestoneCharacter } from '@/server/queries/lodestone';
 
-interface ProgressBarProps {
-  count: number;
-  total: number;
-}
-
-function ProgressBar({ count, total }: ProgressBarProps) {
+function ProgressBar({ count, total }: { count: number; total: number }) {
   const percentage = total > 0 ? (count / total) * 100 : 0;
 
   return (
@@ -24,37 +19,52 @@ function ProgressBar({ count, total }: ProgressBarProps) {
 }
 
 export default async function LodestoneWrapper({ params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  const lodestoneId = (await params).id;
-  if (!lodestoneId) return notFound();
+  const { id: lodestoneId } = await params;
 
-  const character = await fetchUniqueLodestoneCharacter({ lodestoneId });
+  const [session, character] = await Promise.all([
+    auth(),
+    fetchUniqueLodestoneCharacter({ lodestoneId }).catch(() => null),
+  ]);
+
+  if (!character) return notFound();
 
   return (
     <div className="flex min-w-64 flex-col items-center justify-center gap-y-10 rounded-md bg-zinc-200/20 p-10 md:min-w-96 dark:bg-zinc-900/20">
       <section className="flex flex-col items-center justify-center">
-        <Image src={character.avatar} alt={character.name} width={100} height={100} className="rounded-full" />
+        {character.avatar && (
+          <Image
+            src={character.avatar}
+            alt={character.name}
+            width={100}
+            height={100}
+            className="rounded-full"
+            unoptimized
+          />
+        )}
         <h1 className="text-2xl font-bold">{character.name}</h1>
         <p className="text-sm">
           {character.server} - {character.data_center}
         </p>
       </section>
-      {!character.minions?.public ? (
-        <p>This character&apos;s minion collection is not public.</p>
-      ) : (
+
+      {character.minions?.public ? (
         <div className="w-full">
           <p className="text-xs uppercase">Minions</p>
           <ProgressBar count={character.minions.count} total={character.minions.total} />
         </div>
-      )}
-      {!character.mounts?.public ? (
-        <p>This character&apos;s mount collection is not public.</p>
       ) : (
+        <p>This character&apos;s minion collection is not public.</p>
+      )}
+
+      {character.mounts?.public ? (
         <div className="w-full">
           <p className="text-xs uppercase">Mounts</p>
           <ProgressBar count={character.mounts.count} total={character.mounts.total} />
         </div>
+      ) : (
+        <p>This character&apos;s mount collection is not public.</p>
       )}
+
       <SyncButton session={session} lodestoneId={lodestoneId} />
     </div>
   );

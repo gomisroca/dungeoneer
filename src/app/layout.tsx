@@ -15,17 +15,18 @@ export const metadata: Metadata = {
 
 const raleway = Raleway({
   subsets: ['latin'],
-  weight: ['400', '600'], // Add specific weights if needed
+  weight: ['400', '600', '700'],
 });
 
 function Footer() {
   return (
-    <div className="pointer-events-none fixed right-0 bottom-0 left-0 z-0 flex flex-col items-end justify-end gap-1 p-2 text-xs opacity-20">
+    <footer className="pointer-events-none fixed right-0 bottom-0 left-0 z-0 flex flex-col items-end justify-end gap-1 p-2 text-xs opacity-20">
       <p className="line-clamp-1 text-end">FINAL FANTASY XIV © SQUARE ENIX CO., LTD.</p>
       <p className="line-clamp-2 text-end">FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.</p>
-    </div>
+    </footer>
   );
 }
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={raleway.className} suppressHydrationWarning>

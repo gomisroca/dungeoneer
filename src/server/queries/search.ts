@@ -3,157 +3,54 @@ import 'server-only';
 import { type Prisma } from 'generated/prisma';
 
 import { db } from '@/server/db';
+import { cached } from '@/utils/redis';
+
+const include = {
+  minions: { include: { owners: true } },
+  mounts: { include: { owners: true } },
+  cards: { include: { owners: true } },
+  orchestrions: { include: { owners: true } },
+  spells: { include: { owners: true } },
+  emotes: { include: { owners: true } },
+  hairstyles: { include: { owners: true } },
+};
+
+function buildSearchWhere(term: string) {
+  const nameMatch = { name: { contains: term, mode: 'insensitive' as const } };
+  return {
+    OR: [
+      nameMatch,
+      { minions: { some: nameMatch } },
+      { mounts: { some: nameMatch } },
+      { cards: { some: nameMatch } },
+      { orchestrions: { some: nameMatch } },
+      { spells: { some: nameMatch } },
+      { emotes: { some: nameMatch } },
+      { hairstyles: { some: nameMatch } },
+    ],
+  };
+}
 
 export async function fetchSearchResults(term: string) {
-  try {
-    const where = {
-      OR: [
-        {
-          name: {
-            contains: term,
-            mode: 'insensitive',
-          },
-        },
-        {
-          minions: {
-            some: {
-              name: {
-                contains: term,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        {
-          mounts: {
-            some: {
-              name: {
-                contains: term,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        {
-          cards: {
-            some: {
-              name: {
-                contains: term,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        {
-          orchestrions: {
-            some: {
-              name: {
-                contains: term,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        {
-          spells: {
-            some: {
-              name: {
-                contains: term,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        {
-          emotes: {
-            some: {
-              name: {
-                contains: term,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-        {
-          hairstyles: {
-            some: {
-              name: {
-                contains: term,
-                mode: 'insensitive',
-              },
-            },
-          },
-        },
-      ],
-    };
-    const include = {
-      minions: {
-        include: {
-          owners: true,
-        },
-      },
-      mounts: {
-        include: {
-          owners: true,
-        },
-      },
-      cards: {
-        include: {
-          owners: true,
-        },
-      },
-      orchestrions: {
-        include: {
-          owners: true,
-        },
-      },
-      spells: {
-        include: {
-          owners: true,
-        },
-      },
-      emotes: {
-        include: {
-          owners: true,
-        },
-      },
-      hairstyles: {
-        include: {
-          owners: true,
-        },
-      },
-    };
+  const trimmed = term.trim();
+  if (trimmed.length < 2) return [];
 
-    return db.$transaction(async (trx) => {
-      const dungeons = await trx.dungeon.findMany({
-        where: where as Prisma.DungeonWhereInput,
-        include,
-      });
+  const cacheKey = `search:${trimmed.toLowerCase()}`;
 
-      const raids = await trx.raid.findMany({
-        where: where as Prisma.RaidWhereInput,
-        include,
-      });
+  return cached(
+    cacheKey,
+    async () => {
+      const where = buildSearchWhere(trimmed);
 
-      const trials = await trx.trial.findMany({
-        where: where as Prisma.TrialWhereInput,
-        include,
-      });
+      const [dungeons, raids, trials, variants] = await Promise.all([
+        db.dungeon.findMany({ where: where as Prisma.DungeonWhereInput, include }),
+        db.raid.findMany({ where: where as Prisma.RaidWhereInput, include }),
+        db.trial.findMany({ where: where as Prisma.TrialWhereInput, include }),
+        db.variantDungeon.findMany({ where: where as Prisma.VariantDungeonWhereInput, include }),
+      ]);
 
-      const variants = await trx.variantDungeon.findMany({
-        where: where as Prisma.VariantDungeonWhereInput,
-        include,
-      });
-
-      const items = [...dungeons, ...raids, ...trials, ...variants];
-
-      return items;
-    });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw error;
-    } else {
-      throw new Error('Search failed');
-    }
-  }
+      return [...dungeons, ...raids, ...trials, ...variants];
+    },
+    60 * 2
+  );
 }

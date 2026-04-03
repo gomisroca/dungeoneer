@@ -15,135 +15,55 @@ const include = {
   hairstyles: { include: { owners: true } },
 };
 
+const hasCollectibles = {
+  OR: [
+    { minions: { some: {} } },
+    { mounts: { some: {} } },
+    { orchestrions: { some: {} } },
+    { spells: { some: {} } },
+    { cards: { some: {} } },
+    { emotes: { some: {} } },
+    { hairstyles: { some: {} } },
+  ],
+};
+
 export async function fetchInstances(
   model: InstanceModelName,
-  {
-    expansion,
-    skip = 0,
-    take = 30,
-  }: {
-    expansion?: string;
-    skip?: number;
-    take?: number;
-  }
+  { expansion, skip = 0, take = 30 }: { expansion?: string; skip?: number; take?: number }
 ) {
   const where = {
-    AND: [{ patch: { contains: expansion } }],
-    OR: [
-      { minions: { some: {} } },
-      { mounts: { some: {} } },
-      { orchestrions: { some: {} } },
-      { spells: { some: {} } },
-      { cards: { some: {} } },
-      { emotes: { some: {} } },
-      { hairstyles: { some: {} } },
-    ],
+    ...hasCollectibles,
+    ...(expansion ? { patch: { contains: expansion } } : {}),
   };
 
-  const cacheKey = `${model}:${expansion}:${skip}:${take}`;
+  const cacheKey = `${model}:${expansion ?? 'all'}:${skip}:${take}`;
+
   const instances = await cached(
     cacheKey,
-    async () => {
-      try {
-        switch (model) {
-          case 'dungeon':
-            return await db.dungeon.findMany({
-              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
-              where,
-              include,
-              skip,
-              take,
-            });
-          case 'raid':
-            return await db.raid.findMany({
-              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
-              where,
-              include,
-              skip,
-              take,
-            });
-          case 'trial':
-            return await db.trial.findMany({
-              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
-              where,
-              include,
-              skip,
-              take,
-            });
-          case 'variantDungeon':
-            return await db.variantDungeon.findMany({
-              orderBy: [{ patch: 'asc' }, { id: 'asc' }],
-              where,
-              include,
-              skip,
-              take,
-            });
-          default:
-            throw new Error(`Unsupported model: ${model as string}`);
-        }
-      } catch (error) {
-        console.error(`Failed to get ${model}s:`, error);
-        return null;
-      }
-    },
-    60 * 5 // Cache for 5 minutes
+    () =>
+      (db[model] as typeof db.dungeon).findMany({
+        orderBy: [{ patch: 'asc' }, { id: 'asc' }],
+        where,
+        include,
+        skip,
+        take,
+      }),
+    60 * 5
   );
 
-  return { instances, hasMore: Array.isArray(instances) && instances.length === take };
+  return { instances, hasMore: instances.length === take };
 }
 
-export async function fetchUniqueInstance(
-  model: InstanceModelName,
-  {
-    id,
-  }: {
-    id: number;
-  }
-) {
+export async function fetchUniqueInstance(model: InstanceModelName, { id }: { id: number }) {
   const cacheKey = `${model}:${id}`;
-  const instance = await cached(
-    cacheKey,
-    async () => {
-      try {
-        switch (model) {
-          case 'dungeon':
-            return await db.dungeon.findUniqueOrThrow({
-              where: {
-                id,
-              },
-              include,
-            });
-          case 'raid':
-            return await db.raid.findUniqueOrThrow({
-              where: {
-                id,
-              },
-              include,
-            });
-          case 'trial':
-            return await db.trial.findUniqueOrThrow({
-              where: {
-                id,
-              },
-              include,
-            });
-          case 'variantDungeon':
-            return await db.variantDungeon.findUniqueOrThrow({
-              where: {
-                id,
-              },
-              include,
-            });
-          default:
-            throw new Error(`Unsupported model: ${model as string}`);
-        }
-      } catch (error) {
-        console.error(`Failed to get ${model}:`, error);
-        return null;
-      }
-    },
-    60 * 5 // Cache for 5 minutes
-  );
 
-  return instance;
+  return cached(
+    cacheKey,
+    () =>
+      (db[model] as typeof db.dungeon).findUniqueOrThrow({
+        where: { id },
+        include,
+      }),
+    60 * 5
+  );
 }

@@ -1,7 +1,10 @@
 import { atom } from 'jotai';
 
-// Establish a message atom taking in a string and an optional boolean
-export const messageAtom = atom<{
+export type MessageType = 'success' | 'error' | 'warning';
+
+export type Message = {
   content: string;
-  error?: boolean;
-} | null>(null);
+  type?: MessageType;
+};
+
+export const messageAtom = atom<Message | null>(null);

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "prisma generate",
     "build": "next build",
     "db:generate": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",
@@ -13,6 +14,7 @@
     "dev": "next dev --turbo",
     "postinstall": "prisma generate",
     "lint": "next lint",
+    "prestart": "prisma generate",
     "start": "next start",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",

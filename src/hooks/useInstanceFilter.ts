@@ -1,39 +1,27 @@
 import { type Session } from 'next-auth';
 import { useMemo } from 'react';
-import {
-  type ExpandedCard,
-  type ExpandedEmote,
-  type ExpandedHairstyle,
-  type ExpandedInstance,
-  type ExpandedMinion,
-  type ExpandedMount,
-  type ExpandedOrchestrion,
-  type ExpandedSpell,
-  type Item,
-} from 'types';
+import { type ExpandedCollectible, type ExpandedInstance, type Item } from 'types';
 
-type ExpandedItemType =
-  | ExpandedMinion
-  | ExpandedMount
-  | ExpandedCard
-  | ExpandedOrchestrion
-  | ExpandedSpell
-  | ExpandedHairstyle
-  | ExpandedEmote;
+function getLocalItemIds(): string[] {
+  try {
+    const stored = localStorage.getItem('userItems');
+    return stored ? (JSON.parse(stored) as Item[]).map((i) => i.id) : [];
+  } catch {
+    return [];
+  }
+}
 
-function checkOwnership(instance: ExpandedInstance, userId: string | undefined, localItems: string[]) {
-  const isOwned = (items: ExpandedItemType[]) =>
-    items.every((item) => (userId && item.owners.some((owner) => owner.id === userId)) ?? localItems.includes(item.id));
+function isItemOwned(item: ExpandedCollectible, userId: string | undefined, localIds: string[]): boolean {
+  if (userId) return item.owners.some((owner) => owner.id === userId);
+  return localIds.includes(item.id);
+}
 
-  return (
-    isOwned(instance.minions) &&
-    isOwned(instance.mounts) &&
-    isOwned(instance.cards) &&
-    isOwned(instance.orchestrions) &&
-    isOwned(instance.spells) &&
-    isOwned(instance.hairstyles) &&
-    isOwned(instance.emotes)
-  );
+function filterCollectibles<T extends ExpandedCollectible>(
+  items: T[],
+  userId: string | undefined,
+  localIds: string[]
+): T[] {
+  return items.filter((item) => !isItemOwned(item, userId, localIds));
 }
 
 export function useInstanceFilter({
@@ -48,30 +36,29 @@ export function useInstanceFilter({
   return useMemo(() => {
     if (!filter) return instances;
 
-    const localStorageItems = JSON.parse(localStorage.getItem('userItems') ?? '[]') as Item[];
-    const localItems = localStorageItems.map((item) => item.id);
+    const userId = session?.user?.id;
+    const localIds = typeof window !== 'undefined' ? getLocalItemIds() : [];
 
-    return instances.reduce<ExpandedInstance[]>((acc, instance) => {
-      if (!checkOwnership(instance, session?.user?.id, localItems)) {
-        const copyInstance = { ...instance };
-        const filterItems = <T extends ExpandedItemType>(items: T[]) =>
-          items.filter(
-            (item) =>
-              !(session?.user?.id && item.owners.some((owner) => owner.id === session.user.id)) &&
-              !localItems.includes(item.id)
-          );
-
-        copyInstance.minions = filterItems(instance.minions);
-        copyInstance.mounts = filterItems(instance.mounts);
-        copyInstance.cards = filterItems(instance.cards);
-        copyInstance.orchestrions = filterItems(instance.orchestrions);
-        copyInstance.spells = filterItems(instance.spells);
-        copyInstance.hairstyles = filterItems(instance.hairstyles);
-        copyInstance.emotes = filterItems(instance.emotes);
-
-        acc.push(copyInstance);
-      }
-      return acc;
-    }, []);
+    return instances
+      .map((instance) => ({
+        ...instance,
+        minions: filterCollectibles(instance.minions, userId, localIds),
+        mounts: filterCollectibles(instance.mounts, userId, localIds),
+        cards: filterCollectibles(instance.cards, userId, localIds),
+        orchestrions: filterCollectibles(instance.orchestrions, userId, localIds),
+        spells: filterCollectibles(instance.spells, userId, localIds),
+        hairstyles: filterCollectibles(instance.hairstyles, userId, localIds),
+        emotes: filterCollectibles(instance.emotes, userId, localIds),
+      }))
+      .filter(
+        (instance) =>
+          instance.minions.length > 0 ||
+          instance.mounts.length > 0 ||
+          instance.cards.length > 0 ||
+          instance.orchestrions.length > 0 ||
+          instance.spells.length > 0 ||
+          instance.hairstyles.length > 0 ||
+          instance.emotes.length > 0
+      );
   }, [instances, filter, session]);
 }

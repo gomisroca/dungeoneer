@@ -12,30 +12,30 @@ export default function PageChange({
   const router = useRouter();
   const params = useSearchParams();
 
-  const decodeParam = (param: string | null) => (param ? decodeURIComponent(param).replace(/\+/g, ' ') : '');
+  const decode = (key: string) => decodeURIComponent(params.get(key) ?? '').replace(/\+/g, ' ');
+  const name = decode('name');
+  const server = decode('server');
+  const dc = decode('dc');
+  const currentPage = Number(decode('page'));
 
-  const name = decodeParam(params.get('name'));
-  const server = decodeParam(params.get('server'));
-  const dc = decodeParam(params.get('dc'));
-  const page = decodeParam(params.get('page'));
-
-  const handlePageChange = (page: number) => {
-    router.replace(`?name=${name}&dc=${dc}&server=${server}&page=${Number(page)}`);
+  const navigate = (page: number) => {
+    router.replace(`?name=${name}&dc=${dc}&server=${server}&page=${page}`);
   };
 
   return (
     <section className="flex items-center justify-center gap-2">
-      {pagination.prev !== 'javascript:void(0);' && (
-        <Button onClick={() => handlePageChange(Number(page) - 1)} disabled={page === '1' || !pagination.prev}>
-          {Number(page) - 1}
+      {pagination.prev && (
+        <Button arialabel="Previous page" onClick={() => navigate(currentPage - 1)} disabled={currentPage === 1}>
+          {currentPage - 1}
         </Button>
       )}
       <span className="rounded-md p-4 text-lg font-bold">{pagination.current}</span>
-      {pagination.next !== 'javascript:void(0);' && (
+      {pagination.next && (
         <Button
-          onClick={() => handlePageChange(Number(page) + 1)}
-          disabled={page === pagination.total || !pagination.next}>
-          {Number(page) + 1}
+          arialabel="Next page"
+          onClick={() => navigate(currentPage + 1)}
+          disabled={currentPage === Number(pagination.total)}>
+          {currentPage + 1}
         </Button>
       )}
     </section>

@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import { type ItemType } from 'types';
+import { type ItemRouteKey } from 'types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ItemSelector } from '@/app/_components/item-selector';
 
 vi.mock('@/hooks/useItemOwnership', () => ({
-  __esModule: true,
   useItemOwnership: () => ({
-    isOwner: vi.fn().mockReturnValue(true),
+    owned: false,
+    handleAddOrRemove: vi.fn(),
   }),
 }));
 
@@ -20,13 +20,13 @@ const props = {
       owners: [{ id: 'owner-id' }],
     },
   ],
-  type: 'minions' as ItemType,
+  type: 'minions' as ItemRouteKey,
   session: null,
 };
 
 describe('ItemSelector', () => {
   it('should render correctly', () => {
     render(<ItemSelector items={props.items} type={props.type} session={props.session} />);
-    expect(screen.getByRole('button', { name: 'item-view' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Item Name' })).toBeInTheDocument();
   });
 });

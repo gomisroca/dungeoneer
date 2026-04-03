@@ -1,14 +1,15 @@
 'use client';
 
+import { useSetAtom } from 'jotai';
 import { type Session } from 'next-auth';
 
 import { syncLodestone } from '@/actions/lodestone';
 import Button from '@/app/_components/ui/button';
-import { useMessage } from '@/hooks/useMessage';
+import { messageAtom } from '@/atoms/message';
 import { toErrorMessage } from '@/utils/errors';
 
 function SyncButton({ session, lodestoneId }: { session: Session | null; lodestoneId: string }) {
-  const setMessage = useMessage();
+  const setMessage = useSetAtom(messageAtom);
 
   const handleSync = async () => {
     try {
@@ -28,7 +29,7 @@ function SyncButton({ session, lodestoneId }: { session: Session | null; lodesto
       setMessage({ content: 'Character synced successfully.' });
     } catch (error) {
       // If there was an error during the action, set the error message
-      setMessage({ content: toErrorMessage(error, 'Syncing character failed.'), error: true });
+      setMessage({ content: toErrorMessage(error, 'Syncing character failed.'), type: 'error' });
     }
   };
 

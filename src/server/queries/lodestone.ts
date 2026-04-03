@@ -6,6 +6,15 @@ import { type LodestoneCharacter } from 'types';
 import { db } from '@/server/db';
 import { cached } from '@/utils/redis';
 
+function parseWorldText(text: string) {
+  const match = /(?<World>\w+)\s+\[(?<DC>\w+)\]/.exec(text);
+  return { server: match?.[1], data_center: match?.[2] };
+}
+
+function toError(error: unknown, fallback: string): never {
+  throw error instanceof Error ? error : new Error(fallback);
+}
+
 export async function fetchLodestoneCharacters({
   name,
   server,
@@ -21,35 +30,29 @@ export async function fetchLodestoneCharacters({
   pagination: { current: string; total: string; prev: string | null; next: string | null };
 }> {
   try {
-    const baseUrl = 'https://eu.finalfantasyxiv.com/lodestone/character/';
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ q: name, page });
 
-    params.append('q', name);
     if (server) {
-      params.append('worldname', server); // If server is provided, use it directly
+      params.append('worldname', server);
     } else if (dc) {
-      params.append('worldname', `_dc_${dc}`); // If data center is provided, prefix it
+      params.append('worldname', `_dc_${dc}`);
     } else {
-      params.append('worldname', ''); // If neither server nor data center is provided, use the default world
+      params.append('worldname', '');
     }
-    params.append('page', page);
-    const searchUrl = `${baseUrl}?${params.toString()}`;
 
-    const characterResponse = await fetch(searchUrl);
-    const characterHtml = await characterResponse.text();
-    const $ = cheerio.load(characterHtml);
+    const searchUrl = `https://eu.finalfantasyxiv.com/lodestone/character/?${params.toString()}`;
+    const html = await fetch(searchUrl).then((r) => r.text());
+    const $ = cheerio.load(html);
 
-    const noResults = $('.parts__zero').length > 0;
-    if (noResults) {
-      return { characters: [], pagination: { current: '', total: '', prev: '', next: '' } };
+    if ($('.parts__zero').length > 0) {
+      return { characters: [], pagination: { current: '', total: '', prev: null, next: null } };
     }
 
     const characters = $('.entry')
       .map((_, entry) => {
         const $entry = $(entry);
-        const name = $entry.find('.entry__name').text().trim() || '';
-        const worldText = $entry.find('.entry__world').text().trim();
-        const worldMatch = /(.+?)\s+\[(.+?)\]/.exec(worldText);
+        const name = $entry.find('.entry__name').text().trim();
+        const { server, data_center } = parseWorldText($entry.find('.entry__world').text().trim());
 
         return {
           name,
@@ -59,82 +62,71 @@ export async function fetchLodestoneCharacters({
               .find('.entry__link')
               .attr('href')
               ?.match(/lodestone\/character\/(\d*)\//)?.[1] ?? '',
-          server: worldMatch ? worldMatch[1] : '',
-          data_center: worldMatch ? worldMatch[2] : '',
+          server,
+          data_center,
         };
       })
-      .get() // Convert to an array
-      .filter((character) => character.name); // Filter out entries missing name or ID
+      .get()
+      .filter((c) => c.name);
 
-    // Extract pagination info
+    const pagerText = $('ul.btn__pager > li:nth-child(3)').text();
+    const pagerMatch = /\D*(\d+)\D*(\d+)/.exec(pagerText);
+
     const pagination = {
-      current: /\D*(\d+)\D*(\d+)/.exec($('ul.btn__pager > li:nth-child(3)').text())?.[1] ?? '',
-      total: /\D*(\d+)\D*(\d+)/.exec($('ul.btn__pager > li:nth-child(3)').text())?.[2] ?? '',
+      current: pagerMatch?.[1] ?? '',
+      total: pagerMatch?.[2] ?? '',
       prev: $('ul.btn__pager > li:nth-child(1) > a:nth-child(1)').attr('href') ?? null,
       next: $('ul.btn__pager > li:nth-child(4) > a:nth-child(1)').attr('href') ?? null,
     };
 
     return { characters, pagination };
   } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    } else {
-      throw new Error('No characters were found');
-    }
+    toError(error, 'No characters were found');
   }
 }
 
 export async function fetchUniqueLodestoneCharacter({ lodestoneId }: { lodestoneId: string }) {
-  const character = await cached(`character:${lodestoneId}`, async () => {
-    try {
-      const characterResponse = await fetch(`https://eu.finalfantasyxiv.com/lodestone/character/${lodestoneId}/`);
-      const characterHtml = await characterResponse.text();
+  return cached(
+    `character:${lodestoneId}`,
+    async () => {
+      try {
+        const baseUrl = `https://eu.finalfantasyxiv.com/lodestone/character/${lodestoneId}`;
 
-      const $char = cheerio.load(characterHtml);
+        const [charHtml, mountsHtml, minionsHtml, dbMountCount, dbMinionCount] = await Promise.all([
+          fetch(`${baseUrl}/`).then((r) => r.text()),
+          fetch(`${baseUrl}/mount/`).then((r) => r.text()),
+          fetch(`${baseUrl}/minion/`).then((r) => r.text()),
+          cached('db:mount:count', () => db.mount.count(), 60 * 60),
+          cached('db:minion:count', () => db.minion.count(), 60 * 60),
+        ]);
 
-      const character = {
-        name: $char('div.frame__chara__box:nth-child(2) > .frame__chara__name').text().trim(),
-        avatar: $char('.frame__chara__face > img:nth-child(1)').attr('src'),
-        server: /(?<World>\w+)\s+\[(?<DC>\w+)\]/.exec($char('p.frame__chara__world').text())![1],
-        data_center: /(?<World>\w+)\s+\[(?<DC>\w+)\]/.exec($char('p.frame__chara__world').text())![2],
-      };
+        const $char = cheerio.load(charHtml);
+        const { server, data_center } = parseWorldText($char('p.frame__chara__world').text());
 
-      const mountsResponse = await fetch(`https://eu.finalfantasyxiv.com/lodestone/character/${lodestoneId}/mount/`);
-      const mountsHtml = await mountsResponse.text();
-      const $mounts = cheerio.load(mountsHtml);
-      const mounts = $mounts('.minion__sort__total > span:nth-child(1)').text().trim();
-      const dbMounts = await db.mount.count();
+        const mountCount = Number(cheerio.load(mountsHtml)('.minion__sort__total > span:nth-child(1)').text().trim());
+        const minionCount = Number(cheerio.load(minionsHtml)('.minion__sort__total > span:nth-child(1)').text().trim());
 
-      const minionsResponse = await fetch(`https://eu.finalfantasyxiv.com/lodestone/character/${lodestoneId}/minion/`);
-      const minionsHtml = await minionsResponse.text();
-      const $minions = cheerio.load(minionsHtml);
-      const minions = $minions('.minion__sort__total > span:nth-child(1)').text().trim();
-      const dbMinions = await db.minion.count();
-
-      return {
-        name: character.name,
-        avatar: character.avatar,
-        server: character.server,
-        data_center: character.data_center,
-        mounts: {
-          count: Number(mounts),
-          total: dbMounts,
-          public: Number(mounts) > 0,
-        },
-        minions: {
-          count: Number(minions),
-          total: dbMinions,
-          public: Number(minions) > 0,
-        },
-      } as LodestoneCharacter;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Failed to fetch character');
+        return {
+          id: lodestoneId,
+          name: $char('div.frame__chara__box:nth-child(2) > .frame__chara__name').text().trim(),
+          avatar: $char('.frame__chara__face > img:nth-child(1)').attr('src'),
+          server,
+          data_center,
+          mounts: {
+            count: mountCount,
+            total: dbMountCount,
+            public: mountCount > 0,
+          },
+          minions: {
+            count: minionCount,
+            total: dbMinionCount,
+            public: minionCount > 0,
+          },
+        } as LodestoneCharacter;
+      } catch (error) {
+        toError(error, 'Failed to fetch character');
       }
-    }
-  });
-
-  return character;
+    },
+    60 * 30
+  );
 }

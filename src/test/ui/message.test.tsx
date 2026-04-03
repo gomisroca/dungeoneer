@@ -1,23 +1,20 @@
 import { act, render, screen } from '@testing-library/react';
 import { Provider, useAtom } from 'jotai';
 import { useEffect } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Message from '@/app/_components/ui/message';
 import { messageAtom } from '@/atoms/message';
 
-// Mocks for next/navigation
 vi.mock('next/navigation', () => ({
   usePathname: vi.fn().mockReturnValue('/mock-path'),
 }));
 
 function MessageWithProvider() {
   const [, setMessage] = useAtom(messageAtom);
-
   useEffect(() => {
-    setMessage({ content: 'Test Message', error: false });
+    setMessage({ content: 'Test Message', type: 'success' });
   }, []);
-
   return <Message />;
 }
 
@@ -25,7 +22,6 @@ describe('Message component', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
-
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -36,7 +32,6 @@ describe('Message component', () => {
         <MessageWithProvider />
       </Provider>
     );
-
     expect(screen.getByText('Test Message')).toBeVisible();
   });
 
@@ -46,13 +41,10 @@ describe('Message component', () => {
         <MessageWithProvider />
       </Provider>
     );
-
     expect(screen.getByText('Test Message')).toBeVisible();
-
     act(() => {
       vi.advanceTimersByTime(5000);
     });
-
     expect(screen.queryByText('Test Message')).not.toBeInTheDocument();
   });
 
@@ -60,7 +52,7 @@ describe('Message component', () => {
     function ErrorMessage() {
       const [, setMessage] = useAtom(messageAtom);
       useEffect(() => {
-        setMessage({ content: 'Error occurred', error: true });
+        setMessage({ content: 'Error occurred', type: 'error' });
       }, []);
       return <Message />;
     }
@@ -71,7 +63,8 @@ describe('Message component', () => {
       </Provider>
     );
 
-    const content = screen.getByText('Error occurred');
-    expect(content).toHaveClass('border-red-500');
+    // border-red-500 is on the wrapper div, not the text node
+    const wrapper = screen.getByText('Error occurred').closest('div');
+    expect(wrapper).toHaveClass('border-red-500');
   });
 });

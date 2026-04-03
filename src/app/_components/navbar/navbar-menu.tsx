@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { type Session } from 'next-auth';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaCaretDown, FaDog, FaFaceLaugh, FaHorse, FaMusic, FaScissors, FaWandMagicSparkles } from 'react-icons/fa6';
 import { LuSearch } from 'react-icons/lu';
 import { MdOutlineSync } from 'react-icons/md';
@@ -11,12 +11,9 @@ import { TbCardsFilled } from 'react-icons/tb';
 import SignInButton from '@/app/_components/navbar/sign-in';
 import SignOutButton from '@/app/_components/navbar/sign-out';
 import ThemeButton from '@/app/_components/navbar/theme-button';
+import Button from '@/app/_components/ui/button';
 import Link from '@/app/_components/ui/link';
 import { Separator } from '@/app/_components/ui/separator';
-
-type NavbarMenuProps = {
-  session: Session | null;
-};
 
 function ExpandedMenu({ session }: { session: Session | null }) {
   return (
@@ -62,11 +59,9 @@ function ExpandedMenu({ session }: { session: Session | null }) {
   );
 }
 
-export default function NavbarMenu({ session }: NavbarMenuProps) {
+export default function NavbarMenu({ session }: { session: Session | null }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  const toggleMenu = () => setIsExpanded(!isExpanded);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -74,66 +69,37 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
         setIsExpanded(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
     <div ref={menuRef} className="pointer-events-auto relative flex flex-col">
       <div className="flex flex-col items-center justify-center gap-2">
-        <Link href="/instance/dungeons" className="group p-1">
-          <Image
-            priority={true}
-            src="/sources/Dungeon.png"
-            alt="Dungeon"
-            width={50}
-            height={50}
-            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
-          />
-        </Link>
-        <Link href="/instance/raids" className="group p-1">
-          <Image
-            priority={true}
-            src="/sources/Raid.png"
-            alt="Raid"
-            width={50}
-            height={50}
-            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
-          />
-        </Link>
-        <Link href="/instance/trials" className="group p-1">
-          <Image
-            priority={true}
-            src="/sources/Trial.png"
-            alt="Trial"
-            width={50}
-            height={50}
-            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
-          />
-        </Link>
-        <Link href="/instance/variants" className="group p-1">
-          <Image
-            priority={true}
-            src="/sources/V&C Dungeon.png"
-            alt="V&C Dungeon"
-            width={50}
-            height={50}
-            className="duration transition-200 h-6 w-6 object-fill ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
-          />
-        </Link>
-        <div onMouseLeave={() => setIsExpanded(false)}>
-          <button
-            className="mx-auto flex h-6 w-6 flex-row items-center justify-center gap-2 rounded-md p-0 font-semibold text-nowrap whitespace-nowrap transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-zinc-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 lg:h-8 lg:w-8 dark:hover:bg-cyan-700 dark:hover:text-zinc-100 dark:active:bg-cyan-700"
-            onMouseEnter={() => setIsExpanded(true)}
-            onClick={toggleMenu}
-            aria-label="Expand menu">
-            <FaCaretDown size={20} />
-          </button>
-          {isExpanded && <ExpandedMenu session={session} />}
-        </div>
+        {[
+          { href: '/instance/dungeons', src: '/sources/Dungeon.png', alt: 'Dungeon' },
+          { href: '/instance/raids', src: '/sources/Raid.png', alt: 'Raid' },
+          { href: '/instance/trials', src: '/sources/Trial.png', alt: 'Trial' },
+          { href: '/instance/variants', src: '/sources/V&C Dungeon.png', alt: 'V&C Dungeon' },
+        ].map(({ href, src, alt }) => (
+          <Link key={href} href={href} className="group p-1">
+            <Image
+              priority
+              src={src}
+              alt={alt}
+              width={50}
+              height={50}
+              className="h-6 w-6 object-fill transition duration-200 ease-in-out group-hover:contrast-125 lg:h-8 lg:w-8"
+            />
+          </Link>
+        ))}
+        <Button
+          arialabel="Expand menu"
+          className="h-6 w-6 p-0 lg:h-8 lg:w-8"
+          onClick={() => setIsExpanded((prev) => !prev)}>
+          <FaCaretDown size={20} />
+        </Button>
+        {isExpanded && <ExpandedMenu session={session} />}
       </div>
     </div>
   );
